@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Nacho Notch</string>
+
+    <!--Titles-->
+    <string name="hide_notch">Hide Notch</string>
+    <string name="show_notch">Show Notch</string>
+</resources>
