@@ -11,10 +11,8 @@ import android.os.Binder
 import android.os.Build
 import android.os.IBinder
 import android.support.v4.app.NotificationCompat
-import android.view.Gravity
-import android.view.OrientationEventListener
-import android.view.Surface
-import android.view.WindowManager
+import android.util.Log
+import android.view.*
 import android.widget.LinearLayout
 
 class BackgroundHandler : Service() {
@@ -26,13 +24,28 @@ class BackgroundHandler : Service() {
     private lateinit var cover: LinearLayout
     private lateinit var orientationEventListener: OrientationEventListener
 
+    private val params = WindowManager.LayoutParams()
+
     override fun onCreate() {
         super.onCreate()
 
-        windowManager = getSystemService(Context.WINDOW_SERVICE) as WindowManager
-
         cover = LinearLayout(this)
         cover.setBackgroundColor(Color.BLACK)
+
+        params.width = Utils.getRealScreenSize(this).x
+        params.height = Utils.getStatusBarHeight(this)
+        params.gravity = Gravity.TOP
+        params.type = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) WindowManager.LayoutParams.TYPE_PHONE
+        else WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
+        params.flags = WindowManager.LayoutParams.FLAG_LAYOUT_IN_OVERSCAN or
+                WindowManager.LayoutParams.FLAG_LAYOUT_INSET_DECOR or
+                WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
+                WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS or
+                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
+                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
+        params.systemUiVisibility = cover.systemUiVisibility and View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR.inv()
+
+        windowManager = getSystemService(Context.WINDOW_SERVICE) as WindowManager
 
         orientationEventListener = object : OrientationEventListener(this) {
             var oldRot = Surface.ROTATION_0
@@ -79,22 +92,19 @@ class BackgroundHandler : Service() {
     }
 
     private fun addOverlay() {
-        val params = WindowManager.LayoutParams()
-
-        params.width = Utils.getRealScreenSize(this).x
-        params.height = Utils.getStatusBarHeight(this)
-        params.gravity = Gravity.TOP
-        params.type = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) WindowManager.LayoutParams.TYPE_PHONE
-        else WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
-        params.flags = WindowManager.LayoutParams.FLAG_LAYOUT_IN_OVERSCAN or
-                WindowManager.LayoutParams.FLAG_LAYOUT_INSET_DECOR or
-                WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
-                WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS or
-                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
-                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
-
         removeOverlay()
         windowManager.addView(cover, params)
+
+        if (cover.systemUiVisibility and 6 == 6 || cover.systemUiVisibility and 4 == 4) hideOverlay()
+
+        cover.setOnSystemUiVisibilityChangeListener {
+            Log.e("NACHO NOTCH", "$it, ${it and 6}, ${it and 4}")
+            if (it and 6 == 6 || it and 4 == 4) {
+                hideOverlay()
+            } else {
+                showOverlay()
+            }
+        }
     }
 
     private fun removeOverlayAndDisable() {
@@ -109,6 +119,20 @@ class BackgroundHandler : Service() {
             windowManager.removeView(cover)
         } catch (e: Exception) {
             e.printStackTrace()
+        }
+    }
+
+    private fun hideOverlay() {
+        if (cover.visibility != View.GONE) {
+            cover.visibility = View.GONE
+            windowManager.updateViewLayout(cover, params)
+        }
+    }
+
+    private fun showOverlay() {
+        if (cover.visibility != View.VISIBLE) {
+            cover.visibility = View.VISIBLE
+            windowManager.updateViewLayout(cover, params)
         }
     }
 
