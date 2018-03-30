@@ -2,6 +2,7 @@ package com.zacharee1.nachonotch
 
 import android.content.Context
 import android.graphics.Point
+import android.preference.PreferenceManager
 import android.util.TypedValue
 import android.view.WindowManager
 
@@ -42,5 +43,13 @@ object Utils {
             result = context.resources.getDimensionPixelSize(resourceId)
         }
         return result
+    }
+
+    fun isEnabled(context: Context): Boolean {
+        return PreferenceManager.getDefaultSharedPreferences(context).getBoolean(BackgroundHandler.SHOULD_RUN, false)
+    }
+
+    fun setEnabled(context: Context, enabled: Boolean) {
+        PreferenceManager.getDefaultSharedPreferences(context).edit().putBoolean(BackgroundHandler.SHOULD_RUN, enabled).apply()
     }
 }

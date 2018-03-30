@@ -19,7 +19,7 @@ import android.widget.LinearLayout
 
 class BackgroundHandler : Service() {
     companion object {
-        var RUNNING = false
+        const val SHOULD_RUN = "enabled"
     }
 
     private lateinit var windowManager: WindowManager
@@ -27,7 +27,6 @@ class BackgroundHandler : Service() {
     private lateinit var orientationEventListener: OrientationEventListener
 
     override fun onCreate() {
-        RUNNING = true
         super.onCreate()
 
         windowManager = getSystemService(Context.WINDOW_SERVICE) as WindowManager
@@ -51,13 +50,12 @@ class BackgroundHandler : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        addOverlayAndEnable()
+        if (Utils.isEnabled(this)) addOverlayAndEnable()
 
         return START_STICKY
     }
 
     override fun onDestroy() {
-        RUNNING = false
         super.onDestroy()
         removeOverlayAndDisable()
     }
@@ -115,7 +113,7 @@ class BackgroundHandler : Service() {
     }
 
     override fun onBind(intent: Intent): IBinder? {
-        return null
+        return BackgroundBinder()
     }
 
     inner class BackgroundBinder : Binder() {
