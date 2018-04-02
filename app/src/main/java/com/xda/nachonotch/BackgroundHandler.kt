@@ -42,8 +42,7 @@ class BackgroundHandler : Service() {
                 WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS or
                 WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
                 WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE or
-                WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS and
-                WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS.inv()
+                WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS
 
         windowManager = getSystemService(Context.WINDOW_SERVICE) as WindowManager
 
@@ -99,7 +98,9 @@ class BackgroundHandler : Service() {
 
         cover.setOnSystemUiVisibilityChangeListener {
             if (it and 6 == 6 || it and 4 == 4) hideOverlay() else showOverlay()
+            cover.systemUiVisibility = cover.systemUiVisibility and View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR.inv()
         }
+
     }
 
     private fun removeOverlayAndDisable() {

@@ -12,7 +12,7 @@
         android:supportsRtl="true"
         android:theme="@android:style/Theme">
         <service
-            android:name="com.xda.nachonotch.ToggleService"
+            android:name=".ToggleService"
             android:icon="@drawable/ic_space_bar_black_24dp"
             android:label="@string/hide_notch"
             android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
@@ -21,12 +21,12 @@
             </intent-filter>
         </service>
         <service
-            android:name="com.xda.nachonotch.BackgroundHandler"
+            android:name=".BackgroundHandler"
             android:enabled="true"
             android:exported="true" />
 
         <receiver
-            android:name="com.xda.nachonotch.BootReceiver"
+            android:name=".BootReceiver"
             android:enabled="true"
             android:exported="true">
             <intent-filter>
@@ -34,6 +34,15 @@
                 <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
             </intent-filter>
         </receiver>
+
+        <activity android:name=".MainActivity"
+            android:theme="@style/Theme.AppCompat">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>

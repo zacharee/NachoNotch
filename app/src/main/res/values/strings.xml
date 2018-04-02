@@ -4,4 +4,7 @@
     <!--Titles-->
     <string name="hide_notch">Hide Notch</string>
     <string name="show_notch">Show Notch</string>
+
+    <!--Messages-->
+    <string name="user_didnt_read_app_description">Hey! Looks like you were either curious about this icon, or you just neglected to read the app\'s description in the Play Store (even with the capital letters telling you to do so). Click the link below for a quick YouTube video (also linked in the description) showing you how this app works.\n\n<a href="https://youtu.be/HhH5wK1NokY">Tutorial</a></string>
 </resources>
