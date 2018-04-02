@@ -1,4 +1,4 @@
-package com.zacharee1.nachonotch
+package com.xda.nachonotch
 
 import android.app.Notification
 import android.app.NotificationChannel
@@ -11,7 +11,6 @@ import android.os.Binder
 import android.os.Build
 import android.os.IBinder
 import android.support.v4.app.NotificationCompat
-import android.util.Log
 import android.view.*
 import android.widget.LinearLayout
 
@@ -42,8 +41,9 @@ class BackgroundHandler : Service() {
                 WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
                 WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS or
                 WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
-                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
-        params.systemUiVisibility = cover.systemUiVisibility and View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR.inv()
+                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE or
+                WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS and
+                WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS.inv()
 
         windowManager = getSystemService(Context.WINDOW_SERVICE) as WindowManager
 
@@ -98,12 +98,7 @@ class BackgroundHandler : Service() {
         if (cover.systemUiVisibility and 6 == 6 || cover.systemUiVisibility and 4 == 4) hideOverlay()
 
         cover.setOnSystemUiVisibilityChangeListener {
-            Log.e("NACHO NOTCH", "$it, ${it and 6}, ${it and 4}")
-            if (it and 6 == 6 || it and 4 == 4) {
-                hideOverlay()
-            } else {
-                showOverlay()
-            }
+            if (it and 6 == 6 || it and 4 == 4) hideOverlay() else showOverlay()
         }
     }
 

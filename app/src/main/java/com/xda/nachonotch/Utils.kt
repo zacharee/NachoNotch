@@ -1,4 +1,4 @@
-package com.zacharee1.nachonotch
+package com.xda.nachonotch
 
 import android.content.Context
 import android.graphics.Point

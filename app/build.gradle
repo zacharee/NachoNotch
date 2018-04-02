@@ -4,14 +4,16 @@ apply plugin: 'kotlin-android'
 
 apply plugin: 'kotlin-android-extensions'
 
+project.version = 2
+
 android {
     compileSdkVersion 27
     defaultConfig {
         applicationId "com.xda.nachonotch"
         minSdkVersion 24
         targetSdkVersion 27
-        versionCode 1
-        versionName "1.0"
+        versionCode project.version
+        versionName project.version + ""
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {

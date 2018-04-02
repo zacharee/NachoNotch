@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.zacharee1.nachonotch">
+    package="com.xda.nachonotch">
 
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
@@ -12,7 +12,7 @@
         android:supportsRtl="true"
         android:theme="@android:style/Theme">
         <service
-            android:name=".ToggleService"
+            android:name="com.xda.nachonotch.ToggleService"
             android:icon="@drawable/ic_space_bar_black_24dp"
             android:label="@string/hide_notch"
             android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
@@ -21,12 +21,12 @@
             </intent-filter>
         </service>
         <service
-            android:name=".BackgroundHandler"
+            android:name="com.xda.nachonotch.BackgroundHandler"
             android:enabled="true"
             android:exported="true" />
 
         <receiver
-            android:name=".BootReceiver"
+            android:name="com.xda.nachonotch.BootReceiver"
             android:enabled="true"
             android:exported="true">
             <intent-filter>
