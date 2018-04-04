@@ -11,6 +11,7 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@android:style/Theme">
+
         <service
             android:name=".ToggleService"
             android:icon="@drawable/ic_space_bar_black_24dp"
@@ -20,6 +21,7 @@
                 <action android:name="android.service.quicksettings.action.QS_TILE" />
             </intent-filter>
         </service>
+
         <service
             android:name=".BackgroundHandler"
             android:enabled="true"
@@ -35,12 +37,20 @@
             </intent-filter>
         </receiver>
 
-        <activity android:name=".MainActivity"
+        <activity
+            android:name=".MainActivity"
             android:theme="@style/Theme.AppCompat">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity android:name=".EnableActivity"
+            android:theme="@style/Null">
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE_PREFERENCES"/>
             </intent-filter>
         </activity>
     </application>

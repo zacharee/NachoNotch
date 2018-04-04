@@ -7,4 +7,7 @@
 
     <!--Messages-->
     <string name="user_didnt_read_app_description">Hey! Looks like you were either curious about this icon, or you just neglected to read the app\'s description in the Play Store (even with the capital letters telling you to do so). Click the link below for a quick YouTube video (also linked in the description) showing you how this app works.\n\n<a href="https://youtu.be/HhH5wK1NokY">Tutorial</a></string>
+    <string name="disable_activity">I know what I\'m doing. Disable this activity and hide the launcher icon.</string>
+    <string name="activity_disabled">Launcher activity disabled.</string>
+    <string name="activity_enabled">Launcher activity enabled.</string>
 </resources>
