@@ -6,13 +6,12 @@ import android.app.NotificationManager
 import android.app.Service
 import android.content.Context
 import android.content.Intent
-import android.graphics.Color
+import android.graphics.PixelFormat
 import android.os.Binder
 import android.os.Build
 import android.os.IBinder
 import android.support.v4.app.NotificationCompat
 import android.view.*
-import android.widget.LinearLayout
 
 class BackgroundHandler : Service() {
     companion object {
@@ -20,7 +19,7 @@ class BackgroundHandler : Service() {
     }
 
     private lateinit var windowManager: WindowManager
-    private lateinit var cover: LinearLayout
+    private lateinit var cover: Overlay
     private lateinit var orientationEventListener: OrientationEventListener
 
     private val params = WindowManager.LayoutParams()
@@ -28,8 +27,7 @@ class BackgroundHandler : Service() {
     override fun onCreate() {
         super.onCreate()
 
-        cover = LinearLayout(this)
-        cover.setBackgroundColor(Color.BLACK)
+        cover = Overlay(this)
 
         params.width = Utils.getRealScreenSize(this).x
         params.height = Utils.getStatusBarHeight(this)
@@ -43,6 +41,7 @@ class BackgroundHandler : Service() {
                 WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
                 WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE or
                 WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS
+        params.format = PixelFormat.TRANSLUCENT
 
         windowManager = getSystemService(Context.WINDOW_SERVICE) as WindowManager
 
@@ -94,13 +93,15 @@ class BackgroundHandler : Service() {
         removeOverlay()
         windowManager.addView(cover, params)
 
-        if (cover.systemUiVisibility and 6 == 6 || cover.systemUiVisibility and 4 == 4) hideOverlay()
+        if (cover.isImmersive()) hideOverlay()
 
         cover.setOnSystemUiVisibilityChangeListener {
-            if (it and 6 == 6 || it and 4 == 4) hideOverlay() else showOverlay()
-            cover.systemUiVisibility = cover.systemUiVisibility and View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR.inv()
-        }
+            if (it and View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR != 0) {
+                cover.systemUiVisibility = cover.systemUiVisibility and View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR.inv()
+            }
 
+            if (cover.isImmersive(it)) hideOverlay() else showOverlay()
+        }
     }
 
     private fun removeOverlayAndDisable() {
