@@ -227,7 +227,7 @@ class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeL
             if (uri == Settings.Global.getUriFor(Settings.Global.POLICY_CONTROL)) {
                 val current = Settings.Global.getString(contentResolver, Settings.Global.POLICY_CONTROL)
 
-                if (current != null && current.isNotEmpty() && (current.contains("full") || current.contains("nav"))) {
+                if (current != null && current.isNotEmpty() && (current.contains("full"))) {
                     hideOverlay()
                 } else {
                     showOverlay()

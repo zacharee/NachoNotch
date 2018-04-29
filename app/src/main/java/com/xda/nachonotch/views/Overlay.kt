@@ -25,7 +25,7 @@ class Overlay : LinearLayout {
     fun isImmersive(vis: Int): Boolean {
         val immersive = Settings.Global.getString(context.contentResolver, Settings.Global.POLICY_CONTROL) ?: "immersive.none"
 
-        return vis and 6 == 4 || vis and 4 == 4 || immersive.contains("full") || immersive.contains("nav") || immersive.contains("full")
+        return vis and 6 == 4 || vis and 4 == 4 || immersive.contains("full") || immersive.contains("full")
     }
 
     fun getParams(): WindowManager.LayoutParams {
