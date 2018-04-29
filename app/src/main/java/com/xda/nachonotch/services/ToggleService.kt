@@ -1,4 +1,4 @@
-package com.xda.nachonotch
+package com.xda.nachonotch.services
 
 import android.content.ComponentName
 import android.content.Intent
@@ -11,6 +11,8 @@ import android.provider.Settings
 import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
 import android.support.v4.content.ContextCompat
+import com.xda.nachonotch.R
+import com.xda.nachonotch.util.Utils
 
 class ToggleService : TileService() {
     private val connection = object : ServiceConnection {

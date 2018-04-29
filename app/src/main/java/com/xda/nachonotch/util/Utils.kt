@@ -1,10 +1,11 @@
-package com.xda.nachonotch
+package com.xda.nachonotch.util
 
 import android.content.Context
 import android.graphics.Point
 import android.preference.PreferenceManager
 import android.util.TypedValue
 import android.view.WindowManager
+import com.xda.nachonotch.services.BackgroundHandler
 
 /**
  * General utility functions for OHM
@@ -51,5 +52,9 @@ object Utils {
 
     fun setEnabled(context: Context, enabled: Boolean) {
         PreferenceManager.getDefaultSharedPreferences(context).edit().putBoolean(BackgroundHandler.SHOULD_RUN, enabled).apply()
+    }
+
+    fun areCornersEnabled(context: Context): Boolean {
+        return PreferenceManager.getDefaultSharedPreferences(context).getBoolean("rounded_corners", false)
     }
 }

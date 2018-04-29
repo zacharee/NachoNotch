@@ -1,9 +1,11 @@
-package com.xda.nachonotch
+package com.xda.nachonotch.receivers
 
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.support.v4.content.ContextCompat.startForegroundService
+import com.xda.nachonotch.services.BackgroundHandler
+import com.xda.nachonotch.util.Utils
 
 class BootReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
