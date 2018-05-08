@@ -3,6 +3,7 @@ package com.xda.nachonotch.views
 import android.content.Context
 import android.graphics.Color
 import android.graphics.PixelFormat
+import android.graphics.Rect
 import android.os.Build
 import android.provider.Settings
 import android.util.AttributeSet
@@ -10,22 +11,27 @@ import android.view.Gravity
 import android.view.WindowManager
 import android.view.WindowManager.LayoutParams.FLAG_DIM_BEHIND
 import android.widget.LinearLayout
-import com.xda.nachonotch.util.Utils.getStatusBarHeight
+import com.xda.nachonotch.util.Utils
 
-class Overlay : LinearLayout {
+class BottomOverlay : LinearLayout {
+    private val wm: WindowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+
     constructor(context: Context) : this(context, null)
     constructor(context: Context, attributeSet: AttributeSet?) : super(context, attributeSet) {
         setBackgroundColor(Color.BLACK)
     }
 
-    fun isImmersive(): Boolean {
-        return isImmersive(systemUiVisibility)
+    fun isHidden(): Boolean {
+        return isHidden(systemUiVisibility)
     }
 
-    fun isImmersive(vis: Int): Boolean {
+    fun isHidden(vis: Int): Boolean {
         val immersive = Settings.Global.getString(context.contentResolver, Settings.Global.POLICY_CONTROL) ?: "immersive.none"
+        val overscan = Rect()
 
-        return vis and 6 == 4 || vis and 4 == 4 || immersive.contains("full") || immersive.contains("full")
+        wm.defaultDisplay.getOverscanInsets(overscan)
+
+        return vis and Utils.IMMERSIVE_NAV != 0 || immersive.contains("full") || immersive.contains("navigation") || overscan.bottom < 0
     }
 
     fun getParams(): WindowManager.LayoutParams {
@@ -40,9 +46,10 @@ class Overlay : LinearLayout {
                     WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE or
                     WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS
             type = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) WindowManager.LayoutParams.TYPE_SYSTEM_ALERT else WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
-            gravity = Gravity.TOP
-            width =   WindowManager.LayoutParams.MATCH_PARENT
-            height = getStatusBarHeight(context)
+            gravity = Gravity.BOTTOM
+            width =  WindowManager.LayoutParams.MATCH_PARENT
+            height = Utils.getNavBarHeight(context)
+            y = -height
             format = PixelFormat.TRANSLUCENT
         }
     }

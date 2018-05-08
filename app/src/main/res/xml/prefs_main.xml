@@ -9,4 +9,8 @@
         android:title="@string/rounded_corners"
         android:key="rounded_corners" />
 
+    <SwitchPreference
+        android:title="@string/cover_nav"
+        android:key="cover_nav" />
+
 </PreferenceScreen>

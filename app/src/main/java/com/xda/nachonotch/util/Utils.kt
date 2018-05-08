@@ -2,6 +2,7 @@ package com.xda.nachonotch.util
 
 import android.content.Context
 import android.graphics.Point
+import android.os.Build
 import android.preference.PreferenceManager
 import android.util.TypedValue
 import android.view.WindowManager
@@ -11,6 +12,10 @@ import com.xda.nachonotch.services.BackgroundHandler
  * General utility functions for OHM
  */
 object Utils {
+    val IMMERSIVE_STATUS = 4
+    val IMMERSIVE_NAV = 2
+    val IMMERSIVE_FULL = IMMERSIVE_STATUS or IMMERSIVE_NAV
+
     /**
      * Get the device's screen size
      * @param context context object
@@ -56,5 +61,23 @@ object Utils {
 
     fun areCornersEnabled(context: Context): Boolean {
         return PreferenceManager.getDefaultSharedPreferences(context).getBoolean("rounded_corners", false)
+    }
+
+    fun isNavCoverEnabled(context: Context): Boolean {
+        return PreferenceManager.getDefaultSharedPreferences(context).getBoolean("cover_nav", false)
+    }
+
+    fun hasNavBar(context: Context): Boolean {
+        val id = context.resources.getIdentifier("config_showNavigationBar", "bool", "android")
+        return id > 0 && context.resources.getBoolean(id) || Build.MODEL.contains("Android SDK built for x86")
+    }
+
+    /**
+     * Get the height of the navigation bar
+     * @param context context object
+     * @return the height of the navigation bar
+     */
+    fun getNavBarHeight(context: Context): Int {
+        return if (hasNavBar(context)) context.resources.getDimensionPixelSize(context.resources.getIdentifier("navigation_bar_height", "dimen", "android")) else 0
     }
 }

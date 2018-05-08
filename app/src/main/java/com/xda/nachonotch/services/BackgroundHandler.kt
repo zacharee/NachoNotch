@@ -17,9 +17,10 @@ import android.view.WindowManager
 import com.xda.nachonotch.R
 import com.xda.nachonotch.activities.SettingsActivity
 import com.xda.nachonotch.util.Utils
+import com.xda.nachonotch.views.BottomOverlay
 import com.xda.nachonotch.views.LeftCorner
-import com.xda.nachonotch.views.Overlay
 import com.xda.nachonotch.views.RightCorner
+import com.xda.nachonotch.views.TopOverlay
 
 class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeListener {
     companion object {
@@ -27,7 +28,8 @@ class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeL
     }
 
     private lateinit var windowManager: WindowManager
-    private lateinit var cover: Overlay
+    private lateinit var topCover: TopOverlay
+    private lateinit var bottomCover: BottomOverlay
     private lateinit var left: LeftCorner
     private lateinit var right: RightCorner
     private lateinit var orientationEventListener: OrientationEventListener
@@ -37,7 +39,8 @@ class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeL
     override fun onCreate() {
         super.onCreate()
 
-        cover = Overlay(this)
+        topCover = TopOverlay(this)
+        bottomCover = BottomOverlay(this)
         left = LeftCorner(this)
         right = RightCorner(this)
 
@@ -82,6 +85,8 @@ class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeL
                 if (Utils.areCornersEnabled(this)) {
                     windowManager.addView(left, left.getParams())
                     windowManager.addView(right, right.getParams())
+
+                    if (topCover.isHidden()) hideTopOverlay()
                 } else {
                     try {
                         windowManager.removeView(left)
@@ -91,6 +96,18 @@ class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeL
 
                     try {
                         windowManager.removeView(right)
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+                }
+            }
+            "cover_nav" -> {
+                if (Utils.isNavCoverEnabled(this)) {
+                    windowManager.addView(bottomCover, bottomCover.getParams())
+                    if (bottomCover.isHidden()) hideBottomOverlay()
+                } else {
+                    try {
+                        windowManager.removeView(bottomCover)
                     } catch (e: Exception) {
                         e.printStackTrace()
                     }
@@ -121,17 +138,26 @@ class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeL
 
     private fun addOverlay() {
         removeOverlay()
-        windowManager.addView(cover, cover.getParams())
+        windowManager.addView(topCover, topCover.getParams())
 
         if (Utils.areCornersEnabled(this)) {
             windowManager.addView(left, left.getParams())
             windowManager.addView(right, right.getParams())
         }
 
-        if (cover.isImmersive()) hideOverlay()
+        if (Utils.isNavCoverEnabled(this)) {
+            windowManager.addView(bottomCover, bottomCover.getParams())
+        }
 
-        cover.setOnSystemUiVisibilityChangeListener {
-            if (cover.isImmersive(it)) hideOverlay() else showOverlay()
+        if (topCover.isHidden()) hideTopOverlay()
+        if (bottomCover.isHidden()) hideBottomOverlay()
+
+        topCover.setOnSystemUiVisibilityChangeListener {
+            if (topCover.isHidden(it)) hideTopOverlay() else showTopOverlay()
+        }
+
+        bottomCover.setOnSystemUiVisibilityChangeListener {
+            if (bottomCover.isHidden(it)) hideBottomOverlay() else showBottomOverlay()
         }
     }
 
@@ -144,7 +170,7 @@ class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeL
 
     private fun removeOverlay() {
         try {
-            windowManager.removeView(cover)
+            windowManager.removeView(topCover)
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -160,12 +186,18 @@ class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeL
         } catch (e: Exception) {
             e.printStackTrace()
         }
+
+        try {
+            windowManager.removeView(bottomCover)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
-    private fun hideOverlay() {
-        if (cover.visibility != View.GONE) {
-            cover.visibility = View.GONE
-            windowManager.updateViewLayout(cover, cover.getParams())
+    private fun hideTopOverlay() {
+        if (topCover.visibility != View.GONE) {
+            topCover.visibility = View.GONE
+            windowManager.updateViewLayout(topCover, topCover.getParams())
         }
         
         if (Utils.areCornersEnabled(this)) {
@@ -181,21 +213,41 @@ class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeL
         }
     }
 
-    private fun showOverlay() {
-        if (cover.visibility != View.VISIBLE) {
-            cover.visibility = View.VISIBLE
-            windowManager.updateViewLayout(cover, cover.getParams())
-        }
-
-        if (Utils.areCornersEnabled(this)) {
-            if (left.visibility != View.VISIBLE) {
-                left.visibility = View.VISIBLE
-                windowManager.updateViewLayout(left, left.getParams())
+    private fun showTopOverlay() {
+        if (!topCover.isHidden()) {
+            if (topCover.visibility != View.VISIBLE) {
+                topCover.visibility = View.VISIBLE
+                windowManager.updateViewLayout(topCover, topCover.getParams())
             }
 
-            if (right.visibility != View.VISIBLE) {
-                right.visibility = View.VISIBLE
-                windowManager.updateViewLayout(right, right.getParams())
+            if (Utils.areCornersEnabled(this)) {
+                if (left.visibility != View.VISIBLE) {
+                    left.visibility = View.VISIBLE
+                    windowManager.updateViewLayout(left, left.getParams())
+                }
+
+                if (right.visibility != View.VISIBLE) {
+                    right.visibility = View.VISIBLE
+                    windowManager.updateViewLayout(right, right.getParams())
+                }
+            }
+        }
+    }
+
+    private fun hideBottomOverlay() {
+        if (Utils.isNavCoverEnabled(this)) {
+            if (bottomCover.visibility != View.GONE) {
+                bottomCover.visibility = View.GONE
+                windowManager.updateViewLayout(bottomCover, bottomCover.getParams())
+            }
+        }
+    }
+
+    private fun showBottomOverlay() {
+        if (Utils.isNavCoverEnabled(this) || !bottomCover.isHidden()) {
+            if (bottomCover.visibility != View.VISIBLE) {
+                bottomCover.visibility = View.VISIBLE
+                windowManager.updateViewLayout(bottomCover, bottomCover.getParams())
             }
         }
     }
@@ -216,23 +268,16 @@ class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeL
         }
 
         override fun onSystemUiVisibilityChange(visibility: Int) {
-            if (cover.isImmersive()) {
-                hideOverlay()
-            } else {
-                showOverlay()
-            }
+            handle()
         }
 
         override fun onChange(selfChange: Boolean, uri: Uri?) {
-            if (uri == Settings.Global.getUriFor(Settings.Global.POLICY_CONTROL)) {
-                val current = Settings.Global.getString(contentResolver, Settings.Global.POLICY_CONTROL)
+            handle()
+        }
 
-                if (current != null && current.isNotEmpty() && (current.contains("full"))) {
-                    hideOverlay()
-                } else {
-                    showOverlay()
-                }
-            }
+        private fun handle() {
+            if (topCover.isHidden()) hideTopOverlay() else showTopOverlay()
+            if (bottomCover.isHidden()) hideBottomOverlay() else showBottomOverlay()
         }
 
         fun destroy() {
