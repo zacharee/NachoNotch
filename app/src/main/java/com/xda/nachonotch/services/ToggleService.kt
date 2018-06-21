@@ -11,6 +11,7 @@ import android.provider.Settings
 import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
 import android.support.v4.content.ContextCompat
+import android.widget.Toast
 import com.xda.nachonotch.R
 import com.xda.nachonotch.util.Utils
 
@@ -43,6 +44,7 @@ class ToggleService : TileService() {
         } else {
             val intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + applicationContext.packageName))
             startActivity(intent)
+            Toast.makeText(this, resources.getText(R.string.enable_overlay_permission), Toast.LENGTH_SHORT).show()
         }
     }
 
