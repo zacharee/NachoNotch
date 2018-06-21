@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "318416808800",
+    "firebase_url": "https://nacho-notch.firebaseio.com",
+    "project_id": "nacho-notch",
+    "storage_bucket": "nacho-notch.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:318416808800:android:1e8d8836518a9e84",
+        "android_client_info": {
+          "package_name": "com.xda.nachonotch"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "318416808800-l8psp4pufvgb7v4ekslsj491smmivc0f.apps.googleusercontent.com",
+          "client_type": 3
+        },
+        {
+          "client_id": "318416808800-l8psp4pufvgb7v4ekslsj491smmivc0f.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB1kHBKDKk0amvq_xu82g2mFoRCGvLqWsk"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
