@@ -215,40 +215,46 @@ class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeL
 
     private fun showTopOverlay() {
         if (!topCover.isHidden()) {
-            if (topCover.visibility != View.VISIBLE) {
-                topCover.visibility = View.VISIBLE
-                windowManager.updateViewLayout(topCover, topCover.getParams())
-            }
-
-            if (Utils.areCornersEnabled(this)) {
-                if (left.visibility != View.VISIBLE) {
-                    left.visibility = View.VISIBLE
-                    windowManager.updateViewLayout(left, left.getParams())
+            try {
+                if (topCover.visibility != View.VISIBLE) {
+                    topCover.visibility = View.VISIBLE
+                    windowManager.updateViewLayout(topCover, topCover.getParams())
                 }
 
-                if (right.visibility != View.VISIBLE) {
-                    right.visibility = View.VISIBLE
-                    windowManager.updateViewLayout(right, right.getParams())
+                if (Utils.areCornersEnabled(this)) {
+                    if (left.visibility != View.VISIBLE) {
+                        left.visibility = View.VISIBLE
+                        windowManager.updateViewLayout(left, left.getParams())
+                    }
+
+                    if (right.visibility != View.VISIBLE) {
+                        right.visibility = View.VISIBLE
+                        windowManager.updateViewLayout(right, right.getParams())
+                    }
                 }
-            }
+            } catch (e: IllegalArgumentException) {}
         }
     }
 
     private fun hideBottomOverlay() {
         if (Utils.isNavCoverEnabled(this)) {
-            if (bottomCover.visibility != View.GONE) {
-                bottomCover.visibility = View.GONE
-                windowManager.updateViewLayout(bottomCover, bottomCover.getParams())
-            }
+            try {
+                if (bottomCover.visibility != View.GONE) {
+                    bottomCover.visibility = View.GONE
+                    windowManager.updateViewLayout(bottomCover, bottomCover.getParams())
+                }
+            } catch (e: IllegalArgumentException) {}
         }
     }
 
     private fun showBottomOverlay() {
         if (Utils.isNavCoverEnabled(this) || !bottomCover.isHidden()) {
-            if (bottomCover.visibility != View.VISIBLE) {
-                bottomCover.visibility = View.VISIBLE
-                windowManager.updateViewLayout(bottomCover, bottomCover.getParams())
-            }
+            try {
+                if (bottomCover.visibility != View.VISIBLE) {
+                    bottomCover.visibility = View.VISIBLE
+                    windowManager.updateViewLayout(bottomCover, bottomCover.getParams())
+                }
+            } catch (e: IllegalArgumentException) {}
         }
     }
 
