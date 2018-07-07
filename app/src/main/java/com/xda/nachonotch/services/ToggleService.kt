@@ -55,14 +55,19 @@ class ToggleService : TileService() {
     }
 
     private fun addOverlayAndEnable() {
-        Utils.setEnabled(this, true)
+        if (Settings.canDrawOverlays(this)) {
+            Utils.setEnabled(this, true)
 
-        val service = Intent(this, BackgroundHandler::class.java)
-        ContextCompat.startForegroundService(this, service)
+            val service = Intent(this, BackgroundHandler::class.java)
+            ContextCompat.startForegroundService(this, service)
 
-        qsTile?.state = Tile.STATE_ACTIVE
-        qsTile?.label = resources.getString(R.string.show_notch)
-        qsTile?.updateTile()
+            qsTile?.state = Tile.STATE_ACTIVE
+            qsTile?.label = resources.getString(R.string.show_notch)
+            qsTile?.updateTile()
+        } else {
+            val intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:$packageName"))
+            startActivity(intent)
+        }
     }
 
     private fun removeOverlayAndDisable() {

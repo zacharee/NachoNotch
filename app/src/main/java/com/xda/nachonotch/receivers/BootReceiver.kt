@@ -3,7 +3,9 @@ package com.xda.nachonotch.receivers
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.support.v4.content.ContextCompat.startForegroundService
+import android.net.Uri
+import android.provider.Settings
+import android.support.v4.content.ContextCompat
 import com.xda.nachonotch.services.BackgroundHandler
 import com.xda.nachonotch.util.Utils
 
@@ -11,8 +13,12 @@ class BootReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         if (intent.action == Intent.ACTION_BOOT_COMPLETED || intent.action == Intent.ACTION_MY_PACKAGE_REPLACED) {
             if (Utils.isEnabled(context)) {
-                val service = Intent(context, BackgroundHandler::class.java)
-                startForegroundService(context, service)
+                if (Settings.canDrawOverlays(context)) {
+                    val service = Intent(context, BackgroundHandler::class.java)
+                    ContextCompat.startForegroundService(context, service)
+                } else {
+                    context.startActivity(Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:${context.packageName}")))
+                }
             }
         }
     }
