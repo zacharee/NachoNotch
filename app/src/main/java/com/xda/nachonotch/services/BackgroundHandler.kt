@@ -83,34 +83,38 @@ class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeL
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
         when (key) {
             "rounded_corners" -> {
-                if (Utils.areCornersEnabled(this)) {
-                    windowManager.addView(left, left.getParams())
-                    windowManager.addView(right, right.getParams())
+                if (Utils.isEnabled(this)) {
+                    if (Utils.areCornersEnabled(this)) {
+                        windowManager.addView(left, left.getParams())
+                        windowManager.addView(right, right.getParams())
 
-                    if (topCover.isHidden()) hideTopOverlay()
-                } else {
-                    try {
-                        windowManager.removeView(left)
-                    } catch (e: Exception) {
-                        e.printStackTrace()
-                    }
+                        if (topCover.isHidden()) hideTopOverlay()
+                    } else {
+                        try {
+                            windowManager.removeView(left)
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                        }
 
-                    try {
-                        windowManager.removeView(right)
-                    } catch (e: Exception) {
-                        e.printStackTrace()
+                        try {
+                            windowManager.removeView(right)
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                        }
                     }
                 }
             }
             "cover_nav" -> {
-                if (Utils.isNavCoverEnabled(this)) {
-                    windowManager.addView(bottomCover, bottomCover.getParams())
-                    if (bottomCover.isHidden()) hideBottomOverlay()
-                } else {
-                    try {
-                        windowManager.removeView(bottomCover)
-                    } catch (e: Exception) {
-                        e.printStackTrace()
+                if (Utils.isEnabled(this)) {
+                    if (Utils.isNavCoverEnabled(this)) {
+                        windowManager.addView(bottomCover, bottomCover.getParams())
+                        if (bottomCover.isHidden()) hideBottomOverlay()
+                    } else {
+                        try {
+                            windowManager.removeView(bottomCover)
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                        }
                     }
                 }
             }
