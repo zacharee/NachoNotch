@@ -1,11 +1,16 @@
 package com.xda.nachonotch.util
 
 import android.content.Context
+import android.content.Intent
 import android.graphics.Point
+import android.net.Uri
 import android.os.Build
 import android.preference.PreferenceManager
+import android.provider.Settings
 import android.util.TypedValue
 import android.view.WindowManager
+import android.widget.Toast
+import com.xda.nachonotch.R
 import com.xda.nachonotch.services.BackgroundHandler
 
 /**
@@ -78,6 +83,14 @@ object Utils {
      * @return the height of the navigation bar
      */
     fun getNavBarHeight(context: Context): Int {
-        return if (hasNavBar(context)) context.resources.getDimensionPixelSize(context.resources.getIdentifier("navigation_bar_height", "dimen", "android")) else 0
+        return if (hasNavBar(context))
+            context.resources.getDimensionPixelSize(context.resources.getIdentifier("navigation_bar_height", "dimen", "android")) else 0
+    }
+
+    fun launchOverlaySettings(context: Context) {
+        val intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:${context.packageName}"))
+        context.startActivity(intent)
+
+        Toast.makeText(context, R.string.enable_overlay_permission, Toast.LENGTH_SHORT).show()
     }
 }

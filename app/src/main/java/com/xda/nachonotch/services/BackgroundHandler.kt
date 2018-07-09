@@ -67,6 +67,7 @@ class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeL
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         if (Utils.isEnabled(this)) addOverlayAndEnable()
+        else removeOverlayAndDisable()
 
         return START_STICKY
     }
@@ -137,27 +138,31 @@ class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeL
     }
 
     private fun addOverlay() {
-        removeOverlay()
-        windowManager.addView(topCover, topCover.getParams())
+        try {
+            removeOverlay()
+            windowManager.addView(topCover, topCover.getParams())
 
-        if (Utils.areCornersEnabled(this)) {
-            windowManager.addView(left, left.getParams())
-            windowManager.addView(right, right.getParams())
-        }
+            if (Utils.areCornersEnabled(this)) {
+                windowManager.addView(left, left.getParams())
+                windowManager.addView(right, right.getParams())
+            }
 
-        if (Utils.isNavCoverEnabled(this)) {
-            windowManager.addView(bottomCover, bottomCover.getParams())
-        }
+            if (Utils.isNavCoverEnabled(this)) {
+                windowManager.addView(bottomCover, bottomCover.getParams())
+            }
 
-        if (topCover.isHidden()) hideTopOverlay()
-        if (bottomCover.isHidden()) hideBottomOverlay()
+            if (topCover.isHidden()) hideTopOverlay()
+            if (bottomCover.isHidden()) hideBottomOverlay()
 
-        topCover.setOnSystemUiVisibilityChangeListener {
-            if (topCover.isHidden(it)) hideTopOverlay() else showTopOverlay()
-        }
+            topCover.setOnSystemUiVisibilityChangeListener {
+                if (topCover.isHidden(it)) hideTopOverlay() else showTopOverlay()
+            }
 
-        bottomCover.setOnSystemUiVisibilityChangeListener {
-            if (bottomCover.isHidden(it)) hideBottomOverlay() else showBottomOverlay()
+            bottomCover.setOnSystemUiVisibilityChangeListener {
+                if (bottomCover.isHidden(it)) hideBottomOverlay() else showBottomOverlay()
+            }
+        } catch (e: WindowManager.BadTokenException) {
+            Utils.launchOverlaySettings(this)
         }
     }
 

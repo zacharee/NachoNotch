@@ -4,14 +4,12 @@ import android.content.ComponentName
 import android.content.Intent
 import android.content.ServiceConnection
 import android.content.SharedPreferences
-import android.net.Uri
 import android.os.IBinder
 import android.preference.PreferenceManager
 import android.provider.Settings
 import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
 import android.support.v4.content.ContextCompat
-import android.widget.Toast
 import com.xda.nachonotch.R
 import com.xda.nachonotch.util.Utils
 
@@ -42,9 +40,7 @@ class ToggleService : TileService() {
         if (Settings.canDrawOverlays(this)) {
             if (Utils.isEnabled(this)) removeOverlayAndDisable() else addOverlayAndEnable()
         } else {
-            val intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + applicationContext.packageName))
-            startActivity(intent)
-            Toast.makeText(this, resources.getText(R.string.enable_overlay_permission), Toast.LENGTH_SHORT).show()
+            Utils.launchOverlaySettings(this)
         }
     }
 
@@ -65,8 +61,7 @@ class ToggleService : TileService() {
             qsTile?.label = resources.getString(R.string.show_notch)
             qsTile?.updateTile()
         } else {
-            val intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:$packageName"))
-            startActivity(intent)
+            Utils.launchOverlaySettings(this)
         }
     }
 
