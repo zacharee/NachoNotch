@@ -214,42 +214,52 @@ class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeL
     private fun hideTopOverlay() {
         if (topCover.visibility != View.GONE) {
             topCover.visibility = View.GONE
-            windowManager.updateViewLayout(topCover, topCover.getParams())
+            try {
+                windowManager.updateViewLayout(topCover, topCover.getParams())
+            } catch (e: Exception) {}
         }
         
         if (Utils.areCornersEnabled(this)) {
             if (left.visibility != View.GONE) {
                 left.visibility = View.GONE
-                windowManager.updateViewLayout(left, left.getParams())
+                try {
+                    windowManager.updateViewLayout(left, left.getParams())
+                } catch (e: Exception) {}
             }
 
             if (right.visibility != View.GONE) {
                 right.visibility = View.GONE
-                windowManager.updateViewLayout(right, right.getParams())
+                try {
+                    windowManager.updateViewLayout(right, right.getParams())
+                } catch (e: Exception) {}
             }
         }
     }
 
     private fun showTopOverlay() {
         if (!topCover.isHidden()) {
-            try {
-                if (topCover.visibility != View.VISIBLE) {
-                    topCover.visibility = View.VISIBLE
+            if (topCover.visibility != View.VISIBLE) {
+                topCover.visibility = View.VISIBLE
+                try {
                     windowManager.updateViewLayout(topCover, topCover.getParams())
-                }
+                } catch (e: Exception) {}
+            }
 
-                if (Utils.areCornersEnabled(this)) {
-                    if (left.visibility != View.VISIBLE) {
-                        left.visibility = View.VISIBLE
+            if (Utils.areCornersEnabled(this)) {
+                if (left.visibility != View.VISIBLE) {
+                    left.visibility = View.VISIBLE
+                    try {
                         windowManager.updateViewLayout(left, left.getParams())
-                    }
-
-                    if (right.visibility != View.VISIBLE) {
-                        right.visibility = View.VISIBLE
-                        windowManager.updateViewLayout(right, right.getParams())
-                    }
+                    } catch (e: Exception) {}
                 }
-            } catch (e: IllegalArgumentException) {}
+
+                if (right.visibility != View.VISIBLE) {
+                    right.visibility = View.VISIBLE
+                    try {
+                        windowManager.updateViewLayout(right, right.getParams())
+                    } catch (e: Exception) {}
+                }
+            }
         }
     }
 
