@@ -6,8 +6,12 @@
         android:key="enable_launcher" />
 
     <SwitchPreference
-        android:title="@string/rounded_corners"
+        android:title="@string/rounded_corners_top"
         android:key="rounded_corners" />
+
+    <SwitchPreference
+        android:title="@string/rounded_corners_bottom"
+        android:key="rounded_corners_bottom" />
 
     <SwitchPreference
         android:title="@string/cover_nav"

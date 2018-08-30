@@ -5,7 +5,8 @@
     <string name="hide_notch">Hide Notch</string>
     <string name="show_notch">Show Notch</string>
     <string name="enable_launcher">Enable Launcher Activity</string>
-    <string name="rounded_corners">Enable Rounded Corners</string>
+    <string name="rounded_corners_top">Enable Rounded Corners on Top</string>
+    <string name="rounded_corners_bottom">Enable Rounded Corners on Bottom</string>
     <string name="cover_nav">Black-Out Navigation Bar</string>
 
     <!--Messages-->

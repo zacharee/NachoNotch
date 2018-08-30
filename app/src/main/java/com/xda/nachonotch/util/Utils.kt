@@ -64,8 +64,12 @@ object Utils {
         PreferenceManager.getDefaultSharedPreferences(context).edit().putBoolean(BackgroundHandler.SHOULD_RUN, enabled).apply()
     }
 
-    fun areCornersEnabled(context: Context): Boolean {
+    fun areTopCornersEnabled(context: Context): Boolean {
         return PreferenceManager.getDefaultSharedPreferences(context).getBoolean("rounded_corners", false)
+    }
+
+    fun areBottomCornersEnabled(context: Context): Boolean {
+        return PreferenceManager.getDefaultSharedPreferences(context).getBoolean("rounded_corners_bottom", false)
     }
 
     fun isNavCoverEnabled(context: Context): Boolean {

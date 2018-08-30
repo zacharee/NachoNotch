@@ -12,7 +12,6 @@ import android.view.WindowManager
 import android.view.WindowManager.LayoutParams.FLAG_DIM_BEHIND
 import android.widget.LinearLayout
 import com.xda.nachonotch.util.Utils
-import com.xda.nachonotch.util.Utils.getStatusBarHeight
 
 class TopOverlay : LinearLayout {
     private val wm: WindowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
@@ -44,12 +43,11 @@ class TopOverlay : LinearLayout {
                     WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
                     WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS or
                     WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
-                    WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE or
-                    WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS
+                    WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
             type = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) WindowManager.LayoutParams.TYPE_PHONE else WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
             gravity = Gravity.TOP
             width = WindowManager.LayoutParams.MATCH_PARENT
-            height = getStatusBarHeight(context)
+            height = Utils.getStatusBarHeight(context)
             format = PixelFormat.TRANSLUCENT
         }
     }

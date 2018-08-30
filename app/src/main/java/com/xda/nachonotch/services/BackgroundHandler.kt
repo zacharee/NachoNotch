@@ -17,50 +17,40 @@ import android.view.WindowManager
 import com.xda.nachonotch.R
 import com.xda.nachonotch.activities.SettingsActivity
 import com.xda.nachonotch.util.Utils
-import com.xda.nachonotch.views.BottomOverlay
-import com.xda.nachonotch.views.LeftCorner
-import com.xda.nachonotch.views.RightCorner
-import com.xda.nachonotch.views.TopOverlay
+import com.xda.nachonotch.views.*
 
 class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeListener {
     companion object {
         const val SHOULD_RUN = "enabled"
     }
 
-    private lateinit var windowManager: WindowManager
-    private lateinit var topCover: TopOverlay
-    private lateinit var bottomCover: BottomOverlay
-    private lateinit var left: LeftCorner
-    private lateinit var right: RightCorner
-    private lateinit var orientationEventListener: OrientationEventListener
-    private lateinit var immersiveListener: ImmersiveListener
-    private lateinit var prefs: SharedPreferences
+    private val windowManager by lazy { getSystemService(Context.WINDOW_SERVICE) as WindowManager }
+
+    private val topCover by lazy { TopOverlay(this) }
+    private val bottomCover by lazy { BottomOverlay(this) }
+    private val topLeft by lazy { TopLeftCorner(this) }
+    private val topRight by lazy { TopRightCorner(this) }
+    private val bottomLeft by lazy { BottomLeftCorner(this) }
+    private val bottomRight by lazy { BottomRightCorner(this) }
+
+    private val orientationEventListener by lazy { object : OrientationEventListener(this) {
+        var oldRot = Surface.ROTATION_0
+        override fun onOrientationChanged(i: Int) {
+            val currentRot = windowManager.defaultDisplay.rotation
+            if (oldRot != currentRot) {
+                if (currentRot == Surface.ROTATION_0) {
+                    addAllOverlays()
+                }
+                else removeAllOverlays()
+                oldRot = currentRot
+            }
+        }
+    } }
+    private val immersiveListener by lazy { ImmersiveListener() }
+    private val prefs by lazy { PreferenceManager.getDefaultSharedPreferences(this) }
 
     override fun onCreate() {
         super.onCreate()
-
-        topCover = TopOverlay(this)
-        bottomCover = BottomOverlay(this)
-        left = LeftCorner(this)
-        right = RightCorner(this)
-
-        prefs = PreferenceManager.getDefaultSharedPreferences(this)
-        windowManager = getSystemService(Context.WINDOW_SERVICE) as WindowManager
-        immersiveListener = ImmersiveListener()
-
-        orientationEventListener = object : OrientationEventListener(this) {
-            var oldRot = Surface.ROTATION_0
-            override fun onOrientationChanged(i: Int) {
-                val currentRot = windowManager.defaultDisplay.rotation
-                if (oldRot != currentRot) {
-                    if (currentRot == Surface.ROTATION_0) {
-                        addOverlay()
-                    }
-                    else removeOverlay()
-                    oldRot = currentRot
-                }
-            }
-        }
 
         prefs.registerOnSharedPreferenceChangeListener(this)
     }
@@ -81,49 +71,22 @@ class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeL
     }
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
-        when (key) {
-            "rounded_corners" -> {
-                if (Utils.isEnabled(this)) {
-                    try {
-                        if (Utils.areCornersEnabled(this)) {
-                            windowManager.addView(left, left.getParams())
-                            windowManager.addView(right, right.getParams())
-
-                            if (topCover.isHidden()) hideTopOverlay()
-                        } else {
-                            try {
-                                windowManager.removeView(left)
-                            } catch (e: Exception) {
-                                e.printStackTrace()
-                            }
-
-                            try {
-                                windowManager.removeView(right)
-                            } catch (e: Exception) {
-                                e.printStackTrace()
-                            }
-                        }
-                    } catch (e: WindowManager.BadTokenException) {
-                        Utils.launchOverlaySettings(this)
-                    }
+        if (Utils.isEnabled(this)) {
+            when (key) {
+                "rounded_corners" -> {
+                    if (Utils.areTopCornersEnabled(this)) {
+                        addTopCorners()
+                    } else removeTopCorners()
                 }
-            }
-            "cover_nav" -> {
-                if (Utils.isEnabled(this)) {
-                    try {
-                        if (Utils.isNavCoverEnabled(this)) {
-                            windowManager.addView(bottomCover, bottomCover.getParams())
-                            if (bottomCover.isHidden()) hideBottomOverlay()
-                        } else {
-                            try {
-                                windowManager.removeView(bottomCover)
-                            } catch (e: Exception) {
-                                e.printStackTrace()
-                            }
-                        }
-                    } catch (e: WindowManager.BadTokenException) {
-                        Utils.launchOverlaySettings(this)
-                    }
+                "rounded_corners_bottom" -> {
+                    if (Utils.areBottomCornersEnabled(this)) {
+                        addBottomCorners()
+                    } else removeBottomCorners()
+                }
+                "cover_nav" -> {
+                    if (Utils.isNavCoverEnabled(this)) {
+                        addBottomOverlay()
+                    } else removeBottomOverlay()
                 }
             }
         }
@@ -146,69 +109,105 @@ class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeL
         startForeground(1, notification)
         orientationEventListener.enable()
 
-        addOverlay()
-    }
-
-    private fun addOverlay() {
-        try {
-            removeOverlay()
-            windowManager.addView(topCover, topCover.getParams())
-
-            if (Utils.areCornersEnabled(this)) {
-                windowManager.addView(left, left.getParams())
-                windowManager.addView(right, right.getParams())
-            }
-
-            if (Utils.isNavCoverEnabled(this)) {
-                windowManager.addView(bottomCover, bottomCover.getParams())
-            }
-
-            if (topCover.isHidden()) hideTopOverlay()
-            if (bottomCover.isHidden()) hideBottomOverlay()
-
-            topCover.setOnSystemUiVisibilityChangeListener {
-                if (topCover.isHidden(it)) hideTopOverlay() else showTopOverlay()
-            }
-
-            bottomCover.setOnSystemUiVisibilityChangeListener {
-                if (bottomCover.isHidden(it)) hideBottomOverlay() else showBottomOverlay()
-            }
-        } catch (e: WindowManager.BadTokenException) {
-            Utils.launchOverlaySettings(this)
-        }
+        addAllOverlays()
     }
 
     private fun removeOverlayAndDisable() {
         stopForeground(true)
-        removeOverlay()
+        removeAllOverlays()
         orientationEventListener.disable()
         stopSelf()
     }
 
-    private fun removeOverlay() {
+    private fun addAllOverlays() {
+        if (Settings.canDrawOverlays(this)) {
+            removeAllOverlays()
+
+            addTopOverlay()
+            addTopCorners()
+            addBottomOverlay()
+            addBottomCorners()
+        } else {
+            Utils.launchOverlaySettings(this)
+        }
+    }
+
+    private fun removeAllOverlays() {
+        removeTopOverlay()
+        removeTopCorners()
+        removeBottomOverlay()
+        removeBottomCorners()
+    }
+
+    private fun addTopOverlay() {
+        try {
+            windowManager.addView(topCover, topCover.getParams())
+            topCover.setOnSystemUiVisibilityChangeListener(immersiveListener)
+        } catch (e: Exception) {}
+    }
+
+    private fun addBottomOverlay() {
+        if (Utils.isNavCoverEnabled(this)) {
+            try {
+                windowManager.addView(bottomCover, bottomCover.getParams())
+            } catch (e: Exception) {}
+        }
+    }
+
+    private fun addTopCorners() {
+        if (Utils.areTopCornersEnabled(this)) {
+            try {
+                windowManager.addView(topRight, topRight.getParams())
+            } catch (e: Exception) {}
+
+            try {
+                windowManager.addView(topLeft, topLeft.getParams())
+            } catch (e: Exception) {}
+        }
+    }
+
+    private fun addBottomCorners() {
+        if (Utils.areBottomCornersEnabled(this)) {
+            try {
+                windowManager.addView(bottomRight, bottomRight.getParams())
+            } catch (e: Exception) {}
+
+            try {
+                windowManager.addView(bottomLeft, bottomLeft.getParams())
+            } catch (e: Exception) {}
+        }
+    }
+
+    private fun removeTopOverlay() {
         try {
             windowManager.removeView(topCover)
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-        
-        try {
-            windowManager.removeView(left)
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-        
-        try {
-            windowManager.removeView(right)
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
+        } catch (e: Exception) {}
+    }
 
+    private fun removeBottomOverlay() {
         try {
             windowManager.removeView(bottomCover)
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
+        } catch (e: Exception) {}
+    }
+
+    private fun removeTopCorners() {
+        try {
+            windowManager.removeView(topRight)
+        } catch (e: Exception) {}
+
+        try {
+            windowManager.removeView(topLeft)
+        } catch (e: Exception) {}
+    }
+
+    private fun removeBottomCorners() {
+        try {
+            windowManager.removeView(bottomRight)
+        } catch (e: Exception) {}
+
+        try {
+            windowManager.removeView(bottomLeft)
+        } catch (e: Exception) {}
     }
 
     private fun hideTopOverlay() {
@@ -219,18 +218,18 @@ class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeL
             } catch (e: Exception) {}
         }
         
-        if (Utils.areCornersEnabled(this)) {
-            if (left.visibility != View.GONE) {
-                left.visibility = View.GONE
+        if (Utils.areTopCornersEnabled(this)) {
+            if (topLeft.visibility != View.GONE) {
+                topLeft.visibility = View.GONE
                 try {
-                    windowManager.updateViewLayout(left, left.getParams())
+                    windowManager.updateViewLayout(topLeft, topLeft.getParams())
                 } catch (e: Exception) {}
             }
 
-            if (right.visibility != View.GONE) {
-                right.visibility = View.GONE
+            if (topRight.visibility != View.GONE) {
+                topRight.visibility = View.GONE
                 try {
-                    windowManager.updateViewLayout(right, right.getParams())
+                    windowManager.updateViewLayout(topRight, topRight.getParams())
                 } catch (e: Exception) {}
             }
         }
@@ -245,18 +244,18 @@ class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeL
                 } catch (e: Exception) {}
             }
 
-            if (Utils.areCornersEnabled(this)) {
-                if (left.visibility != View.VISIBLE) {
-                    left.visibility = View.VISIBLE
+            if (Utils.areTopCornersEnabled(this)) {
+                if (topLeft.visibility != View.VISIBLE) {
+                    topLeft.visibility = View.VISIBLE
                     try {
-                        windowManager.updateViewLayout(left, left.getParams())
+                        windowManager.updateViewLayout(topLeft, topLeft.getParams())
                     } catch (e: Exception) {}
                 }
 
-                if (right.visibility != View.VISIBLE) {
-                    right.visibility = View.VISIBLE
+                if (topRight.visibility != View.VISIBLE) {
+                    topRight.visibility = View.VISIBLE
                     try {
-                        windowManager.updateViewLayout(right, right.getParams())
+                        windowManager.updateViewLayout(topRight, topRight.getParams())
                     } catch (e: Exception) {}
                 }
             }
@@ -265,23 +264,55 @@ class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeL
 
     private fun hideBottomOverlay() {
         if (Utils.isNavCoverEnabled(this)) {
-            try {
-                if (bottomCover.visibility != View.GONE) {
-                    bottomCover.visibility = View.GONE
+            if (bottomCover.visibility != View.GONE) {
+                bottomCover.visibility = View.GONE
+                try {
                     windowManager.updateViewLayout(bottomCover, bottomCover.getParams())
+                } catch (e: Exception) {}
+            }
+
+            if (Utils.areBottomCornersEnabled(this)) {
+                if (bottomLeft.visibility != View.GONE) {
+                    bottomLeft.visibility = View.GONE
+                    try {
+                        windowManager.updateViewLayout(bottomLeft, bottomLeft.getParams())
+                    } catch (e: Exception) {}
                 }
-            } catch (e: IllegalArgumentException) {}
+
+                if (bottomRight.visibility != View.GONE) {
+                    bottomRight.visibility = View.GONE
+                    try {
+                        windowManager.updateViewLayout(bottomRight, bottomRight.getParams())
+                    } catch (e: Exception) {}
+                }
+            }
         }
     }
 
     private fun showBottomOverlay() {
         if (Utils.isNavCoverEnabled(this) || !bottomCover.isHidden()) {
-            try {
-                if (bottomCover.visibility != View.VISIBLE) {
-                    bottomCover.visibility = View.VISIBLE
+            if (bottomCover.visibility != View.VISIBLE) {
+                bottomCover.visibility = View.VISIBLE
+                try {
                     windowManager.updateViewLayout(bottomCover, bottomCover.getParams())
+                } catch (e: Exception) {}
+            }
+
+            if (Utils.areBottomCornersEnabled(this)) {
+                if (bottomLeft.visibility != View.VISIBLE) {
+                    bottomLeft.visibility = View.VISIBLE
+                    try {
+                        windowManager.updateViewLayout(bottomLeft, bottomLeft.getParams())
+                    } catch (e: Exception) {}
                 }
-            } catch (e: IllegalArgumentException) {}
+
+                if (bottomRight.visibility != View.VISIBLE) {
+                    bottomRight.visibility = View.VISIBLE
+                    try {
+                        windowManager.updateViewLayout(bottomRight, bottomRight.getParams())
+                    } catch (e: Exception) {}
+                }
+            }
         }
     }
 
