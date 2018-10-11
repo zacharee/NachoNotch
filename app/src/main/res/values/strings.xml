@@ -8,10 +8,13 @@
     <string name="rounded_corners_top">Enable Rounded Corners on Top</string>
     <string name="rounded_corners_bottom">Enable Rounded Corners on Bottom</string>
     <string name="cover_nav">Black-Out Navigation Bar</string>
+    <string name="agree_to_terms">Please read and agree to the Terms of Use</string>
+    <string name="terms">Tap Here to View Terms</string>
+    <string name="agree">I Agree</string>
 
     <!--Messages-->
-    <string name="user_didnt_read_app_description">Hey! Looks like you were either curious about this icon, or you just neglected to read the app\'s description in the Play Store (even with the capital letters telling you to do so). Click the link below for a quick YouTube video (also linked in the description) showing you how this app works.\n\n<a href="https://youtu.be/HhH5wK1NokY">Tutorial</a></string>
-    <string name="disable_activity">I know what I\'m doing. Disable this activity and hide the launcher icon.</string>
+    <string name="user_didnt_read_app_description">Hey! This screen doesn\'t do anything. Nacho Notch is using a QS Tile.\n\n<a href="https://youtu.be/HhH5wK1NokY">Tutorial</a></string>
+    <string name="disable_activity">Disable this screen and hide the launcher icon</string>
     <string name="activity_disabled">Launcher activity disabled.</string>
     <string name="activity_enabled">Launcher activity enabled.</string>
     <string name="settings_prompt">Touch for settings</string>

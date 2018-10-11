@@ -37,10 +37,12 @@ class ToggleService : TileService() {
     }
 
     override fun onClick() {
-        if (Settings.canDrawOverlays(this)) {
-            if (Utils.isEnabled(this)) removeOverlayAndDisable() else addOverlayAndEnable()
-        } else {
-            Utils.launchOverlaySettings(this)
+        if (Utils.enforceTerms(this)) {
+            if (Settings.canDrawOverlays(this)) {
+                if (Utils.isEnabled(this)) removeOverlayAndDisable() else addOverlayAndEnable()
+            } else {
+                Utils.launchOverlaySettings(this)
+            }
         }
     }
 

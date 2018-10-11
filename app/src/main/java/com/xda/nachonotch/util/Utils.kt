@@ -11,6 +11,7 @@ import android.util.TypedValue
 import android.view.WindowManager
 import android.widget.Toast
 import com.xda.nachonotch.R
+import com.xda.nachonotch.activities.TermsActivity
 import com.xda.nachonotch.services.BackgroundHandler
 
 /**
@@ -96,5 +97,14 @@ object Utils {
         context.startActivity(intent)
 
         Toast.makeText(context, R.string.enable_overlay_permission, Toast.LENGTH_SHORT).show()
+    }
+
+    fun enforceTerms(context: Context): Boolean {
+        val agreed = PreferenceManager.getDefaultSharedPreferences(context).getBoolean("agreed_terms", false)
+        if (!agreed) {
+            context.startActivity(Intent(context, TermsActivity::class.java))
+        }
+
+        return agreed
     }
 }

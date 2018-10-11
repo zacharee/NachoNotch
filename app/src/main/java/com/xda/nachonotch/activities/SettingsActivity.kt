@@ -7,14 +7,19 @@ import android.preference.PreferenceFragment
 import android.support.v7.app.AppCompatActivity
 import android.widget.Toast
 import com.xda.nachonotch.R
+import com.xda.nachonotch.util.Utils
 
 class SettingsActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_settings)
 
-        fragmentManager?.beginTransaction()?.replace(R.id.content, MainFragment())?.commit()
+        if (!Utils.enforceTerms(this)) finish()
+        else {
+            setContentView(R.layout.activity_settings)
+
+            fragmentManager?.beginTransaction()?.replace(R.id.content, MainFragment())?.commit()
+        }
     }
 
     class MainFragment : PreferenceFragment() {
