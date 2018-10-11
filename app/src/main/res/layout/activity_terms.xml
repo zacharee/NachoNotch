@@ -52,7 +52,7 @@
         style="@style/Widget.AppCompat.Button.Borderless.Colored"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/terms"
+        android:text="@string/view_terms_online"
         android:textSize="18sp"
         app:layout_constraintBottom_toTopOf="@id/agree_wrapper"
         app:layout_constraintEnd_toEndOf="parent"

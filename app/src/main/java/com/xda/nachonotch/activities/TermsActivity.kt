@@ -21,7 +21,7 @@ class TermsActivity : AppCompatActivity() {
         terms_button.setOnClickListener {
             val termsIntent = Intent(
                     Intent.ACTION_VIEW,
-                    Uri.parse("https://github.com/zacharee/NachoNotch/blob/master/README.md"))
+                    Uri.parse("https://github.com/zacharee/NachoNotch/blob/master/app/src/main/assets/Terms.md"))
             startActivity(termsIntent)
 
             mainThreadHandler.postDelayed({

@@ -24,7 +24,7 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
                 android:gravity="center_vertical"
-                android:text="@string/user_didnt_read_app_description"
+                android:text="@string/welcome_message"
                 android:textAlignment="center"
                 android:textSize="18sp"
                 app:layout_constraintBottom_toBottomOf="parent"
