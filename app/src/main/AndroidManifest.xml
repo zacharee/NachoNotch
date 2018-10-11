@@ -54,6 +54,7 @@
         </activity>
         <activity android:name=".activities.TermsActivity"
             android:launchMode="singleInstance"
+            android:theme="@style/Theme.AppCompat.NoActionBar"
             />
     </application>
 

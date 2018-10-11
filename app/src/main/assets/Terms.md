@@ -19,6 +19,16 @@ Nacho Notch has a few customization options. These are accessed by holding down 
 
 These options can be useful for devices which have displays with rounded corners. They can also be useful for devices whose navigation bar buttons turn white-on-white in certain apps.
 
+# Permissions
+
+Nacho Notch uses the following permissions:
+ - SYSTEM_ALERT_WINDOW
+   - Required to show the overlays
+   - Should be granted automatically if installed from the Play Store
+ - RECEIVE_BOOT_COMPLETED
+   - Required to retain enabled state on reboot
+   - Automatically granted on install
+
 # Terms
 
 To use this app, you agree that you have read everything in the README document and that you understand it. If you have any questions, please contact me.

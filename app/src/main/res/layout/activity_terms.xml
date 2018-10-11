@@ -24,23 +24,28 @@
         android:layout_height="wrap_content"
         android:text="@string/agree_to_terms"
         android:textAlignment="center"
-        app:layout_constraintBottom_toTopOf="@id/stop_image"
+        app:layout_constraintBottom_toTopOf="@id/terms_holder"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/terms_title"
-        />
+        app:layout_constraintTop_toBottomOf="@id/terms_title" />
 
-    <ImageView
-        android:id="@+id/stop_image"
+    <ScrollView
+        android:id="@+id/terms_holder"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginStart="3dp"
-        android:src="@drawable/ic_warning_black_24dp"
-        android:tint="#f00"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
         app:layout_constraintBottom_toTopOf="@id/terms_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/terms_prompt" />
+        app:layout_constraintTop_toBottomOf="@id/terms_prompt">
+
+        <TextView
+            android:id="@+id/terms_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+    </ScrollView>
 
     <Button
         android:id="@+id/terms_button"
@@ -52,9 +57,9 @@
         app:layout_constraintBottom_toTopOf="@id/agree_wrapper"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/stop_image"
+        app:layout_constraintTop_toBottomOf="@id/terms_holder"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.92" />
+        app:layout_constraintVertical_bias="1.0" />
 
     <android.support.constraint.ConstraintLayout
         android:id="@+id/agree_wrapper"
@@ -63,7 +68,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/stop_image"
+        app:layout_constraintTop_toBottomOf="@id/terms_holder"
         app:layout_constraintVertical_bias="1.0">
 
         <CheckBox
