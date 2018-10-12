@@ -3,6 +3,8 @@ package com.xda.nachonotch.activities
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.preference.PreferenceManager
 import android.support.v7.app.AppCompatActivity
 import com.xda.nachonotch.R
@@ -24,7 +26,7 @@ class TermsActivity : AppCompatActivity() {
                     Uri.parse("https://github.com/zacharee/NachoNotch/blob/master/app/src/main/assets/Terms.md"))
             startActivity(termsIntent)
 
-            mainThreadHandler.postDelayed({
+            Handler(Looper.getMainLooper()).postDelayed({
                 agree_box.isEnabled = true
             }, 2000)
         }
