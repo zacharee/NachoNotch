@@ -6,7 +6,10 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.database.ContentObserver
 import android.net.Uri
-import android.os.*
+import android.os.Build
+import android.os.Handler
+import android.os.IBinder
+import android.os.Looper
 import android.preference.PreferenceManager
 import android.provider.Settings
 import android.support.v4.app.NotificationCompat
@@ -22,6 +25,7 @@ import com.xda.nachonotch.views.*
 class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeListener {
     companion object {
         const val SHOULD_RUN = "enabled"
+        const val DELAY_MS = 200L
     }
 
     private val windowManager by lazy { getSystemService(Context.WINDOW_SERVICE) as WindowManager }
@@ -32,6 +36,7 @@ class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeL
     private val topRight by lazy { TopRightCorner(this) }
     private val bottomLeft by lazy { BottomLeftCorner(this) }
     private val bottomRight by lazy { BottomRightCorner(this) }
+    private val handler = Handler(Looper.getMainLooper())
 
     private val orientationEventListener by lazy { object : OrientationEventListener(this) {
         var oldRot = Surface.ROTATION_0
@@ -88,6 +93,24 @@ class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeL
                         addBottomOverlay()
                     } else removeBottomOverlay()
                 }
+                "nav_height" -> {
+                    if (Utils.isNavCoverEnabled(this)) try {
+                        windowManager.updateViewLayout(bottomCover, bottomCover.getParams())
+                    } catch (e: Exception) {}
+                    if (Utils.areBottomCornersEnabled(this)) try {
+                        windowManager.updateViewLayout(bottomLeft, bottomLeft.getParams())
+                        windowManager.updateViewLayout(bottomRight, bottomRight.getParams())
+                    } catch (e: Exception) {}
+                }
+                "status_height" -> {
+                    if (Utils.isEnabled(this)) try {
+                        windowManager.updateViewLayout(topCover, topCover.getParams())
+                    } catch (e: Exception) {}
+                    if (Utils.areTopCornersEnabled(this)) try {
+                        windowManager.updateViewLayout(topLeft, topLeft.getParams())
+                        windowManager.updateViewLayout(topRight, topRight.getParams())
+                    } catch (e: Exception) {}
+                }
             }
         }
     }
@@ -140,42 +163,50 @@ class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeL
     }
 
     private fun addTopOverlay() {
-        try {
-            windowManager.addView(topCover, topCover.getParams())
-            topCover.setOnSystemUiVisibilityChangeListener(immersiveListener)
-        } catch (e: Exception) {}
+        handler.postDelayed({
+            try {
+                windowManager.addView(topCover, topCover.getParams())
+                topCover.setOnSystemUiVisibilityChangeListener(immersiveListener)
+            } catch (e: Exception) {}
+        }, DELAY_MS)
     }
 
     private fun addBottomOverlay() {
-        if (Utils.isNavCoverEnabled(this)) {
-            try {
-                windowManager.addView(bottomCover, bottomCover.getParams())
-            } catch (e: Exception) {}
-        }
+        handler.postDelayed({
+            if (Utils.isNavCoverEnabled(this)) {
+                try {
+                    windowManager.addView(bottomCover, bottomCover.getParams())
+                } catch (e: Exception) {}
+            }
+        }, DELAY_MS)
     }
 
     private fun addTopCorners() {
-        if (Utils.areTopCornersEnabled(this)) {
-            try {
-                windowManager.addView(topRight, topRight.getParams())
-            } catch (e: Exception) {}
+        handler.postDelayed({
+            if (Utils.areTopCornersEnabled(this)) {
+                try {
+                    windowManager.addView(topRight, topRight.getParams())
+                } catch (e: Exception) {}
 
-            try {
-                windowManager.addView(topLeft, topLeft.getParams())
-            } catch (e: Exception) {}
-        }
+                try {
+                    windowManager.addView(topLeft, topLeft.getParams())
+                } catch (e: Exception) {}
+            }
+        }, DELAY_MS)
     }
 
     private fun addBottomCorners() {
-        if (Utils.areBottomCornersEnabled(this)) {
-            try {
-                windowManager.addView(bottomRight, bottomRight.getParams())
-            } catch (e: Exception) {}
+        handler.postDelayed({
+            if (Utils.areBottomCornersEnabled(this)) {
+                try {
+                    windowManager.addView(bottomRight, bottomRight.getParams())
+                } catch (e: Exception) {}
 
-            try {
-                windowManager.addView(bottomLeft, bottomLeft.getParams())
-            } catch (e: Exception) {}
-        }
+                try {
+                    windowManager.addView(bottomLeft, bottomLeft.getParams())
+                } catch (e: Exception) {}
+            }
+        }, DELAY_MS)
     }
 
     private fun removeTopOverlay() {
@@ -317,16 +348,10 @@ class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeL
     }
 
     override fun onBind(intent: Intent): IBinder? {
-        return BackgroundBinder()
+        return null
     }
 
-    inner class BackgroundBinder : Binder() {
-        fun getService(): BackgroundHandler {
-            return this@BackgroundHandler
-        }
-    }
-
-    inner class ImmersiveListener : ContentObserver(Handler(Looper.getMainLooper())), View.OnSystemUiVisibilityChangeListener {
+    inner class ImmersiveListener : ContentObserver(handler), View.OnSystemUiVisibilityChangeListener {
         init {
             contentResolver.registerContentObserver(Settings.Global.CONTENT_URI, true, this)
         }

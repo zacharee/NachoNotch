@@ -12,6 +12,8 @@
     <string name="view_terms_online">View Online</string>
     <string name="agree">I Agree</string>
     <string name="terms">Terms</string>
+    <string name="status_height">Status Bar Height</string>
+    <string name="nav_height">Navigation Bar Height</string>
 
     <!--Messages-->
     <string name="welcome_message">Hey! This screen doesn\'t do anything. Nacho Notch is using a QS Tile.\n\n<a href="https://youtu.be/HhH5wK1NokY">Tutorial</a></string>

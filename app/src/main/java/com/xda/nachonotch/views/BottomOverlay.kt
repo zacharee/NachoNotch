@@ -49,7 +49,7 @@ class BottomOverlay : LinearLayout {
             gravity = Gravity.BOTTOM
             width =  WindowManager.LayoutParams.MATCH_PARENT
             height = Utils.getNavBarHeight(context)
-            y = -height
+            y = -Utils.getResourceNavHeight(context)
             format = PixelFormat.TRANSLUCENT
         }
     }

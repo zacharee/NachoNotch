@@ -8,6 +8,7 @@ import android.view.Gravity
 import android.view.WindowManager
 import android.widget.LinearLayout
 import com.xda.nachonotch.R
+import com.xda.nachonotch.util.Utils
 
 class BottomRightCorner : LinearLayout {
     constructor(context: Context) : this(context, null)
@@ -21,6 +22,10 @@ class BottomRightCorner : LinearLayout {
         return WindowManager.LayoutParams().apply {
             dimAmount = 0.001f
             flags = WindowManager.LayoutParams.FLAG_DIM_BEHIND or
+                    WindowManager.LayoutParams.FLAG_LAYOUT_IN_OVERSCAN or
+                    WindowManager.LayoutParams.FLAG_LAYOUT_INSET_DECOR or
+                    WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
+                    WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS or
                     WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
                     WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
             type = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) WindowManager.LayoutParams.TYPE_PHONE else WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
@@ -28,6 +33,7 @@ class BottomRightCorner : LinearLayout {
             width =   WindowManager.LayoutParams.WRAP_CONTENT
             height = WindowManager.LayoutParams.WRAP_CONTENT
             format = PixelFormat.TRANSLUCENT
+            y = Utils.getNavBarHeight(context) - Utils.getResourceNavHeight(context)
         }
     }
 }

@@ -6,7 +6,7 @@ apply plugin: 'kotlin-android-extensions'
 
 apply plugin: 'io.fabric'
 
-project.version = 14
+project.version = 15
 
 android {
     compileSdkVersion 27
@@ -35,6 +35,7 @@ dependencies {
     }
     implementation 'com.crashlytics.sdk.android:crashlytics:2.9.5'
     implementation 'ru.noties:markwon:2.0.0'
+    implementation 'com.github.zacharee:MaterialSeekbarPreference:662853f5e6'
 }
 
 apply plugin: 'com.google.gms.google-services'

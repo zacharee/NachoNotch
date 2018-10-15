@@ -44,7 +44,8 @@ class TopOverlay : LinearLayout {
                     WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS or
                     WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
                     WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
-            type = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) WindowManager.LayoutParams.TYPE_PHONE else WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
+            type = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) WindowManager.LayoutParams.TYPE_PHONE
+                    else WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
             gravity = Gravity.TOP
             width = WindowManager.LayoutParams.MATCH_PARENT
             height = Utils.getStatusBarHeight(context)

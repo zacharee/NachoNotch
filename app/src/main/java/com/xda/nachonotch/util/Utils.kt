@@ -49,12 +49,12 @@ object Utils {
     }
 
     fun getStatusBarHeight(context: Context): Int {
-        var result = 0
-        val resourceId = context.resources.getIdentifier("status_bar_height", "dimen", "android")
-        if (resourceId > 0) {
-            result = context.resources.getDimensionPixelSize(resourceId)
-        }
-        return result
+        return PreferenceManager.getDefaultSharedPreferences(context)
+                .getInt("status_height", getResurceStatusHeight(context))
+    }
+
+    fun getResurceStatusHeight(context: Context): Int {
+        return context.resources.getDimensionPixelSize(context.resources.getIdentifier("status_bar_height", "dimen", "android"))
     }
 
     fun isEnabled(context: Context): Boolean {
@@ -88,6 +88,11 @@ object Utils {
      * @return the height of the navigation bar
      */
     fun getNavBarHeight(context: Context): Int {
+        return PreferenceManager.getDefaultSharedPreferences(context)
+                .getInt("nav_height", getResourceNavHeight(context))
+    }
+
+    fun getResourceNavHeight(context: Context): Int {
         return if (hasNavBar(context))
             context.resources.getDimensionPixelSize(context.resources.getIdentifier("navigation_bar_height", "dimen", "android")) else 0
     }

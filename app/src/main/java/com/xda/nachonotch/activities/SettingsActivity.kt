@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.preference.PreferenceFragment
 import android.support.v7.app.AppCompatActivity
 import android.widget.Toast
+import com.pavelsikun.seekbarpreference.SeekBarPreference
 import com.xda.nachonotch.R
 import com.xda.nachonotch.util.Utils
 
@@ -36,6 +37,17 @@ class SettingsActivity : AppCompatActivity() {
                 activateLauncher()
                 true
             }
+
+            val statusHeight = findPreference("status_height") as SeekBarPreference
+            val navHeight = findPreference("nav_height") as SeekBarPreference
+
+            preferenceManager.sharedPreferences.apply {
+                if (!contains("status_height")) statusHeight.currentValue = Utils.getResurceStatusHeight(activity)
+                if (!contains("nav_height")) navHeight.currentValue = Utils.getResourceNavHeight(activity)
+            }
+
+            statusHeight.setDefaultValue(Utils.getResurceStatusHeight(activity))
+            navHeight.setDefaultValue(Utils.getResourceNavHeight(activity))
         }
 
         private fun activateLauncher() {
