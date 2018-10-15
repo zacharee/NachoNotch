@@ -14,6 +14,10 @@
     <string name="terms">Terms</string>
     <string name="status_height">Status Bar Height</string>
     <string name="nav_height">Navigation Bar Height</string>
+    <string name="top_corner_width">Top Corner Width</string>
+    <string name="top_corner_height">Top Corner Height</string>
+    <string name="bottom_corner_width">Bottom Corner Width</string>
+    <string name="bottom_corner_height">Bottom Corner Height</string>
 
     <!--Messages-->
     <string name="welcome_message">Hey! This screen doesn\'t do anything. Nacho Notch is using a QS Tile.\n\n<a href="https://youtu.be/HhH5wK1NokY">Tutorial</a></string>

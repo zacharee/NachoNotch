@@ -111,6 +111,20 @@ class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeL
                         windowManager.updateViewLayout(topRight, topRight.getParams())
                     } catch (e: Exception) {}
                 }
+                "top_corner_width",
+                    "top_corner_height" -> {
+                    if (Utils.areTopCornersEnabled(this)) try {
+                        windowManager.updateViewLayout(topLeft, topLeft.getParams())
+                        windowManager.updateViewLayout(topRight, topRight.getParams())
+                    } catch (e: Exception) {}
+                }
+                "bottom_corner_width",
+                    "bottom_corner_height" -> {
+                    if (Utils.areBottomCornersEnabled(this)) try {
+                        windowManager.updateViewLayout(bottomLeft, bottomLeft.getParams())
+                        windowManager.updateViewLayout(bottomRight, bottomRight.getParams())
+                    } catch (e: Exception) {}
+                }
             }
         }
     }

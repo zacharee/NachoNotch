@@ -112,4 +112,28 @@ object Utils {
 
         return agreed
     }
+
+    fun getTopCornerWidthDp(context: Context) =
+            PreferenceManager.getDefaultSharedPreferences(context)
+                    .getInt("top_corner_width", 24)
+
+    fun getTopCornerWidthPx(context: Context) = dpAsPx(context, getTopCornerWidthDp(context))
+
+    fun getTopCornerHeightDp(context: Context) =
+            PreferenceManager.getDefaultSharedPreferences(context)
+                    .getInt("top_corner_height", 24)
+
+    fun getTopCornerHeightPx(context: Context) = dpAsPx(context, getTopCornerHeightDp(context))
+
+    fun getBottomCornerWidthDp(context: Context) =
+            PreferenceManager.getDefaultSharedPreferences(context)
+                    .getInt("bottom_corner_width", 24)
+
+    fun getBottomCornerWidthPx(context: Context) = dpAsPx(context, getBottomCornerWidthDp(context))
+
+    fun getBottomCornerHeightDp(context: Context) =
+            PreferenceManager.getDefaultSharedPreferences(context)
+                    .getInt("bottom_corner_height", 24)
+
+    fun getBottomCornerHeightPx(context: Context) = dpAsPx(context, getBottomCornerHeightDp(context))
 }
