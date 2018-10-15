@@ -7,69 +7,79 @@
         android:key="enable_launcher"
         />
 
-    <com.pavelsikun.seekbarpreference.SeekBarPreference
-        android:title="@string/status_height"
-        android:key="status_height"
-        app:msbp_minValue="0"
-        app:msbp_maxValue="300"
-        />
+    <PreferenceCategory
+        android:title="@string/options">
 
-    <SwitchPreference
-        android:title="@string/rounded_corners_top"
-        android:key="rounded_corners"
-        />
+        <SwitchPreference
+            android:title="@string/cover_nav"
+            android:key="cover_nav"
+            />
 
-    <com.pavelsikun.seekbarpreference.SeekBarPreference
-        android:title="@string/top_corner_width"
-        android:key="top_corner_width"
-        android:defaultValue="24"
-        app:msbp_minValue="0"
-        app:msbp_maxValue="56"
-        app:msbp_measurementUnit="dp"
-        />
+        <SwitchPreference
+            android:title="@string/rounded_corners_top"
+            android:key="rounded_corners"
+            />
 
-    <com.pavelsikun.seekbarpreference.SeekBarPreference
-        android:title="@string/top_corner_height"
-        android:key="top_corner_height"
-        android:defaultValue="24"
-        app:msbp_minValue="0"
-        app:msbp_maxValue="56"
-        app:msbp_measurementUnit="dp"
-        />
+        <SwitchPreference
+            android:title="@string/rounded_corners_bottom"
+            android:key="rounded_corners_bottom"
+            />
 
-    <SwitchPreference
-        android:title="@string/cover_nav"
-        android:key="cover_nav"
-        />
+    </PreferenceCategory>
 
-    <com.pavelsikun.seekbarpreference.SeekBarPreference
-        android:title="@string/nav_height"
-        android:key="nav_height"
-        app:msbp_minValue="0"
-        app:msbp_maxValue="400"
-        />
+    <PreferenceCategory
+        android:title="@string/dimensions">
 
-    <SwitchPreference
-        android:title="@string/rounded_corners_bottom"
-        android:key="rounded_corners_bottom"
-        />
+        <com.pavelsikun.seekbarpreference.SeekBarPreference
+            android:title="@string/status_height"
+            android:key="status_height"
+            app:msbp_minValue="0"
+            app:msbp_maxValue="300"
+            />
 
-    <com.pavelsikun.seekbarpreference.SeekBarPreference
-        android:title="@string/bottom_corner_width"
-        android:key="bottom_corner_width"
-        android:defaultValue="24"
-        app:msbp_minValue="0"
-        app:msbp_maxValue="56"
-        app:msbp_measurementUnit="dp"
-        />
+        <com.pavelsikun.seekbarpreference.SeekBarPreference
+            android:title="@string/nav_height"
+            android:key="nav_height"
+            app:msbp_minValue="0"
+            app:msbp_maxValue="400"
+            />
 
-    <com.pavelsikun.seekbarpreference.SeekBarPreference
-        android:title="@string/bottom_corner_height"
-        android:key="bottom_corner_height"
-        android:defaultValue="24"
-        app:msbp_minValue="0"
-        app:msbp_maxValue="56"
-        app:msbp_measurementUnit="dp"
-        />
+        <com.pavelsikun.seekbarpreference.SeekBarPreference
+            android:title="@string/top_corner_width"
+            android:key="top_corner_width"
+            android:defaultValue="24"
+            app:msbp_minValue="0"
+            app:msbp_maxValue="56"
+            app:msbp_measurementUnit="dp"
+            />
+
+        <com.pavelsikun.seekbarpreference.SeekBarPreference
+            android:title="@string/top_corner_height"
+            android:key="top_corner_height"
+            android:defaultValue="24"
+            app:msbp_minValue="0"
+            app:msbp_maxValue="56"
+            app:msbp_measurementUnit="dp"
+            />
+
+        <com.pavelsikun.seekbarpreference.SeekBarPreference
+            android:title="@string/bottom_corner_width"
+            android:key="bottom_corner_width"
+            android:defaultValue="24"
+            app:msbp_minValue="0"
+            app:msbp_maxValue="56"
+            app:msbp_measurementUnit="dp"
+            />
+
+        <com.pavelsikun.seekbarpreference.SeekBarPreference
+            android:title="@string/bottom_corner_height"
+            android:key="bottom_corner_height"
+            android:defaultValue="24"
+            app:msbp_minValue="0"
+            app:msbp_maxValue="56"
+            app:msbp_measurementUnit="dp"
+            />
+
+    </PreferenceCategory>
 
 </PreferenceScreen>
