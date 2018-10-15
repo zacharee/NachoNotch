@@ -29,8 +29,8 @@ class BottomLeftCorner : View {
                     WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
             type = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) WindowManager.LayoutParams.TYPE_PHONE else WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
             gravity = Gravity.BOTTOM or Gravity.LEFT
-            width =   WindowManager.LayoutParams.WRAP_CONTENT
-            height = WindowManager.LayoutParams.WRAP_CONTENT
+            width =  Utils.dpAsPx(context, 24)
+            height = Utils.dpAsPx(context, 24)
             format = PixelFormat.TRANSLUCENT
             y = Utils.getNavBarHeight(context) - Utils.getResourceNavHeight(context)
         }
