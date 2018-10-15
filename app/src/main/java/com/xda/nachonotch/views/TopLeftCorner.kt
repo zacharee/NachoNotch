@@ -5,12 +5,12 @@ import android.graphics.PixelFormat
 import android.os.Build
 import android.util.AttributeSet
 import android.view.Gravity
+import android.view.View
 import android.view.WindowManager
-import android.widget.LinearLayout
 import com.xda.nachonotch.R
 import com.xda.nachonotch.util.Utils
 
-class TopLeftCorner : LinearLayout {
+class TopLeftCorner : View {
     constructor(context: Context) : this(context, null)
     constructor(context: Context, attributeSet: AttributeSet?) : super(context, attributeSet) {
         background = resources.getDrawable(R.drawable.corner_left, null)

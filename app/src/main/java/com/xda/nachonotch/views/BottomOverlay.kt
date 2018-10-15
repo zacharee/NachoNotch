@@ -8,12 +8,12 @@ import android.os.Build
 import android.provider.Settings
 import android.util.AttributeSet
 import android.view.Gravity
+import android.view.View
 import android.view.WindowManager
 import android.view.WindowManager.LayoutParams.FLAG_DIM_BEHIND
-import android.widget.LinearLayout
 import com.xda.nachonotch.util.Utils
 
-class BottomOverlay : LinearLayout {
+class BottomOverlay : View {
     private val wm: WindowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
 
     constructor(context: Context) : this(context, null)
