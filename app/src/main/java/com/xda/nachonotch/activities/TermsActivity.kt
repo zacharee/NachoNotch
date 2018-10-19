@@ -7,6 +7,7 @@ import android.os.Handler
 import android.os.Looper
 import android.preference.PreferenceManager
 import android.support.v7.app.AppCompatActivity
+import android.text.method.LinkMovementMethod
 import com.xda.nachonotch.R
 import com.xda.nachonotch.util.Utils
 import kotlinx.android.synthetic.main.activity_terms.*
@@ -20,6 +21,7 @@ class TermsActivity : AppCompatActivity() {
         setContentView(R.layout.activity_terms)
 
         Markwon.setMarkdown(terms_text, getTermsText())
+        terms_text.movementMethod = LinkMovementMethod.getInstance()
 
         terms_button.setOnClickListener {
             val termsIntent = Intent(

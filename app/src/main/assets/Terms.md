@@ -15,7 +15,7 @@ Be aware that these terms may be updated. Please make sure you review them frequ
 # Usage
 
 Install the app and add the included Quick Settings Tile to your QS shade. Use it to toggle Nacho Notch's functionality.
-Instructional video: https://www.youtube.com/watch?v=HhH5wK1NokY
+[Instructional Video](https://www.youtube.com/watch?v=HhH5wK1NokY)
 
 Nacho Notch has a few customization options. These are accessed by holding down on the QS Tile.
  - Enable Rounded Corners on Top
