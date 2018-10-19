@@ -22,6 +22,8 @@ object Utils {
     val IMMERSIVE_NAV = 2
     val IMMERSIVE_FULL = IMMERSIVE_STATUS or IMMERSIVE_NAV
 
+    val TERMS_VERSION = 1
+
     /**
      * Get the device's screen size
      * @param context context object
@@ -105,12 +107,12 @@ object Utils {
     }
 
     fun enforceTerms(context: Context): Boolean {
-        val agreed = PreferenceManager.getDefaultSharedPreferences(context).getBoolean("agreed_terms", false)
-        if (!agreed) {
+        val termsVer = PreferenceManager.getDefaultSharedPreferences(context).getInt("terms_version", 0)
+        return if (termsVer < TERMS_VERSION) {
             context.startActivity(Intent(context, TermsActivity::class.java))
-        }
+            false
+        } else true
 
-        return agreed
     }
 
     fun getTopCornerWidthDp(context: Context) =

@@ -8,7 +8,7 @@
     <string name="rounded_corners_top">Enable Rounded Corners on Top</string>
     <string name="rounded_corners_bottom">Enable Rounded Corners on Bottom</string>
     <string name="cover_nav">Black-Out Navigation Bar</string>
-    <string name="agree_to_terms">Please read and agree to the Terms of Use</string>
+    <string name="agree_to_terms">Please read and agree to the Terms of Use. If you are seeing this screen again, the terms have likely been updated.</string>
     <string name="view_terms_online">View Online</string>
     <string name="agree">I Agree</string>
     <string name="terms">Terms</string>
