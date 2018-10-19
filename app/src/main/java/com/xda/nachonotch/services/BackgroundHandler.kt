@@ -6,10 +6,7 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.database.ContentObserver
 import android.net.Uri
-import android.os.Build
-import android.os.Handler
-import android.os.IBinder
-import android.os.Looper
+import android.os.*
 import android.preference.PreferenceManager
 import android.provider.Settings
 import android.support.v4.app.NotificationCompat
@@ -362,7 +359,7 @@ class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeL
     }
 
     override fun onBind(intent: Intent): IBinder? {
-        return null
+        return Binder()
     }
 
     inner class ImmersiveListener : ContentObserver(handler), View.OnSystemUiVisibilityChangeListener {
