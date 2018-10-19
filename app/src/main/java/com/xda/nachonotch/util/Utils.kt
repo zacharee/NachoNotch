@@ -52,10 +52,10 @@ object Utils {
 
     fun getStatusBarHeight(context: Context): Int {
         return PreferenceManager.getDefaultSharedPreferences(context)
-                .getInt("status_height", getResurceStatusHeight(context))
+                .getInt("status_height", getResourceStatusHeight(context))
     }
 
-    fun getResurceStatusHeight(context: Context): Int {
+    fun getResourceStatusHeight(context: Context): Int {
         return context.resources.getDimensionPixelSize(context.resources.getIdentifier("status_bar_height", "dimen", "android"))
     }
 
