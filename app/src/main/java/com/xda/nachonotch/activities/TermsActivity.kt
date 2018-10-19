@@ -8,6 +8,7 @@ import android.os.Looper
 import android.preference.PreferenceManager
 import android.support.v7.app.AppCompatActivity
 import com.xda.nachonotch.R
+import com.xda.nachonotch.util.Utils
 import kotlinx.android.synthetic.main.activity_terms.*
 import ru.noties.markwon.Markwon
 import java.io.BufferedReader
@@ -46,7 +47,7 @@ class TermsActivity : AppCompatActivity() {
             if (agree_box.isChecked) {
                 PreferenceManager.getDefaultSharedPreferences(this)
                         .edit()
-                        .putBoolean("agreed_terms", true)
+                        .putInt("terms_version", Utils.TERMS_VERSION)
                         .apply()
 
                 finish()
