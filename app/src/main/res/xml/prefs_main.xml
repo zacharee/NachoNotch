@@ -2,11 +2,6 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <Preference
-        android:title="@string/enable_launcher"
-        android:key="enable_launcher"
-        />
-
     <PreferenceCategory
         android:title="@string/options">
 
