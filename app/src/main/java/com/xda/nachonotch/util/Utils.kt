@@ -109,7 +109,7 @@ object Utils {
     fun enforceTerms(context: Context): Boolean {
         val termsVer = PreferenceManager.getDefaultSharedPreferences(context).getInt("terms_version", 0)
         return if (termsVer < TERMS_VERSION) {
-            context.startActivity(Intent(context, TermsActivity::class.java))
+            context.startActivity(Intent(context, TermsActivity::class.java).apply { addFlags(Intent.FLAG_ACTIVITY_NEW_TASK) })
             false
         } else true
 
