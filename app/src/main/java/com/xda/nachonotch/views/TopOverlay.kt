@@ -38,12 +38,10 @@ class TopOverlay : View {
         return WindowManager.LayoutParams().apply {
             dimAmount = 0.001f
             flags  = FLAG_DIM_BEHIND or
-                    WindowManager.LayoutParams.FLAG_LAYOUT_IN_OVERSCAN or
-                    WindowManager.LayoutParams.FLAG_LAYOUT_INSET_DECOR or
                     WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
-                    WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS or
                     WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
-                    WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
+                    WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE or
+                    WindowManager.LayoutParams.FLAG_LAYOUT_INSET_DECOR
             type = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) WindowManager.LayoutParams.TYPE_PHONE
                     else WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
             gravity = Gravity.TOP

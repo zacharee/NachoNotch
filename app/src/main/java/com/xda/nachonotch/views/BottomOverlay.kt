@@ -10,7 +10,6 @@ import android.util.AttributeSet
 import android.view.Gravity
 import android.view.View
 import android.view.WindowManager
-import android.view.WindowManager.LayoutParams.FLAG_DIM_BEHIND
 import com.xda.nachonotch.util.Utils
 
 class BottomOverlay : View {
@@ -36,9 +35,7 @@ class BottomOverlay : View {
 
     fun getParams(): WindowManager.LayoutParams {
         return WindowManager.LayoutParams().apply {
-            dimAmount = 0.001f
-            flags  = FLAG_DIM_BEHIND or
-                    WindowManager.LayoutParams.FLAG_LAYOUT_IN_OVERSCAN or
+            flags  = WindowManager.LayoutParams.FLAG_LAYOUT_IN_OVERSCAN or
                     WindowManager.LayoutParams.FLAG_LAYOUT_INSET_DECOR or
                     WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
                     WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS or

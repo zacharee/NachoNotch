@@ -20,12 +20,7 @@ class BottomRightCorner : View {
 
     fun getParams(): WindowManager.LayoutParams {
         return WindowManager.LayoutParams().apply {
-            dimAmount = 0.001f
-            flags = WindowManager.LayoutParams.FLAG_DIM_BEHIND or
-                    WindowManager.LayoutParams.FLAG_LAYOUT_IN_OVERSCAN or
-                    WindowManager.LayoutParams.FLAG_LAYOUT_INSET_DECOR or
-                    WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
-                    WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS or
+            flags = WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
                     WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
                     WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
             type = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) WindowManager.LayoutParams.TYPE_PHONE else WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
