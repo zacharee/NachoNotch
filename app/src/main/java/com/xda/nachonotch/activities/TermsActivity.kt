@@ -5,11 +5,11 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.preference.PreferenceManager
 import android.text.method.LinkMovementMethod
 import androidx.appcompat.app.AppCompatActivity
 import com.xda.nachonotch.R
 import com.xda.nachonotch.util.Utils
+import com.xda.nachonotch.util.prefManager
 import kotlinx.android.synthetic.main.activity_terms.*
 import ru.noties.markwon.Markwon
 import java.io.BufferedReader
@@ -47,10 +47,7 @@ class TermsActivity : AppCompatActivity() {
 
         done.setOnClickListener {
             if (agree_box.isChecked) {
-                PreferenceManager.getDefaultSharedPreferences(this)
-                        .edit()
-                        .putInt("terms_version", Utils.TERMS_VERSION)
-                        .apply()
+                prefManager.termsVersion = Utils.TERMS_VERSION
 
                 finish()
             }

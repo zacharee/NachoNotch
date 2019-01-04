@@ -7,7 +7,6 @@ import android.content.SharedPreferences
 import android.database.ContentObserver
 import android.net.Uri
 import android.os.*
-import android.preference.PreferenceManager
 import android.provider.Settings
 import android.view.OrientationEventListener
 import android.view.Surface
@@ -16,7 +15,7 @@ import android.view.WindowManager
 import androidx.core.app.NotificationCompat
 import com.xda.nachonotch.R
 import com.xda.nachonotch.activities.SettingsActivity
-import com.xda.nachonotch.util.Utils
+import com.xda.nachonotch.util.PrefManager
 import com.xda.nachonotch.util.launchOverlaySettings
 import com.xda.nachonotch.util.prefManager
 import com.xda.nachonotch.views.*
@@ -51,12 +50,11 @@ class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeL
         }
     } }
     private val immersiveListener by lazy { ImmersiveListener() }
-    private val prefs by lazy { PreferenceManager.getDefaultSharedPreferences(this) }
 
     override fun onCreate() {
         super.onCreate()
 
-        prefs.registerOnSharedPreferenceChangeListener(this)
+        prefManager.registerOnSharedPreferenceChangeListener(this)
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -71,28 +69,28 @@ class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeL
         removeOverlayAndDisable()
         immersiveListener.destroy()
 
-        prefs.unregisterOnSharedPreferenceChangeListener(this)
+        prefManager.unregisterOnSharedPreferenceChangeListener(this)
     }
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
         if (prefManager.isEnabled) {
             when (key) {
-                "rounded_corners" -> {
+                PrefManager.ROUNDED_CORNERS_TOP -> {
                     if (prefManager.useTopCorners) {
                         addTopCorners()
                     } else removeTopCorners()
                 }
-                "rounded_corners_bottom" -> {
+                PrefManager.ROUNDED_CORNERS_BOTTOM -> {
                     if (prefManager.useBottomCorners) {
                         addBottomCorners()
                     } else removeBottomCorners()
                 }
-                "cover_nav" -> {
+                PrefManager.COVER_NAV -> {
                     if (prefManager.coverNav) {
                         addBottomOverlay()
                     } else removeBottomOverlay()
                 }
-                "nav_height" -> {
+                PrefManager.NAV_HEIGHT -> {
                     if (prefManager.coverNav) try {
                         windowManager.updateViewLayout(bottomCover, bottomCover.getParams())
                     } catch (e: Exception) {}
@@ -101,7 +99,7 @@ class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeL
                         windowManager.updateViewLayout(bottomRight, bottomRight.getParams())
                     } catch (e: Exception) {}
                 }
-                "status_height" -> {
+                PrefManager.STATUS_HEIGHT -> {
                     try {
                         windowManager.updateViewLayout(topCover, topCover.getParams())
                     } catch (e: Exception) {}
@@ -110,15 +108,15 @@ class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeL
                         windowManager.updateViewLayout(topRight, topRight.getParams())
                     } catch (e: Exception) {}
                 }
-                "top_corner_width",
-                    "top_corner_height" -> {
+                PrefManager.TOP_CORNER_WIDTH,
+                    PrefManager.TOP_CORNER_HEIGHT -> {
                     if (prefManager.useTopCorners) try {
                         windowManager.updateViewLayout(topLeft, topLeft.getParams())
                         windowManager.updateViewLayout(topRight, topRight.getParams())
                     } catch (e: Exception) {}
                 }
-                "bottom_corner_width",
-                    "bottom_corner_height" -> {
+                PrefManager.BOTTOM_CORNER_WIDTH,
+                    PrefManager.BOTTOM_CORNER_HEIGHT -> {
                     if (prefManager.useBottomCorners) try {
                         windowManager.updateViewLayout(bottomLeft, bottomLeft.getParams())
                         windowManager.updateViewLayout(bottomRight, bottomRight.getParams())

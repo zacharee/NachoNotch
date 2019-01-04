@@ -2,6 +2,7 @@ package com.xda.nachonotch.util
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.SharedPreferences
 import androidx.preference.PreferenceManager
 import com.xda.nachonotch.services.BackgroundHandler
 
@@ -70,8 +71,11 @@ class PrefManager private constructor(private val context: Context) {
     val statusBarHeight: Int
         get() = getInt(STATUS_HEIGHT, context.resourceStatusBarHeight)
 
-    val termsVersion: Int
+    var termsVersion: Int
         get() = getInt(TERMS_VERSION, 0)
+        set(value) {
+            putInt(TERMS_VERSION, value)
+        }
 
     val useBottomCorners: Boolean
         get() = getBoolean(ROUNDED_CORNERS_BOTTOM, false)
@@ -92,4 +96,10 @@ class PrefManager private constructor(private val context: Context) {
     fun putInt(key: String, value: Int) = prefs.edit().putInt(key, value).apply()
     fun putString(key: String, value: String?) = prefs.edit().putString(key, value).apply()
     fun putStringSet(key: String, set: Set<String>) = prefs.edit().putStringSet(key, set).apply()
+
+    fun registerOnSharedPreferenceChangeListener(listener: SharedPreferences.OnSharedPreferenceChangeListener) =
+            prefs.registerOnSharedPreferenceChangeListener(listener)
+
+    fun unregisterOnSharedPreferenceChangeListener(listener: SharedPreferences.OnSharedPreferenceChangeListener) =
+            prefs.unregisterOnSharedPreferenceChangeListener(listener)
 }

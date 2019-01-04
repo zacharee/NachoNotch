@@ -25,10 +25,8 @@ class ToggleService : TileService() {
             prefManager.isEnabled = false
         }
     }
-    private lateinit var prefs: SharedPreferences
 
     override fun onCreate() {
-        prefs = PreferenceManager.getDefaultSharedPreferences(this)
         bindService(Intent(this, BackgroundHandler::class.java), connection, 0)
     }
 
