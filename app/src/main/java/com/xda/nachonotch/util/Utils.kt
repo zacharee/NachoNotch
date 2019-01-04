@@ -43,7 +43,15 @@ fun Context.enforceTerms(): Boolean {
 
 fun Context.launchOverlaySettings() {
     val intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:$packageName"))
-    startActivity(intent)
+    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+
+    try {
+        startActivity(intent)
+    } catch (e: Exception) {
+        intent.data = null
+
+        startActivity(intent)
+    }
 
     Toast.makeText(this, R.string.enable_overlay_permission, Toast.LENGTH_SHORT).show()
 }
