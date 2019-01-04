@@ -6,8 +6,8 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.preference.PreferenceManager
-import android.support.v7.app.AppCompatActivity
 import android.text.method.LinkMovementMethod
+import androidx.appcompat.app.AppCompatActivity
 import com.xda.nachonotch.R
 import com.xda.nachonotch.util.Utils
 import kotlinx.android.synthetic.main.activity_terms.*

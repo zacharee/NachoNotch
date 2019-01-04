@@ -9,11 +9,11 @@ import android.net.Uri
 import android.os.*
 import android.preference.PreferenceManager
 import android.provider.Settings
-import android.support.v4.app.NotificationCompat
 import android.view.OrientationEventListener
 import android.view.Surface
 import android.view.View
 import android.view.WindowManager
+import androidx.core.app.NotificationCompat
 import com.xda.nachonotch.R
 import com.xda.nachonotch.activities.SettingsActivity
 import com.xda.nachonotch.util.Utils

@@ -4,7 +4,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.provider.Settings
-import android.support.v4.content.ContextCompat
+import androidx.core.content.ContextCompat
 import com.xda.nachonotch.services.BackgroundHandler
 import com.xda.nachonotch.util.Utils
 

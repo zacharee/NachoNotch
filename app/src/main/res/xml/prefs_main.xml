@@ -25,54 +25,54 @@
     <PreferenceCategory
         android:title="@string/dimensions">
 
-        <com.pavelsikun.seekbarpreference.SeekBarPreference
+        <tk.zwander.seekbarpreference.SeekBarPreference
             android:title="@string/status_height"
             android:key="status_height"
-            app:msbp_minValue="0"
-            app:msbp_maxValue="300"
+            app:minValue="0"
+            app:maxValue="300"
             />
 
-        <com.pavelsikun.seekbarpreference.SeekBarPreference
+        <tk.zwander.seekbarpreference.SeekBarPreference
             android:title="@string/nav_height"
             android:key="nav_height"
-            app:msbp_minValue="0"
-            app:msbp_maxValue="400"
+            app:minValue="0"
+            app:maxValue="400"
             />
 
-        <com.pavelsikun.seekbarpreference.SeekBarPreference
+        <tk.zwander.seekbarpreference.SeekBarPreference
             android:title="@string/top_corner_width"
             android:key="top_corner_width"
             android:defaultValue="24"
-            app:msbp_minValue="0"
-            app:msbp_maxValue="56"
-            app:msbp_measurementUnit="dp"
+            app:minValue="0"
+            app:maxValue="56"
+            app:measurementUnit="dp"
             />
 
-        <com.pavelsikun.seekbarpreference.SeekBarPreference
+        <tk.zwander.seekbarpreference.SeekBarPreference
             android:title="@string/top_corner_height"
             android:key="top_corner_height"
             android:defaultValue="24"
-            app:msbp_minValue="0"
-            app:msbp_maxValue="56"
-            app:msbp_measurementUnit="dp"
+            app:minValue="0"
+            app:maxValue="56"
+            app:measurementUnit="dp"
             />
 
-        <com.pavelsikun.seekbarpreference.SeekBarPreference
+        <tk.zwander.seekbarpreference.SeekBarPreference
             android:title="@string/bottom_corner_width"
             android:key="bottom_corner_width"
             android:defaultValue="24"
-            app:msbp_minValue="0"
-            app:msbp_maxValue="56"
-            app:msbp_measurementUnit="dp"
+            app:minValue="0"
+            app:maxValue="56"
+            app:measurementUnit="dp"
             />
 
-        <com.pavelsikun.seekbarpreference.SeekBarPreference
+        <tk.zwander.seekbarpreference.SeekBarPreference
             android:title="@string/bottom_corner_height"
             android:key="bottom_corner_height"
             android:defaultValue="24"
-            app:msbp_minValue="0"
-            app:msbp_maxValue="56"
-            app:msbp_measurementUnit="dp"
+            app:minValue="0"
+            app:maxValue="56"
+            app:measurementUnit="dp"
             />
 
     </PreferenceCategory>

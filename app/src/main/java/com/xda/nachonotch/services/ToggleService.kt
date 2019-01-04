@@ -9,7 +9,7 @@ import android.preference.PreferenceManager
 import android.provider.Settings
 import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
-import android.support.v4.content.ContextCompat
+import androidx.core.content.ContextCompat
 import com.xda.nachonotch.R
 import com.xda.nachonotch.util.Utils
 
