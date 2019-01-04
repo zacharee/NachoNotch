@@ -36,19 +36,20 @@ class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeL
     private val bottomRight by lazy { BottomRightCorner(this) }
     private val handler = Handler(Looper.getMainLooper())
 
-    private val orientationEventListener by lazy { object : OrientationEventListener(this) {
-        var oldRot = Surface.ROTATION_0
-        override fun onOrientationChanged(i: Int) {
-            val currentRot = windowManager.defaultDisplay.rotation
-            if (oldRot != currentRot) {
-                if (currentRot == Surface.ROTATION_0) {
-                    addAllOverlays()
+    private val orientationEventListener by lazy {
+        object : OrientationEventListener(this) {
+            var oldRot = Surface.ROTATION_0
+            override fun onOrientationChanged(i: Int) {
+                val currentRot = windowManager.defaultDisplay.rotation
+                if (oldRot != currentRot) {
+                    if (currentRot == Surface.ROTATION_0) {
+                        addAllOverlays()
+                    } else removeAllOverlays()
+                    oldRot = currentRot
                 }
-                else removeAllOverlays()
-                oldRot = currentRot
             }
         }
-    } }
+    }
     private val immersiveListener by lazy { ImmersiveListener() }
 
     override fun onCreate() {
@@ -93,34 +94,40 @@ class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeL
                 PrefManager.NAV_HEIGHT -> {
                     if (prefManager.coverNav) try {
                         windowManager.updateViewLayout(bottomCover, bottomCover.getParams())
-                    } catch (e: Exception) {}
+                    } catch (e: Exception) {
+                    }
                     if (prefManager.useBottomCorners) try {
                         windowManager.updateViewLayout(bottomLeft, bottomLeft.getParams())
                         windowManager.updateViewLayout(bottomRight, bottomRight.getParams())
-                    } catch (e: Exception) {}
+                    } catch (e: Exception) {
+                    }
                 }
                 PrefManager.STATUS_HEIGHT -> {
                     try {
                         windowManager.updateViewLayout(topCover, topCover.getParams())
-                    } catch (e: Exception) {}
+                    } catch (e: Exception) {
+                    }
                     if (prefManager.useTopCorners) try {
                         windowManager.updateViewLayout(topLeft, topLeft.getParams())
                         windowManager.updateViewLayout(topRight, topRight.getParams())
-                    } catch (e: Exception) {}
+                    } catch (e: Exception) {
+                    }
                 }
                 PrefManager.TOP_CORNER_WIDTH,
-                    PrefManager.TOP_CORNER_HEIGHT -> {
+                PrefManager.TOP_CORNER_HEIGHT -> {
                     if (prefManager.useTopCorners) try {
                         windowManager.updateViewLayout(topLeft, topLeft.getParams())
                         windowManager.updateViewLayout(topRight, topRight.getParams())
-                    } catch (e: Exception) {}
+                    } catch (e: Exception) {
+                    }
                 }
                 PrefManager.BOTTOM_CORNER_WIDTH,
-                    PrefManager.BOTTOM_CORNER_HEIGHT -> {
+                PrefManager.BOTTOM_CORNER_HEIGHT -> {
                     if (prefManager.useBottomCorners) try {
                         windowManager.updateViewLayout(bottomLeft, bottomLeft.getParams())
                         windowManager.updateViewLayout(bottomRight, bottomRight.getParams())
-                    } catch (e: Exception) {}
+                    } catch (e: Exception) {
+                    }
                 }
             }
         }
@@ -178,7 +185,8 @@ class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeL
             try {
                 windowManager.addView(topCover, topCover.getParams())
                 topCover.setOnSystemUiVisibilityChangeListener(immersiveListener)
-            } catch (e: Exception) {}
+            } catch (e: Exception) {
+            }
         }, DELAY_MS)
     }
 
@@ -187,7 +195,8 @@ class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeL
             if (prefManager.coverNav) {
                 try {
                     windowManager.addView(bottomCover, bottomCover.getParams())
-                } catch (e: Exception) {}
+                } catch (e: Exception) {
+                }
             }
         }, DELAY_MS)
     }
@@ -197,11 +206,13 @@ class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeL
             if (prefManager.useTopCorners) {
                 try {
                     windowManager.addView(topRight, topRight.getParams())
-                } catch (e: Exception) {}
+                } catch (e: Exception) {
+                }
 
                 try {
                     windowManager.addView(topLeft, topLeft.getParams())
-                } catch (e: Exception) {}
+                } catch (e: Exception) {
+                }
             }
         }, DELAY_MS)
     }
@@ -211,11 +222,13 @@ class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeL
             if (prefManager.useBottomCorners) {
                 try {
                     windowManager.addView(bottomRight, bottomRight.getParams())
-                } catch (e: Exception) {}
+                } catch (e: Exception) {
+                }
 
                 try {
                     windowManager.addView(bottomLeft, bottomLeft.getParams())
-                } catch (e: Exception) {}
+                } catch (e: Exception) {
+                }
             }
         }, DELAY_MS)
     }
@@ -223,33 +236,39 @@ class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeL
     private fun removeTopOverlay() {
         try {
             windowManager.removeView(topCover)
-        } catch (e: Exception) {}
+        } catch (e: Exception) {
+        }
     }
 
     private fun removeBottomOverlay() {
         try {
             windowManager.removeView(bottomCover)
-        } catch (e: Exception) {}
+        } catch (e: Exception) {
+        }
     }
 
     private fun removeTopCorners() {
         try {
             windowManager.removeView(topRight)
-        } catch (e: Exception) {}
+        } catch (e: Exception) {
+        }
 
         try {
             windowManager.removeView(topLeft)
-        } catch (e: Exception) {}
+        } catch (e: Exception) {
+        }
     }
 
     private fun removeBottomCorners() {
         try {
             windowManager.removeView(bottomRight)
-        } catch (e: Exception) {}
+        } catch (e: Exception) {
+        }
 
         try {
             windowManager.removeView(bottomLeft)
-        } catch (e: Exception) {}
+        } catch (e: Exception) {
+        }
     }
 
     private fun hideTopOverlay() {
@@ -257,22 +276,25 @@ class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeL
             topCover.visibility = View.GONE
             try {
                 windowManager.updateViewLayout(topCover, topCover.getParams())
-            } catch (e: Exception) {}
+            } catch (e: Exception) {
+            }
         }
-        
+
         if (prefManager.useTopCorners) {
             if (topLeft.visibility != View.GONE) {
                 topLeft.visibility = View.GONE
                 try {
                     windowManager.updateViewLayout(topLeft, topLeft.getParams())
-                } catch (e: Exception) {}
+                } catch (e: Exception) {
+                }
             }
 
             if (topRight.visibility != View.GONE) {
                 topRight.visibility = View.GONE
                 try {
                     windowManager.updateViewLayout(topRight, topRight.getParams())
-                } catch (e: Exception) {}
+                } catch (e: Exception) {
+                }
             }
         }
     }
@@ -283,7 +305,8 @@ class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeL
                 topCover.visibility = View.VISIBLE
                 try {
                     windowManager.updateViewLayout(topCover, topCover.getParams())
-                } catch (e: Exception) {}
+                } catch (e: Exception) {
+                }
             }
 
             if (prefManager.useTopCorners) {
@@ -291,14 +314,16 @@ class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeL
                     topLeft.visibility = View.VISIBLE
                     try {
                         windowManager.updateViewLayout(topLeft, topLeft.getParams())
-                    } catch (e: Exception) {}
+                    } catch (e: Exception) {
+                    }
                 }
 
                 if (topRight.visibility != View.VISIBLE) {
                     topRight.visibility = View.VISIBLE
                     try {
                         windowManager.updateViewLayout(topRight, topRight.getParams())
-                    } catch (e: Exception) {}
+                    } catch (e: Exception) {
+                    }
                 }
             }
         }
@@ -310,7 +335,8 @@ class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeL
                 bottomCover.visibility = View.GONE
                 try {
                     windowManager.updateViewLayout(bottomCover, bottomCover.getParams())
-                } catch (e: Exception) {}
+                } catch (e: Exception) {
+                }
             }
 
             if (prefManager.useBottomCorners) {
@@ -318,14 +344,16 @@ class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeL
                     bottomLeft.visibility = View.GONE
                     try {
                         windowManager.updateViewLayout(bottomLeft, bottomLeft.getParams())
-                    } catch (e: Exception) {}
+                    } catch (e: Exception) {
+                    }
                 }
 
                 if (bottomRight.visibility != View.GONE) {
                     bottomRight.visibility = View.GONE
                     try {
                         windowManager.updateViewLayout(bottomRight, bottomRight.getParams())
-                    } catch (e: Exception) {}
+                    } catch (e: Exception) {
+                    }
                 }
             }
         }
@@ -337,7 +365,8 @@ class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeL
                 bottomCover.visibility = View.VISIBLE
                 try {
                     windowManager.updateViewLayout(bottomCover, bottomCover.getParams())
-                } catch (e: Exception) {}
+                } catch (e: Exception) {
+                }
             }
 
             if (prefManager.useBottomCorners) {
@@ -345,14 +374,16 @@ class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeL
                     bottomLeft.visibility = View.VISIBLE
                     try {
                         windowManager.updateViewLayout(bottomLeft, bottomLeft.getParams())
-                    } catch (e: Exception) {}
+                    } catch (e: Exception) {
+                    }
                 }
 
                 if (bottomRight.visibility != View.VISIBLE) {
                     bottomRight.visibility = View.VISIBLE
                     try {
                         windowManager.updateViewLayout(bottomRight, bottomRight.getParams())
-                    } catch (e: Exception) {}
+                    } catch (e: Exception) {
+                    }
                 }
             }
         }
