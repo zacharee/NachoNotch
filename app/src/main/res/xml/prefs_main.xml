@@ -45,7 +45,7 @@
             android:defaultValue="24"
             app:minValue="0"
             app:maxValue="56"
-            app:measurementUnit="dp"
+            app:units="dp"
             />
 
         <tk.zwander.seekbarpreference.SeekBarPreference
@@ -54,7 +54,7 @@
             android:defaultValue="24"
             app:minValue="0"
             app:maxValue="56"
-            app:measurementUnit="dp"
+            app:units="dp"
             />
 
         <tk.zwander.seekbarpreference.SeekBarPreference
@@ -63,7 +63,7 @@
             android:defaultValue="24"
             app:minValue="0"
             app:maxValue="56"
-            app:measurementUnit="dp"
+            app:units="dp"
             />
 
         <tk.zwander.seekbarpreference.SeekBarPreference
@@ -72,7 +72,7 @@
             android:defaultValue="24"
             app:minValue="0"
             app:maxValue="56"
-            app:measurementUnit="dp"
+            app:units="dp"
             />
 
     </PreferenceCategory>
