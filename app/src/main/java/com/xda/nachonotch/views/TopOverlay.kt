@@ -3,7 +3,6 @@ package com.xda.nachonotch.views
 import android.content.Context
 import android.graphics.Color
 import android.graphics.PixelFormat
-import android.graphics.Rect
 import android.os.Build
 import android.provider.Settings
 import android.util.AttributeSet
@@ -12,10 +11,9 @@ import android.view.View
 import android.view.WindowManager
 import android.view.WindowManager.LayoutParams.FLAG_DIM_BEHIND
 import com.xda.nachonotch.util.Utils
+import com.xda.nachonotch.util.prefManager
 
 class TopOverlay : View {
-    private val wm: WindowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
-
     constructor(context: Context) : this(context, null)
     constructor(context: Context, attributeSet: AttributeSet?) : super(context, attributeSet) {
         setBackgroundColor(Color.BLACK)
@@ -26,12 +24,13 @@ class TopOverlay : View {
     }
 
     fun isHidden(vis: Int): Boolean {
-        val immersive = Settings.Global.getString(context.contentResolver, Settings.Global.POLICY_CONTROL) ?: "immersive.none"
-        val overscan = Rect()
+        val immersive = Settings.Global
+                .getString(context.contentResolver, "polic_control")
+                ?: "immersive.none"
 
-        wm.defaultDisplay.getOverscanInsets(overscan)
-
-        return vis and Utils.IMMERSIVE_STATUS != 0 || immersive.contains("full") || immersive.contains("status") || overscan.top < 0
+        return vis and Utils.IMMERSIVE_STATUS != 0
+                || immersive.contains("full")
+                || immersive.contains("status")
     }
 
     fun getParams(): WindowManager.LayoutParams {
@@ -46,7 +45,7 @@ class TopOverlay : View {
                     else WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
             gravity = Gravity.TOP
             width = WindowManager.LayoutParams.MATCH_PARENT
-            height = Utils.getStatusBarHeight(context)
+            height = context.prefManager.statusBarHeight
             format = PixelFormat.TRANSLUCENT
         }
     }

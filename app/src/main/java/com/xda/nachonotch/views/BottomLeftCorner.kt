@@ -8,7 +8,8 @@ import android.view.Gravity
 import android.view.View
 import android.view.WindowManager
 import com.xda.nachonotch.R
-import com.xda.nachonotch.util.Utils
+import com.xda.nachonotch.util.prefManager
+import com.xda.nachonotch.util.resourceNavBarHeight
 
 class BottomLeftCorner : View {
     constructor(context: Context) : this(context, null)
@@ -22,12 +23,14 @@ class BottomLeftCorner : View {
             flags = WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
                     WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
                     WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
-            type = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) WindowManager.LayoutParams.TYPE_PHONE else WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
+            type = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
+                WindowManager.LayoutParams.TYPE_PHONE
+            else WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
             gravity = Gravity.BOTTOM or Gravity.LEFT
-            width =  Utils.getBottomCornerWidthPx(context)
-            height = Utils.getBottomCornerHeightPx(context)
+            width =  context.prefManager.cornerWidthBottomPx
+            height = context.prefManager.cornerHeightBottomPx
             format = PixelFormat.TRANSLUCENT
-            y = Utils.getNavBarHeight(context) - Utils.getResourceNavHeight(context)
+            y = context.prefManager.navBarHeight - context.resourceNavBarHeight
         }
     }
 }

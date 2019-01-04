@@ -8,7 +8,7 @@ import android.view.Gravity
 import android.view.View
 import android.view.WindowManager
 import com.xda.nachonotch.R
-import com.xda.nachonotch.util.Utils
+import com.xda.nachonotch.util.prefManager
 
 class TopRightCorner : View {
     constructor(context: Context) : this(context, null)
@@ -23,12 +23,14 @@ class TopRightCorner : View {
                     WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS or
                     WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
                     WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
-            type = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) WindowManager.LayoutParams.TYPE_PHONE else WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
+            type = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
+                WindowManager.LayoutParams.TYPE_PHONE
+            else WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
             gravity = Gravity.TOP or Gravity.RIGHT
-            width =  Utils.getTopCornerWidthPx(context)
-            height = Utils.getTopCornerHeightPx(context)
+            width = context.prefManager.cornerWidthTopPx
+            height = context.prefManager.cornerHeightTopPx
             format = PixelFormat.TRANSLUCENT
-            y = Utils.getStatusBarHeight(context)
+            y = context.prefManager.statusBarHeight
         }
     }
 }

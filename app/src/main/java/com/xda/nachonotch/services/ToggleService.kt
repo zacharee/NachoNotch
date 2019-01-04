@@ -11,16 +11,18 @@ import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
 import androidx.core.content.ContextCompat
 import com.xda.nachonotch.R
-import com.xda.nachonotch.util.Utils
+import com.xda.nachonotch.util.enforceTerms
+import com.xda.nachonotch.util.launchOverlaySettings
+import com.xda.nachonotch.util.prefManager
 
 class ToggleService : TileService() {
     private val connection = object : ServiceConnection {
         override fun onServiceConnected(name: ComponentName?, ser: IBinder?) {
-            Utils.setEnabled(this@ToggleService, true)
+            prefManager.isEnabled = true
         }
 
         override fun onServiceDisconnected(name: ComponentName?) {
-            Utils.setEnabled(this@ToggleService, false)
+            prefManager.isEnabled = false
         }
     }
     private lateinit var prefs: SharedPreferences
@@ -31,17 +33,18 @@ class ToggleService : TileService() {
     }
 
     override fun onStartListening() {
-        qsTile?.state = if (Utils.isEnabled(this)) Tile.STATE_ACTIVE else Tile.STATE_INACTIVE
-        qsTile?.label = resources.getString(if (Utils.isEnabled(this)) R.string.show_notch else R.string.hide_notch)
+        qsTile?.state = if (prefManager.isEnabled) Tile.STATE_ACTIVE else Tile.STATE_INACTIVE
+        qsTile?.label = resources.getString(if (prefManager.isEnabled) R.string.show_notch else R.string.hide_notch)
         qsTile?.updateTile()
     }
 
     override fun onClick() {
-        if (Utils.enforceTerms(this)) {
+        if (enforceTerms()) {
             if (Settings.canDrawOverlays(this)) {
-                if (Utils.isEnabled(this)) removeOverlayAndDisable() else addOverlayAndEnable()
+                if (prefManager.isEnabled) removeOverlayAndDisable()
+                else addOverlayAndEnable()
             } else {
-                Utils.launchOverlaySettings(this)
+                launchOverlaySettings()
             }
         }
     }
@@ -54,7 +57,7 @@ class ToggleService : TileService() {
 
     private fun addOverlayAndEnable() {
         if (Settings.canDrawOverlays(this)) {
-            Utils.setEnabled(this, true)
+            prefManager.isEnabled = true
 
             val service = Intent(this, BackgroundHandler::class.java)
             ContextCompat.startForegroundService(this, service)
@@ -63,7 +66,7 @@ class ToggleService : TileService() {
             qsTile?.label = resources.getString(R.string.show_notch)
             qsTile?.updateTile()
         } else {
-            Utils.launchOverlaySettings(this)
+            launchOverlaySettings()
         }
     }
 
@@ -75,6 +78,6 @@ class ToggleService : TileService() {
         val service = Intent(this, BackgroundHandler::class.java)
         stopService(service)
 
-        Utils.setEnabled(this, false)
+        prefManager.isEnabled = false
     }
 }

@@ -3,7 +3,6 @@ package com.xda.nachonotch.views
 import android.content.Context
 import android.graphics.Color
 import android.graphics.PixelFormat
-import android.graphics.Rect
 import android.os.Build
 import android.provider.Settings
 import android.util.AttributeSet
@@ -11,6 +10,8 @@ import android.view.Gravity
 import android.view.View
 import android.view.WindowManager
 import com.xda.nachonotch.util.Utils
+import com.xda.nachonotch.util.prefManager
+import com.xda.nachonotch.util.resourceNavBarHeight
 
 class BottomOverlay : View {
     private val wm: WindowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
@@ -25,12 +26,13 @@ class BottomOverlay : View {
     }
 
     fun isHidden(vis: Int): Boolean {
-        val immersive = Settings.Global.getString(context.contentResolver, Settings.Global.POLICY_CONTROL) ?: "immersive.none"
-        val overscan = Rect()
+        val immersive = Settings.Global
+                .getString(context.contentResolver, "policy_control")
+                ?: "immersive.none"
 
-        wm.defaultDisplay.getOverscanInsets(overscan)
-
-        return vis and Utils.IMMERSIVE_NAV != 0 || immersive.contains("full") || immersive.contains("navigation") || overscan.bottom < 0
+        return vis and Utils.IMMERSIVE_NAV != 0
+                || immersive.contains("full")
+                || immersive.contains("navigation")
     }
 
     fun getParams(): WindowManager.LayoutParams {
@@ -45,8 +47,8 @@ class BottomOverlay : View {
             type = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) WindowManager.LayoutParams.TYPE_PHONE else WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
             gravity = Gravity.BOTTOM
             width =  WindowManager.LayoutParams.MATCH_PARENT
-            height = Utils.getNavBarHeight(context)
-            y = -Utils.getResourceNavHeight(context)
+            height = context.prefManager.navBarHeight
+            y = -context.resourceNavBarHeight
             format = PixelFormat.TRANSLUCENT
         }
     }

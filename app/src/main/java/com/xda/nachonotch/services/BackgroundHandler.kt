@@ -17,6 +17,8 @@ import androidx.core.app.NotificationCompat
 import com.xda.nachonotch.R
 import com.xda.nachonotch.activities.SettingsActivity
 import com.xda.nachonotch.util.Utils
+import com.xda.nachonotch.util.launchOverlaySettings
+import com.xda.nachonotch.util.prefManager
 import com.xda.nachonotch.views.*
 
 class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeListener {
@@ -58,7 +60,7 @@ class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeL
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        if (Utils.isEnabled(this)) addOverlayAndEnable()
+        if (prefManager.isEnabled) addOverlayAndEnable()
         else removeOverlayAndDisable()
 
         return START_STICKY
@@ -73,51 +75,51 @@ class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeL
     }
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
-        if (Utils.isEnabled(this)) {
+        if (prefManager.isEnabled) {
             when (key) {
                 "rounded_corners" -> {
-                    if (Utils.areTopCornersEnabled(this)) {
+                    if (prefManager.useTopCorners) {
                         addTopCorners()
                     } else removeTopCorners()
                 }
                 "rounded_corners_bottom" -> {
-                    if (Utils.areBottomCornersEnabled(this)) {
+                    if (prefManager.useBottomCorners) {
                         addBottomCorners()
                     } else removeBottomCorners()
                 }
                 "cover_nav" -> {
-                    if (Utils.isNavCoverEnabled(this)) {
+                    if (prefManager.coverNav) {
                         addBottomOverlay()
                     } else removeBottomOverlay()
                 }
                 "nav_height" -> {
-                    if (Utils.isNavCoverEnabled(this)) try {
+                    if (prefManager.coverNav) try {
                         windowManager.updateViewLayout(bottomCover, bottomCover.getParams())
                     } catch (e: Exception) {}
-                    if (Utils.areBottomCornersEnabled(this)) try {
+                    if (prefManager.useBottomCorners) try {
                         windowManager.updateViewLayout(bottomLeft, bottomLeft.getParams())
                         windowManager.updateViewLayout(bottomRight, bottomRight.getParams())
                     } catch (e: Exception) {}
                 }
                 "status_height" -> {
-                    if (Utils.isEnabled(this)) try {
+                    try {
                         windowManager.updateViewLayout(topCover, topCover.getParams())
                     } catch (e: Exception) {}
-                    if (Utils.areTopCornersEnabled(this)) try {
+                    if (prefManager.useTopCorners) try {
                         windowManager.updateViewLayout(topLeft, topLeft.getParams())
                         windowManager.updateViewLayout(topRight, topRight.getParams())
                     } catch (e: Exception) {}
                 }
                 "top_corner_width",
                     "top_corner_height" -> {
-                    if (Utils.areTopCornersEnabled(this)) try {
+                    if (prefManager.useTopCorners) try {
                         windowManager.updateViewLayout(topLeft, topLeft.getParams())
                         windowManager.updateViewLayout(topRight, topRight.getParams())
                     } catch (e: Exception) {}
                 }
                 "bottom_corner_width",
                     "bottom_corner_height" -> {
-                    if (Utils.areBottomCornersEnabled(this)) try {
+                    if (prefManager.useBottomCorners) try {
                         windowManager.updateViewLayout(bottomLeft, bottomLeft.getParams())
                         windowManager.updateViewLayout(bottomRight, bottomRight.getParams())
                     } catch (e: Exception) {}
@@ -162,7 +164,7 @@ class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeL
             addBottomOverlay()
             addBottomCorners()
         } else {
-            Utils.launchOverlaySettings(this)
+            launchOverlaySettings()
         }
     }
 
@@ -184,7 +186,7 @@ class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeL
 
     private fun addBottomOverlay() {
         handler.postDelayed({
-            if (Utils.isNavCoverEnabled(this)) {
+            if (prefManager.coverNav) {
                 try {
                     windowManager.addView(bottomCover, bottomCover.getParams())
                 } catch (e: Exception) {}
@@ -194,7 +196,7 @@ class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeL
 
     private fun addTopCorners() {
         handler.postDelayed({
-            if (Utils.areTopCornersEnabled(this)) {
+            if (prefManager.useTopCorners) {
                 try {
                     windowManager.addView(topRight, topRight.getParams())
                 } catch (e: Exception) {}
@@ -208,7 +210,7 @@ class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeL
 
     private fun addBottomCorners() {
         handler.postDelayed({
-            if (Utils.areBottomCornersEnabled(this)) {
+            if (prefManager.useBottomCorners) {
                 try {
                     windowManager.addView(bottomRight, bottomRight.getParams())
                 } catch (e: Exception) {}
@@ -260,7 +262,7 @@ class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeL
             } catch (e: Exception) {}
         }
         
-        if (Utils.areTopCornersEnabled(this)) {
+        if (prefManager.useTopCorners) {
             if (topLeft.visibility != View.GONE) {
                 topLeft.visibility = View.GONE
                 try {
@@ -286,7 +288,7 @@ class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeL
                 } catch (e: Exception) {}
             }
 
-            if (Utils.areTopCornersEnabled(this)) {
+            if (prefManager.useTopCorners) {
                 if (topLeft.visibility != View.VISIBLE) {
                     topLeft.visibility = View.VISIBLE
                     try {
@@ -305,7 +307,7 @@ class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeL
     }
 
     private fun hideBottomOverlay() {
-        if (Utils.isNavCoverEnabled(this)) {
+        if (prefManager.coverNav) {
             if (bottomCover.visibility != View.GONE) {
                 bottomCover.visibility = View.GONE
                 try {
@@ -313,7 +315,7 @@ class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeL
                 } catch (e: Exception) {}
             }
 
-            if (Utils.areBottomCornersEnabled(this)) {
+            if (prefManager.useBottomCorners) {
                 if (bottomLeft.visibility != View.GONE) {
                     bottomLeft.visibility = View.GONE
                     try {
@@ -332,7 +334,7 @@ class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeL
     }
 
     private fun showBottomOverlay() {
-        if (Utils.isNavCoverEnabled(this) || !bottomCover.isHidden()) {
+        if (prefManager.coverNav || !bottomCover.isHidden()) {
             if (bottomCover.visibility != View.VISIBLE) {
                 bottomCover.visibility = View.VISIBLE
                 try {
@@ -340,7 +342,7 @@ class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeL
                 } catch (e: Exception) {}
             }
 
-            if (Utils.areBottomCornersEnabled(this)) {
+            if (prefManager.useBottomCorners) {
                 if (bottomLeft.visibility != View.VISIBLE) {
                     bottomLeft.visibility = View.VISIBLE
                     try {

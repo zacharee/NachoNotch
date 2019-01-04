@@ -9,14 +9,14 @@ import android.view.MenuItem
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.xda.nachonotch.activities.SettingsActivity
-import com.xda.nachonotch.util.Utils
+import com.xda.nachonotch.util.enforceTerms
 
 class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        if (!Utils.enforceTerms(this)) finish()
+        if (!enforceTerms()) finish()
         else {
             setContentView(R.layout.activity_main)
 

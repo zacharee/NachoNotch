@@ -4,7 +4,10 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.preference.PreferenceFragmentCompat
 import com.xda.nachonotch.R
-import com.xda.nachonotch.util.Utils
+import com.xda.nachonotch.util.PrefManager
+import com.xda.nachonotch.util.enforceTerms
+import com.xda.nachonotch.util.resourceNavBarHeight
+import com.xda.nachonotch.util.resourceStatusBarHeight
 import tk.zwander.seekbarpreference.SeekBarPreference
 
 class SettingsActivity : AppCompatActivity() {
@@ -12,7 +15,7 @@ class SettingsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        if (!Utils.enforceTerms(this)) finish()
+        if (!enforceTerms()) finish()
         else {
             setContentView(R.layout.activity_settings)
 
@@ -28,16 +31,16 @@ class SettingsActivity : AppCompatActivity() {
         }
 
         private fun setListeners() {
-            val statusHeight = findPreference("status_height") as SeekBarPreference
-            val navHeight = findPreference("nav_height") as SeekBarPreference
+            val statusHeight = findPreference(PrefManager.STATUS_HEIGHT) as SeekBarPreference
+            val navHeight = findPreference(PrefManager.NAV_HEIGHT) as SeekBarPreference
 
             preferenceManager.sharedPreferences.apply {
-                if (!contains("status_height")) statusHeight.progress = Utils.getResourceStatusHeight(activity!!)
-                if (!contains("nav_height")) navHeight.progress = Utils.getResourceNavHeight(activity!!)
+                if (!contains(PrefManager.STATUS_HEIGHT)) statusHeight.progress = activity!!.resourceStatusBarHeight
+                if (!contains(PrefManager.NAV_HEIGHT)) navHeight.progress = activity!!.resourceNavBarHeight
             }
 
-            statusHeight.setDefaultValue(Utils.getResourceStatusHeight(activity!!))
-            navHeight.setDefaultValue(Utils.getResourceNavHeight(activity!!))
+            statusHeight.setDefaultValue(activity!!.resourceStatusBarHeight)
+            navHeight.setDefaultValue(activity!!.resourceNavBarHeight)
         }
     }
 }
