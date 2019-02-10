@@ -2,13 +2,20 @@ package com.xda.nachonotch.util
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.Point
 import android.net.Uri
 import android.os.Build
+import android.os.Handler
+import android.os.Looper
 import android.provider.Settings
 import android.util.TypedValue
+import android.view.Surface
+import android.view.WindowManager
 import android.widget.Toast
 import com.xda.nachonotch.R
 import com.xda.nachonotch.activities.TermsActivity
+
+val mainHandler = Handler(Looper.getMainLooper())
 
 val Context.hasNavBar: Boolean
     get() {
@@ -20,6 +27,9 @@ val Context.hasNavBar: Boolean
 val Context.prefManager: PrefManager
     get() = PrefManager.getInstance(this)
 
+val Context.realScreenSize: Point
+    get() = Point().apply { wm.defaultDisplay.getRealSize(this) }
+
 val Context.resourceNavBarHeight: Int
     get() = if (hasNavBar)
         resources.getDimensionPixelSize(
@@ -28,6 +38,9 @@ val Context.resourceNavBarHeight: Int
 val Context.resourceStatusBarHeight: Int
     get() = resources.getDimensionPixelSize(
             resources.getIdentifier("status_bar_height", "dimen", "android"))
+
+val Context.wm: WindowManager
+    get() = getSystemService(Context.WINDOW_SERVICE) as WindowManager
 
 fun Context.dpAsPx(dpVal: Number) =
         Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dpVal.toFloat(), resources.displayMetrics))
