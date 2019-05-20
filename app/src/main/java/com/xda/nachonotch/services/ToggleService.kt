@@ -1,11 +1,6 @@
 package com.xda.nachonotch.services
 
-import android.content.ComponentName
 import android.content.Intent
-import android.content.ServiceConnection
-import android.content.SharedPreferences
-import android.os.IBinder
-import android.preference.PreferenceManager
 import android.provider.Settings
 import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
@@ -16,20 +11,6 @@ import com.xda.nachonotch.util.launchOverlaySettings
 import com.xda.nachonotch.util.prefManager
 
 class ToggleService : TileService() {
-    private val connection = object : ServiceConnection {
-        override fun onServiceConnected(name: ComponentName?, ser: IBinder?) {
-            prefManager.isEnabled = true
-        }
-
-        override fun onServiceDisconnected(name: ComponentName?) {
-            prefManager.isEnabled = false
-        }
-    }
-
-    override fun onCreate() {
-        bindService(Intent(this, BackgroundHandler::class.java), connection, 0)
-    }
-
     override fun onStartListening() {
         qsTile?.state = if (prefManager.isEnabled) Tile.STATE_ACTIVE else Tile.STATE_INACTIVE
         qsTile?.label = resources.getString(if (prefManager.isEnabled) R.string.show_notch else R.string.hide_notch)
@@ -45,12 +26,6 @@ class ToggleService : TileService() {
                 launchOverlaySettings()
             }
         }
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-
-        unbindService(connection)
     }
 
     private fun addOverlayAndEnable() {

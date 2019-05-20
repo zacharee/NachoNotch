@@ -8,13 +8,8 @@ import android.view.WindowManager
 import com.xda.nachonotch.util.prefManager
 import com.xda.nachonotch.util.resourceNavBarHeight
 
-class BottomOverlay : BaseOverlay {
-    override val backgroundColor = Color.BLACK
-
-    constructor(context: Context) : super(context)
-    constructor(context: Context, attributeSet: AttributeSet?) : super(context, attributeSet)
-
-    override fun onSetupParams() {
+class BottomOverlay(context: Context) : BaseOverlay(context, backgroundColor = Color.BLACK) {
+    init {
         with(params) {
             flags = flags or
                     WindowManager.LayoutParams.FLAG_LAYOUT_IN_OVERSCAN or

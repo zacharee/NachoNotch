@@ -8,14 +8,52 @@ import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.provider.Settings
+import android.util.Log
 import android.util.TypedValue
 import android.view.Surface
 import android.view.WindowManager
+import android.view.textclassifier.TextClassifier
 import android.widget.Toast
+import com.xda.nachonotch.App
 import com.xda.nachonotch.R
 import com.xda.nachonotch.activities.TermsActivity
+import com.xda.nachonotch.util.Utils.TERMS_VERSION
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import java.io.PrintWriter
+import java.io.StringWriter
 
 val mainHandler = Handler(Looper.getMainLooper())
+
+val mainScope = CoroutineScope(Dispatchers.Main)
+val logicScope = CoroutineScope(Dispatchers.IO)
+
+val Context.realScreenSize: Point
+    get() = Point(cachedScreenSize ?: refreshScreenSize())
+
+var cachedRotation = Integer.MIN_VALUE
+
+val Context.rotation: Int
+    get() {
+        return wm.defaultDisplay.rotation.also { cachedRotation = it }
+    }
+
+private var cachedScreenSize: Point? = null
+
+/**
+ * Try not to call this from the main Thread
+ */
+fun Context.refreshScreenSize(): Point {
+    val display = wm.defaultDisplay
+
+    val temp = Point().apply { display.getRealSize(this) }
+    cachedScreenSize = temp
+
+    return cachedScreenSize!!
+}
+
+val isLandscape: Boolean
+    get() = cachedRotation.run { this == Surface.ROTATION_90 || this == Surface.ROTATION_270 }
 
 val Context.hasNavBar: Boolean
     get() {
@@ -26,9 +64,6 @@ val Context.hasNavBar: Boolean
 
 val Context.prefManager: PrefManager
     get() = PrefManager.getInstance(this)
-
-val Context.realScreenSize: Point
-    get() = Point().apply { wm.defaultDisplay.getRealSize(this) }
 
 val Context.resourceNavBarHeight: Int
     get() = if (hasNavBar)
@@ -46,7 +81,7 @@ fun Context.dpAsPx(dpVal: Number) =
         Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dpVal.toFloat(), resources.displayMetrics))
 
 fun Context.enforceTerms(): Boolean {
-    return if (prefManager.termsVersion < Utils.TERMS_VERSION) {
+    return if (prefManager.termsVersion < TERMS_VERSION) {
         startActivity(
                 Intent(this, TermsActivity::class.java)
                         .apply { addFlags(Intent.FLAG_ACTIVITY_NEW_TASK) })
@@ -67,6 +102,18 @@ fun Context.launchOverlaySettings() {
     }
 
     Toast.makeText(this, R.string.enable_overlay_permission, Toast.LENGTH_SHORT).show()
+}
+
+val Context.app: App
+    get() = applicationContext as App
+
+fun Throwable.logStack() {
+    val writer = StringWriter()
+    val printer = PrintWriter(writer)
+
+    printStackTrace(printer)
+
+    Log.e("NachoNotch", writer.toString())
 }
 
 object Utils {

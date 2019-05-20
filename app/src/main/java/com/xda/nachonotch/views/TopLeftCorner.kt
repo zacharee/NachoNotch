@@ -1,18 +1,14 @@
 package com.xda.nachonotch.views
 
 import android.content.Context
+import android.graphics.Color
 import android.util.AttributeSet
 import android.view.Gravity
 import com.xda.nachonotch.R
 import com.xda.nachonotch.util.prefManager
 
-class TopLeftCorner : BaseOverlay {
-    override val backgroundResource = R.drawable.corner_left
-
-    constructor(context: Context) : super(context)
-    constructor(context: Context, attributeSet: AttributeSet?) : super(context, attributeSet)
-
-    override fun onSetupParams() {
+class TopLeftCorner(context: Context) : BaseOverlay(context, R.drawable.corner_left) {
+    init {
         with(params) {
             gravity = Gravity.TOP or Gravity.LEFT
             width = context.prefManager.cornerWidthTopPx

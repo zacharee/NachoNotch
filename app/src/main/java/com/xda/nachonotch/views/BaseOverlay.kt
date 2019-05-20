@@ -4,12 +4,17 @@ import android.content.Context
 import android.graphics.PixelFormat
 import android.os.Build
 import android.util.AttributeSet
+import android.util.Log
 import android.view.View
 import android.view.WindowManager
 
-abstract class BaseOverlay : View {
-    open val backgroundResource = 0
-    open val backgroundColor = Integer.MIN_VALUE
+abstract class BaseOverlay(context: Context, backgroundResource: Int = 0, backgroundColor: Int = Int.MIN_VALUE) : View(context) {
+    var isAdded = false
+        set(value) {
+            field = value
+            isWaitingToAdd = false
+        }
+    var isWaitingToAdd = false
 
     val params = WindowManager.LayoutParams().apply {
         flags = WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
@@ -23,22 +28,31 @@ abstract class BaseOverlay : View {
         }
 
         format = PixelFormat.TRANSLUCENT
-
-        onSetupParams()
     }
 
-    constructor(context: Context) : super(context)
-    constructor(context: Context, attrs: AttributeSet?) : super(context, attrs)
-
-    override fun onFinishInflate() {
-        super.onFinishInflate()
-
-        if (backgroundResource > 0) {
-            background = resources.getDrawable(backgroundResource, context.theme)
-        } else if (backgroundColor > Integer.MIN_VALUE) {
+    init {
+        if (backgroundResource != 0) {
+            setBackgroundResource(backgroundResource)
+        } else if (backgroundColor != Int.MIN_VALUE) {
             setBackgroundColor(backgroundColor)
         }
     }
 
-    open fun onSetupParams() {}
+    override fun onAttachedToWindow() {
+        super.onAttachedToWindow()
+        isAdded = true
+    }
+
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+        isAdded = false
+    }
+
+    final override fun setBackgroundResource(resid: Int) {
+        super.setBackgroundResource(resid)
+    }
+
+    final override fun setBackgroundColor(color: Int) {
+        super.setBackgroundColor(color)
+    }
 }

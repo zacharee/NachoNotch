@@ -4,10 +4,11 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.view.WindowManager
 import com.xda.nachonotch.util.ImmersiveHelperManager
+import kotlin.math.absoluteValue
 
 @SuppressLint("ViewConstructor")
 @Suppress("DEPRECATION")
-class ImmersiveHelperViewVertical(context: Context, manager: ImmersiveHelperManager) : BaseImmersiveHelperView(context, manager) {
+class ImmersiveHelperViewHorizontal(context: Context, manager: ImmersiveHelperManager) : BaseImmersiveHelperView(context, manager) {
     init {
         alpha = 0f
     }
@@ -15,18 +16,20 @@ class ImmersiveHelperViewVertical(context: Context, manager: ImmersiveHelperMana
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
 
-        manager.verticalHelperAdded = true
+        manager.horizontalHelperAdded = true
+
+        WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN
     }
 
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
 
-        manager.verticalHelperAdded = false
+        manager.horizontalHelperAdded = false
     }
 
     override fun updateDimensions() {
-        val width = 1
-        val height = WindowManager.LayoutParams.MATCH_PARENT
+        val width = WindowManager.LayoutParams.MATCH_PARENT
+        val height = 1
 
         var changed = false
 

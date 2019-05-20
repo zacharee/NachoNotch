@@ -6,8 +6,7 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.os.*
 import android.provider.Settings
-import android.util.Log
-import android.view.OrientationEventListener
+import android.view.IRotationWatcher
 import android.view.Surface
 import android.view.WindowManager
 import androidx.core.app.NotificationCompat
@@ -32,31 +31,30 @@ class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeL
     private val bottomRight by lazy { BottomRightCorner(this) }
     private val immersiveManager by lazy {
         ImmersiveHelperManager(this).apply {
-            changeListener = this@BackgroundHandler
+            immersiveListener = this@BackgroundHandler
         }
     }
+    private val rotationWatcher by lazy {
+        object : IRotationWatcher.Stub() {
+            override fun onRotationChanged(rotation: Int) {
+                immersiveManager.add()
 
-    private val handler = Handler(Looper.getMainLooper())
-
-    private val orientationEventListener by lazy {
-        object : OrientationEventListener(this) {
-            var oldRot = Surface.ROTATION_0
-            override fun onOrientationChanged(i: Int) {
-                val currentRot = windowManager.defaultDisplay.rotation
-                if (oldRot != currentRot) {
-                    if (currentRot == Surface.ROTATION_0) {
-                        addAllOverlays()
-                    } else removeAllOverlays()
-                    oldRot = currentRot
+                if (rotation == Surface.ROTATION_0) {
+                    addAllOverlays()
+                } else {
+                    removeAllOverlays()
                 }
             }
         }
     }
 
+    private val handler = Handler(Looper.getMainLooper())
+
     override fun onCreate() {
         super.onCreate()
 
         prefManager.registerOnSharedPreferenceChangeListener(this)
+        app.rotationWatchers.add(rotationWatcher)
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -72,13 +70,12 @@ class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeL
         immersiveManager.remove()
 
         prefManager.unregisterOnSharedPreferenceChangeListener(this)
+        app.rotationWatchers.remove(rotationWatcher)
     }
 
     override fun onImmersiveChange() {
         val status = immersiveManager.isStatusImmersive()
         val nav = immersiveManager.isNavImmersive()
-
-        Log.e("NachoNotch", "status: $status, nav: $nav")
 
         if (status) {
             removeTopOverlay()
@@ -92,8 +89,8 @@ class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeL
             removeBottomOverlay()
             removeBottomCorners()
         } else {
-            addTopOverlay()
-            addTopCorners()
+            addBottomOverlay()
+            addBottomCorners()
         }
     }
 
@@ -117,41 +114,35 @@ class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeL
                 }
                 PrefManager.NAV_HEIGHT -> {
                     if (prefManager.coverNav) try {
-                        windowManager.updateViewLayout(bottomCover, bottomCover.getParams())
-                    } catch (e: Exception) {
-                    }
+                        windowManager.updateViewLayout(bottomCover, bottomCover.params)
+                    } catch (e: Exception) {}
                     if (prefManager.useBottomCorners) try {
-                        windowManager.updateViewLayout(bottomLeft, bottomLeft.getParams())
-                        windowManager.updateViewLayout(bottomRight, bottomRight.getParams())
-                    } catch (e: Exception) {
-                    }
+                        windowManager.updateViewLayout(bottomLeft, bottomLeft.params)
+                        windowManager.updateViewLayout(bottomRight, bottomRight.params)
+                    } catch (e: Exception) {}
                 }
                 PrefManager.STATUS_HEIGHT -> {
                     try {
-                        windowManager.updateViewLayout(topCover, topCover.getParams())
-                    } catch (e: Exception) {
-                    }
+                        windowManager.updateViewLayout(topCover, topCover.params)
+                    } catch (e: Exception) {}
                     if (prefManager.useTopCorners) try {
-                        windowManager.updateViewLayout(topLeft, topLeft.getParams())
-                        windowManager.updateViewLayout(topRight, topRight.getParams())
-                    } catch (e: Exception) {
-                    }
+                        windowManager.updateViewLayout(topLeft, topLeft.params)
+                        windowManager.updateViewLayout(topRight, topRight.params)
+                    } catch (e: Exception) {}
                 }
                 PrefManager.TOP_CORNER_WIDTH,
                 PrefManager.TOP_CORNER_HEIGHT -> {
                     if (prefManager.useTopCorners) try {
-                        windowManager.updateViewLayout(topLeft, topLeft.getParams())
-                        windowManager.updateViewLayout(topRight, topRight.getParams())
-                    } catch (e: Exception) {
-                    }
+                        windowManager.updateViewLayout(topLeft, topLeft.params)
+                        windowManager.updateViewLayout(topRight, topRight.params)
+                    } catch (e: Exception) {}
                 }
                 PrefManager.BOTTOM_CORNER_WIDTH,
                 PrefManager.BOTTOM_CORNER_HEIGHT -> {
                     if (prefManager.useBottomCorners) try {
-                        windowManager.updateViewLayout(bottomLeft, bottomLeft.getParams())
-                        windowManager.updateViewLayout(bottomRight, bottomRight.getParams())
-                    } catch (e: Exception) {
-                    }
+                        windowManager.updateViewLayout(bottomLeft, bottomLeft.params)
+                        windowManager.updateViewLayout(bottomRight, bottomRight.params)
+                    } catch (e: Exception) {}
                 }
             }
         }
@@ -174,7 +165,6 @@ class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeL
                 .build()
 
         startForeground(1, notification)
-        orientationEventListener.enable()
         immersiveManager.add()
 
         addAllOverlays()
@@ -183,7 +173,6 @@ class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeL
     private fun removeOverlayAndDisable() {
         stopForeground(true)
         removeAllOverlays()
-        orientationEventListener.disable()
         immersiveManager.remove()
         stopSelf()
     }
@@ -210,18 +199,27 @@ class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeL
 
     private fun addTopOverlay() {
         handler.postDelayed({
-            try {
-                windowManager.addView(topCover, topCover.getParams())
-            } catch (e: Exception) {}
+            if (!topCover.isAdded && !topCover.isWaitingToAdd) {
+                topCover.isWaitingToAdd = true
+                try {
+                    windowManager.addView(topCover, topCover.params)
+                } catch (e: Exception) {
+                    e.logStack()
+                    topCover.isWaitingToAdd = false
+                }
+            }
         }, DELAY_MS)
     }
 
     private fun addBottomOverlay() {
         handler.postDelayed({
-            if (prefManager.coverNav) {
+            if (prefManager.coverNav && !bottomCover.isAdded && !bottomCover.isWaitingToAdd) {
+                bottomCover.isWaitingToAdd = true
                 try {
-                    windowManager.addView(bottomCover, bottomCover.getParams())
-                } catch (e: Exception) {}
+                    windowManager.addView(bottomCover, bottomCover.params)
+                } catch (e: Exception) {
+                    bottomCover.isWaitingToAdd = false
+                }
             }
         }, DELAY_MS)
     }
@@ -229,13 +227,23 @@ class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeL
     private fun addTopCorners() {
         handler.postDelayed({
             if (prefManager.useTopCorners) {
-                try {
-                    windowManager.addView(topRight, topRight.getParams())
-                } catch (e: Exception) {}
+                if (!topRight.isAdded && !topRight.isWaitingToAdd) {
+                    topRight.isWaitingToAdd = true
+                    try {
+                        windowManager.addView(topRight, topRight.params)
+                    } catch (e: Exception) {
+                        topRight.isWaitingToAdd = false
+                    }
+                }
 
-                try {
-                    windowManager.addView(topLeft, topLeft.getParams())
-                } catch (e: Exception) {}
+                if (!topLeft.isAdded && !topLeft.isWaitingToAdd) {
+                    topLeft.isWaitingToAdd = true
+                    try {
+                        windowManager.addView(topLeft, topLeft.params)
+                    } catch (e: Exception) {
+                        topLeft.isWaitingToAdd = false
+                    }
+                }
             }
         }, DELAY_MS)
     }
@@ -243,13 +251,23 @@ class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeL
     private fun addBottomCorners() {
         handler.postDelayed({
             if (prefManager.useBottomCorners) {
-                try {
-                    windowManager.addView(bottomRight, bottomRight.getParams())
-                } catch (e: Exception) {}
+                if (!bottomRight.isAdded && !bottomRight.isWaitingToAdd) {
+                    bottomRight.isWaitingToAdd = true
+                    try {
+                        windowManager.addView(bottomRight, bottomRight.params)
+                    } catch (e: Exception) {
+                        bottomRight.isWaitingToAdd = false
+                    }
+                }
 
-                try {
-                    windowManager.addView(bottomLeft, bottomLeft.getParams())
-                } catch (e: Exception) {}
+                if (!bottomLeft.isAdded && !bottomLeft.isWaitingToAdd) {
+                    bottomLeft.isWaitingToAdd = true
+                    try {
+                        windowManager.addView(bottomLeft, bottomLeft.params)
+                    } catch (e: Exception) {
+                        bottomLeft.isWaitingToAdd = false
+                    }
+                }
             }
         }, DELAY_MS)
     }

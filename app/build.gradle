@@ -27,11 +27,16 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+    packagingOptions {
+        exclude 'META-INF/atomicfu.kotlin_module'
+    }
 }
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.2.0'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.2.0'
 
     //AndroidX
     implementation 'androidx.appcompat:appcompat:1.0.2'
@@ -39,10 +44,10 @@ dependencies {
     implementation 'androidx.preference:preference:1.0.0'
 
     //Google
-    implementation 'com.crashlytics.sdk.android:crashlytics:2.9.8'
+    implementation 'com.crashlytics.sdk.android:crashlytics:2.10.0'
 
     //Mine
-    implementation 'com.github.zacharee:SeekBarPreference:da20a11584'
+    implementation 'com.github.zacharee:SeekBarPreference:c33ebf66c8'
 
     //Other
     implementation 'ru.noties:markwon:2.0.1'

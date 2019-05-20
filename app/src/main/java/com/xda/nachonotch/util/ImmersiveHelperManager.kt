@@ -1,50 +1,122 @@
 package com.xda.nachonotch.util
 
 import android.content.Context
+import android.graphics.Rect
+import android.view.ViewTreeObserver
+import com.xda.nachonotch.views.immersive.ImmersiveHelperViewHorizontal
 import com.xda.nachonotch.views.immersive.ImmersiveHelperViewVertical
 
-class ImmersiveHelperManager(private val context: Context) : ImmersiveTypeListener {
-    private val vertical = ImmersiveHelperViewVertical(context, this)
+class ImmersiveHelperManager(private val context: Context) {
+    val horizontal = ImmersiveHelperViewHorizontal(context, this)
+    val vertical = ImmersiveHelperViewVertical(context, this)
 
-    private var statusImmersive = false
-    private var navImmersive = false
-    private var fullImmersive = false
+    var horizontalLayout = Rect()
+        set(value) {
+            if (field != value) {
+                field.set(value)
 
+                updateImmersiveListener()
+            }
+        }
+
+    var verticalLayout = Rect()
+        set(value) {
+            if (field != value) {
+                field.set(value)
+
+                updateImmersiveListener()
+            }
+        }
+
+    var horizontalHelperAdded = false
+        set(value) {
+            field = value
+
+            updateHelperState()
+        }
     var verticalHelperAdded = false
+        set(value) {
+            field = value
 
-    var changeListener: ImmersiveChangeListener? = null
+            updateHelperState()
+        }
 
-    override fun onFullChange(isFull: Boolean) {
-        fullImmersive = isFull
-        changeListener?.onImmersiveChange()
+
+    var immersiveListener: ImmersiveChangeListener? = null
+
+    init {
+        horizontal.immersiveListener = { left, top, right, bottom ->
+            horizontalLayout = Rect(left, top, right, bottom)
+        }
+        vertical.immersiveListener = { left, top, right, bottom ->
+            verticalLayout = Rect(left, top, right, bottom)
+        }
     }
 
-    override fun onNavChange(isNav: Boolean) {
-        navImmersive = isNav
-        changeListener?.onImmersiveChange()
+    private fun updateImmersiveListener() {
+        immersiveListener?.onImmersiveChange()
     }
 
-    override fun onStatusChange(isStatus: Boolean) {
-        statusImmersive = isStatus
-        changeListener?.onImmersiveChange()
+    private fun updateHelperState() {
     }
 
     fun add() {
+        val wm = context.wm
+
         try {
-            context.wm.addView(vertical, vertical.params)
+            if (!horizontalHelperAdded) {
+                wm.addView(horizontal, horizontal.params)
+            } else {
+                wm.updateViewLayout(horizontal, horizontal.params)
+            }
+        } catch (e: Exception) {}
+
+        try {
+            if (!verticalHelperAdded) {
+                wm.addView(vertical, vertical.params)
+            } else {
+                wm.updateViewLayout(vertical, vertical.params)
+            }
         } catch (e: Exception) {}
     }
 
     fun remove() {
-        Exception().printStackTrace()
+        val wm = context.wm
+
         try {
-            context.wm.removeView(vertical)
+            wm.removeView(horizontal)
+        } catch (e: Exception) {}
+
+        try {
+            wm.removeView(vertical)
         } catch (e: Exception) {}
     }
 
-    fun isStatusImmersive() = isFullImmersive() || statusImmersive
+    fun addOnGlobalLayoutListener(listener: ViewTreeObserver.OnGlobalLayoutListener) {
+        horizontal.viewTreeObserver.addOnGlobalLayoutListener(listener)
+        vertical.viewTreeObserver.addOnGlobalLayoutListener(listener)
+    }
 
-    fun isNavImmersive() = isFullImmersive() || navImmersive
+    fun enterNavImmersive() {
+        horizontal.enterNavImmersive()
+        vertical.enterNavImmersive()
+    }
 
-    fun isFullImmersive() = fullImmersive
+    fun exitNavImmersive() {
+        horizontal.exitNavImmersive()
+        vertical.exitNavImmersive()
+    }
+
+    fun isStatusImmersive() = run {
+        val top = verticalLayout.top
+        top <= 0
+    }
+
+    fun isNavImmersive() = run {
+        if (isLandscape) {
+            horizontalLayout.left <= 0 && horizontalLayout.right <= 0
+        } else {
+            verticalLayout.bottom <= 0
+        }
+    }
 }
