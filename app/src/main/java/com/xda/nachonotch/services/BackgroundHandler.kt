@@ -37,6 +37,7 @@ class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeL
     private val rotationWatcher by lazy {
         object : IRotationWatcher.Stub() {
             override fun onRotationChanged(rotation: Int) {
+                cachedRotation = rotation
                 immersiveManager.add()
 
                 if (rotation == Surface.ROTATION_0) {
@@ -74,24 +75,28 @@ class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeL
     }
 
     override fun onImmersiveChange() {
-        val status = immersiveManager.isStatusImmersive()
+        if (cachedRotation == Surface.ROTATION_0) {
+            val status = immersiveManager.isStatusImmersive()
 
-        if (status) {
-            removeTopOverlay()
-            removeTopCorners()
-        } else {
-            addTopOverlay()
-            addTopCorners()
-        }
-
-        immersiveManager.isNavImmersive {
-            if (it) {
-                removeBottomOverlay()
-                removeBottomCorners()
+            if (status) {
+                removeTopOverlay()
+                removeTopCorners()
             } else {
-                addBottomOverlay()
-                addBottomCorners()
+                addTopOverlay()
+                addTopCorners()
             }
+
+            immersiveManager.isNavImmersive {
+                if (it) {
+                    removeBottomOverlay()
+                    removeBottomCorners()
+                } else {
+                    addBottomOverlay()
+                    addBottomCorners()
+                }
+            }
+        } else {
+            removeAllOverlays()
         }
     }
 
@@ -180,12 +185,14 @@ class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeL
 
     private fun addAllOverlays() {
         if (Settings.canDrawOverlays(this)) {
-            removeAllOverlays()
+            if (cachedRotation == Surface.ROTATION_0) {
+                removeAllOverlays()
 
-            addTopOverlay()
-            addTopCorners()
-            addBottomOverlay()
-            addBottomCorners()
+                addTopOverlay()
+                addTopCorners()
+                addBottomOverlay()
+                addBottomCorners()
+            }
         } else {
             launchOverlaySettings()
         }
