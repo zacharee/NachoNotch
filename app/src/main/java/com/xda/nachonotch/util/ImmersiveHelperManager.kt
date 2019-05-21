@@ -1,12 +1,19 @@
 package com.xda.nachonotch.util
 
 import android.content.Context
+import android.database.ContentObserver
 import android.graphics.Rect
+import android.net.Uri
+import android.provider.Settings
 import android.view.ViewTreeObserver
 import com.xda.nachonotch.views.immersive.ImmersiveHelperViewHorizontal
 import com.xda.nachonotch.views.immersive.ImmersiveHelperViewVertical
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlin.coroutines.coroutineContext
 
-class ImmersiveHelperManager(private val context: Context) {
+class ImmersiveHelperManager(private val context: Context) : ContentObserver(mainHandler) {
     val horizontal = ImmersiveHelperViewHorizontal(context, this)
     val vertical = ImmersiveHelperViewVertical(context, this)
 
@@ -29,18 +36,7 @@ class ImmersiveHelperManager(private val context: Context) {
         }
 
     var horizontalHelperAdded = false
-        set(value) {
-            field = value
-
-            updateHelperState()
-        }
     var verticalHelperAdded = false
-        set(value) {
-            field = value
-
-            updateHelperState()
-        }
-
 
     var immersiveListener: ImmersiveChangeListener? = null
 
@@ -53,15 +49,22 @@ class ImmersiveHelperManager(private val context: Context) {
         }
     }
 
+    override fun onChange(selfChange: Boolean, uri: Uri?) {
+        when (uri) {
+            Settings.Global.getUriFor(Settings.Global.POLICY_CONTROL) -> {
+                updateImmersiveListener()
+            }
+        }
+    }
+
     private fun updateImmersiveListener() {
         immersiveListener?.onImmersiveChange()
     }
 
-    private fun updateHelperState() {
-    }
-
     fun add() {
         val wm = context.wm
+
+        context.contentResolver.registerContentObserver(Settings.Global.getUriFor(Settings.Global.POLICY_CONTROL), true, this)
 
         try {
             if (!horizontalHelperAdded) {
@@ -82,6 +85,8 @@ class ImmersiveHelperManager(private val context: Context) {
 
     fun remove() {
         val wm = context.wm
+
+        context.contentResolver.unregisterContentObserver(this)
 
         try {
             wm.removeView(horizontal)
@@ -109,14 +114,27 @@ class ImmersiveHelperManager(private val context: Context) {
 
     fun isStatusImmersive() = run {
         val top = verticalLayout.top
-        top <= 0
+        top <= 0 || isFullPolicyControl() || isStatusPolicyControl()
     }
 
-    fun isNavImmersive() = run {
-        if (isLandscape) {
-            horizontalLayout.left <= 0 && horizontalLayout.right <= 0
-        } else {
-            verticalLayout.bottom <= 0
+    fun isNavImmersive(callback: (Boolean) -> Unit) {
+        logicScope.launch {
+            val screenSize = context.realScreenSize
+            val overscan = Rect().apply { context.wm.defaultDisplay.getOverscanInsets(this) }
+
+            val isNav = if (isLandscape) {
+                horizontalLayout.left <= 0 && horizontalLayout.right >= screenSize.x + if (overscan.right < 0) overscan.bottom else 0
+            } else {
+                verticalLayout.bottom >= screenSize.y + if (overscan.bottom < 0) overscan.bottom else 0
+            }
+
+            mainScope.launch {
+                callback.invoke(isNav || isFullPolicyControl() || isNavPolicyControl())
+            }
         }
     }
+
+    fun isFullPolicyControl() = Settings.Global.getString(context.contentResolver, Settings.Global.POLICY_CONTROL)?.contains("immersive.full") == true
+    fun isNavPolicyControl() = Settings.Global.getString(context.contentResolver, Settings.Global.POLICY_CONTROL)?.contains("immersive.nav") == true
+    fun isStatusPolicyControl() = Settings.Global.getString(context.contentResolver, Settings.Global.POLICY_CONTROL)?.contains("immersive.status") == true
 }

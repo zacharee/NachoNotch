@@ -75,7 +75,6 @@ class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeL
 
     override fun onImmersiveChange() {
         val status = immersiveManager.isStatusImmersive()
-        val nav = immersiveManager.isNavImmersive()
 
         if (status) {
             removeTopOverlay()
@@ -85,12 +84,14 @@ class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeL
             addTopCorners()
         }
 
-        if (nav) {
-            removeBottomOverlay()
-            removeBottomCorners()
-        } else {
-            addBottomOverlay()
-            addBottomCorners()
+        immersiveManager.isNavImmersive {
+            if (it) {
+                removeBottomOverlay()
+                removeBottomCorners()
+            } else {
+                addBottomOverlay()
+                addBottomCorners()
+            }
         }
     }
 
@@ -204,7 +205,6 @@ class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeL
                 try {
                     windowManager.addView(topCover, topCover.params)
                 } catch (e: Exception) {
-                    e.logStack()
                     topCover.isWaitingToAdd = false
                 }
             }
