@@ -10,14 +10,19 @@ import android.provider.Settings.Global.POLICY_CONTROL
 import android.util.Log
 import android.view.Gravity
 import android.view.View
+import android.view.View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+import android.view.View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
 import android.view.WindowInsets
 import android.view.WindowManager
+import com.android.internal.R.attr.alpha
+import com.android.internal.R.attr.fitsSystemWindows
 import com.xda.nachonotch.util.*
 import kotlinx.coroutines.launch
 
 @SuppressLint("ViewConstructor")
 @Suppress("DEPRECATION")
-open class BaseImmersiveHelperView(context: Context, val manager: ImmersiveHelperManager) : View(context) {
+open class BaseImmersiveHelperView(context: Context, val manager: ImmersiveHelperManager,
+                                   private val immersiveListener: (left: Int, top: Int, right: Int, bottom: Int) -> Unit) : View(context) {
     val params = WindowManager.LayoutParams().apply {
         type = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) WindowManager.LayoutParams.TYPE_PHONE
         else WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
@@ -30,8 +35,6 @@ open class BaseImmersiveHelperView(context: Context, val manager: ImmersiveHelpe
         gravity = Gravity.LEFT or Gravity.BOTTOM
     }
 
-    var immersiveListener: ((left: Int, top: Int, right: Int, bottom: Int) -> Unit)? = null
-
     init {
         alpha = 0f
         fitsSystemWindows = true
@@ -43,7 +46,7 @@ open class BaseImmersiveHelperView(context: Context, val manager: ImmersiveHelpe
         mainHandler.post {
             rect.apply { getBoundsOnScreen(this) }
 
-            immersiveListener?.invoke(rect.left, rect.top, rect.right, rect.bottom)
+            immersiveListener.invoke(rect.left, rect.top, rect.right, rect.bottom)
         }
 
         super.onLayout(changed, left, top, right, bottom)
@@ -52,33 +55,21 @@ open class BaseImmersiveHelperView(context: Context, val manager: ImmersiveHelpe
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
 
+        manager.helperAdded = true
         updateDimensions()
     }
 
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+
+        manager.helperAdded = false
+    }
+
     open fun updateDimensions() {
-        val width = 1
-        val height = WindowManager.LayoutParams.MATCH_PARENT
+        params.width = WindowManager.LayoutParams.MATCH_PARENT
+        params.height = WindowManager.LayoutParams.MATCH_PARENT
 
-        val landscape = isLandscape
-
-        val newW = if (landscape) height else width
-        val newH = if (landscape) width else height
-
-        var changed = false
-
-        if (params.width != newW) {
-            params.width = newW
-
-            changed = true
-        }
-
-        if (params.height != newH) {
-            params.height = newH
-
-            changed = true
-        }
-
-        if (changed) updateLayout()
+        updateLayout()
     }
 
     fun updateLayout() {

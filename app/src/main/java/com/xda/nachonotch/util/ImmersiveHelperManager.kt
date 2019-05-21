@@ -6,18 +6,15 @@ import android.graphics.Rect
 import android.net.Uri
 import android.provider.Settings
 import android.view.ViewTreeObserver
-import com.xda.nachonotch.views.immersive.ImmersiveHelperViewHorizontal
-import com.xda.nachonotch.views.immersive.ImmersiveHelperViewVertical
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import com.xda.nachonotch.views.immersive.BaseImmersiveHelperView
 import kotlinx.coroutines.launch
-import kotlin.coroutines.coroutineContext
 
 class ImmersiveHelperManager(private val context: Context) : ContentObserver(mainHandler) {
-    val horizontal = ImmersiveHelperViewHorizontal(context, this)
-    val vertical = ImmersiveHelperViewVertical(context, this)
+    val base = BaseImmersiveHelperView(context, this) { left, top, right, bottom ->
+        layout = Rect(left, top, right, bottom)
+    }
 
-    var horizontalLayout = Rect()
+    var layout = Rect()
         set(value) {
             if (field != value) {
                 field.set(value)
@@ -26,28 +23,9 @@ class ImmersiveHelperManager(private val context: Context) : ContentObserver(mai
             }
         }
 
-    var verticalLayout = Rect()
-        set(value) {
-            if (field != value) {
-                field.set(value)
-
-                updateImmersiveListener()
-            }
-        }
-
-    var horizontalHelperAdded = false
-    var verticalHelperAdded = false
+    var helperAdded = false
 
     var immersiveListener: ImmersiveChangeListener? = null
-
-    init {
-        horizontal.immersiveListener = { left, top, right, bottom ->
-            horizontalLayout = Rect(left, top, right, bottom)
-        }
-        vertical.immersiveListener = { left, top, right, bottom ->
-            verticalLayout = Rect(left, top, right, bottom)
-        }
-    }
 
     override fun onChange(selfChange: Boolean, uri: Uri?) {
         when (uri) {
@@ -67,18 +45,10 @@ class ImmersiveHelperManager(private val context: Context) : ContentObserver(mai
         context.contentResolver.registerContentObserver(Settings.Global.getUriFor(Settings.Global.POLICY_CONTROL), true, this)
 
         try {
-            if (!horizontalHelperAdded) {
-                wm.addView(horizontal, horizontal.params)
+            if (!helperAdded) {
+                wm.addView(base, base.params)
             } else {
-                wm.updateViewLayout(horizontal, horizontal.params)
-            }
-        } catch (e: Exception) {}
-
-        try {
-            if (!verticalHelperAdded) {
-                wm.addView(vertical, vertical.params)
-            } else {
-                wm.updateViewLayout(vertical, vertical.params)
+                wm.updateViewLayout(base, base.params)
             }
         } catch (e: Exception) {}
     }
@@ -89,31 +59,24 @@ class ImmersiveHelperManager(private val context: Context) : ContentObserver(mai
         context.contentResolver.unregisterContentObserver(this)
 
         try {
-            wm.removeView(horizontal)
-        } catch (e: Exception) {}
-
-        try {
-            wm.removeView(vertical)
+            wm.removeView(base)
         } catch (e: Exception) {}
     }
 
     fun addOnGlobalLayoutListener(listener: ViewTreeObserver.OnGlobalLayoutListener) {
-        horizontal.viewTreeObserver.addOnGlobalLayoutListener(listener)
-        vertical.viewTreeObserver.addOnGlobalLayoutListener(listener)
+        base.viewTreeObserver.addOnGlobalLayoutListener(listener)
     }
 
     fun enterNavImmersive() {
-        horizontal.enterNavImmersive()
-        vertical.enterNavImmersive()
+        base.enterNavImmersive()
     }
 
     fun exitNavImmersive() {
-        horizontal.exitNavImmersive()
-        vertical.exitNavImmersive()
+        base.exitNavImmersive()
     }
 
     fun isStatusImmersive() = run {
-        val top = verticalLayout.top
+        val top = layout.top
         top <= 0 || isFullPolicyControl() || isStatusPolicyControl()
     }
 
@@ -123,9 +86,9 @@ class ImmersiveHelperManager(private val context: Context) : ContentObserver(mai
             val overscan = Rect().apply { context.wm.defaultDisplay.getOverscanInsets(this) }
 
             val isNav = if (isLandscape) {
-                horizontalLayout.left <= 0 && horizontalLayout.right >= screenSize.x + if (overscan.right < 0) overscan.bottom else 0
+                layout.left <= 0 && layout.right >= screenSize.x - overscan.bottom
             } else {
-                verticalLayout.bottom >= screenSize.y + if (overscan.bottom < 0) overscan.bottom else 0
+                layout.bottom >= screenSize.y - overscan.bottom
             }
 
             mainScope.launch {
