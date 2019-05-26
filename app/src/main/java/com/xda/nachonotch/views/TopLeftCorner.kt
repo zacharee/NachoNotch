@@ -4,16 +4,16 @@ import android.content.Context
 import android.graphics.Color
 import android.util.AttributeSet
 import android.view.Gravity
+import android.view.WindowManager
 import com.xda.nachonotch.R
 import com.xda.nachonotch.util.prefManager
 
 class TopLeftCorner(context: Context) : BaseOverlay(context, R.drawable.corner_left) {
-    init {
-        with(params) {
+    override val params: WindowManager.LayoutParams
+        get() = super.params.apply {
             gravity = Gravity.TOP or Gravity.LEFT
             width = context.prefManager.cornerWidthTopPx
             height = context.prefManager.cornerHeightTopPx
             y = context.prefManager.statusBarHeight
         }
-    }
 }

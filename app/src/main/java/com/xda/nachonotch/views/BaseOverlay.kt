@@ -16,10 +16,12 @@ abstract class BaseOverlay(context: Context, backgroundResource: Int = 0, backgr
         }
     var isWaitingToAdd = false
 
-    val params = WindowManager.LayoutParams().apply {
+    open val params = WindowManager.LayoutParams().apply {
         flags = WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
                 WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
-                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
+                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE or
+                WindowManager.LayoutParams.FLAG_LAYOUT_INSET_DECOR or
+                WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS
 
         type = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
             WindowManager.LayoutParams.TYPE_PRIORITY_PHONE

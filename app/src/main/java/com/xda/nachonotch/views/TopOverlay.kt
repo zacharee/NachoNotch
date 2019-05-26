@@ -10,14 +10,10 @@ import android.view.WindowManager.LayoutParams.FLAG_LAYOUT_INSET_DECOR
 import com.xda.nachonotch.util.prefManager
 
 class TopOverlay(context: Context) : BaseOverlay(context, backgroundColor = Color.BLACK) {
-    init {
-        with(params) {
-            flags = flags or FLAG_DIM_BEHIND or
-                    FLAG_LAYOUT_INSET_DECOR
-            dimAmount = 0.001f
+    override val params: WindowManager.LayoutParams
+        get() = super.params.apply {
             gravity = Gravity.TOP
             width = WindowManager.LayoutParams.MATCH_PARENT
             height = context.prefManager.statusBarHeight
         }
-    }
 }

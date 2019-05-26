@@ -9,8 +9,8 @@ import com.xda.nachonotch.util.prefManager
 import com.xda.nachonotch.util.resourceNavBarHeight
 
 class BottomOverlay(context: Context) : BaseOverlay(context, backgroundColor = Color.BLACK) {
-    init {
-        with(params) {
+    override val params: WindowManager.LayoutParams
+        get() = super.params.apply {
             flags = flags or
                     WindowManager.LayoutParams.FLAG_LAYOUT_IN_OVERSCAN or
                     WindowManager.LayoutParams.FLAG_LAYOUT_INSET_DECOR or
@@ -21,5 +21,4 @@ class BottomOverlay(context: Context) : BaseOverlay(context, backgroundColor = C
             height = context.prefManager.navBarHeight
             y = -context.resourceNavBarHeight
         }
-    }
 }
