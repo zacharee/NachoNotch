@@ -5,17 +5,9 @@ import android.content.Context
 import android.graphics.PixelFormat
 import android.graphics.Rect
 import android.os.Build
-import android.provider.Settings
-import android.provider.Settings.Global.POLICY_CONTROL
-import android.util.Log
 import android.view.Gravity
 import android.view.View
-import android.view.View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-import android.view.View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-import android.view.WindowInsets
 import android.view.WindowManager
-import com.android.internal.R.attr.alpha
-import com.android.internal.R.attr.fitsSystemWindows
 import com.xda.nachonotch.util.*
 import kotlinx.coroutines.launch
 
@@ -55,22 +47,11 @@ open class BaseImmersiveHelperView(context: Context, val manager: ImmersiveHelpe
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
 
-        manager.helperAdded = true
         updateDimensions()
-    }
-
-    override fun onDetachedFromWindow() {
-        super.onDetachedFromWindow()
-
-        manager.helperAdded = false
-    }
-
-    open fun updateDimensions() {
-        params.width = WindowManager.LayoutParams.MATCH_PARENT
-        params.height = WindowManager.LayoutParams.MATCH_PARENT
-
         updateLayout()
     }
+
+    open fun updateDimensions() {}
 
     fun updateLayout() {
         mainScope.launch {
