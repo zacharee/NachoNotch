@@ -2,13 +2,10 @@ package com.xda.nachonotch.views
 
 import android.content.Context
 import android.graphics.Color
-import android.graphics.PixelFormat
-import android.hardware.display.DisplayManagerGlobal
-import android.util.AttributeSet
 import android.view.Gravity
-import android.view.View
 import android.view.WindowManager
-import android.view.WindowManager.LayoutParams.*
+import android.view.WindowManager.LayoutParams.FLAG_DIM_BEHIND
+import android.view.WindowManager.LayoutParams.MATCH_PARENT
 import com.xda.nachonotch.util.prefManager
 
 class TopOverlay(context: Context) : BaseOverlay(context, backgroundColor = Color.BLACK) {
