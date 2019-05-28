@@ -44,7 +44,7 @@ dependencies {
     implementation 'androidx.preference:preference:1.0.0'
 
     //Google
-    implementation 'com.crashlytics.sdk.android:crashlytics:2.10.0'
+    implementation 'com.crashlytics.sdk.android:crashlytics:2.10.1'
 
     //Mine
     implementation 'com.github.zacharee:SeekBarPreference:c33ebf66c8'
