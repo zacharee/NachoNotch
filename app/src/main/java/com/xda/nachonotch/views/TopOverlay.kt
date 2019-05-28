@@ -12,7 +12,7 @@ class TopOverlay(context: Context) : BaseOverlay(context, backgroundColor = Colo
     override val params: WindowManager.LayoutParams
         get() = super.params.apply {
             flags = flags or FLAG_DIM_BEHIND
-            dimAmount = 0f
+            dimAmount = 0.000001f
             gravity = Gravity.TOP
             width = MATCH_PARENT
             height = context.prefManager.statusBarHeight
