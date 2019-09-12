@@ -60,14 +60,15 @@ class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeL
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         if (prefManager.isEnabled) addOverlayAndEnable()
-        else removeOverlayAndDisable()
+        else stopSelf()
 
         return START_STICKY
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        removeOverlayAndDisable()
+        stopForeground(true)
+        removeAllOverlays()
         immersiveManager.remove()
 
         prefManager.unregisterOnSharedPreferenceChangeListener(this)
@@ -174,13 +175,6 @@ class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeL
         immersiveManager.add()
 
         addAllOverlays()
-    }
-
-    private fun removeOverlayAndDisable() {
-        stopForeground(true)
-        removeAllOverlays()
-        immersiveManager.remove()
-        stopSelf()
     }
 
     private fun addAllOverlays() {
