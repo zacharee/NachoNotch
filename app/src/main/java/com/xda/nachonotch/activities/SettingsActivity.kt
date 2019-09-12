@@ -19,7 +19,7 @@ class SettingsActivity : AppCompatActivity() {
         else {
             setContentView(R.layout.activity_settings)
 
-            supportFragmentManager?.beginTransaction()?.replace(R.id.content, MainFragment())?.commit()
+            supportFragmentManager.beginTransaction().replace(R.id.content, MainFragment()).commit()
         }
     }
 
@@ -31,8 +31,8 @@ class SettingsActivity : AppCompatActivity() {
         }
 
         private fun setListeners() {
-            val statusHeight = findPreference(PrefManager.STATUS_HEIGHT) as SeekBarPreference
-            val navHeight = findPreference(PrefManager.NAV_HEIGHT) as SeekBarPreference
+            val statusHeight = findPreference<SeekBarPreference>(PrefManager.STATUS_HEIGHT) as SeekBarPreference
+            val navHeight = findPreference<SeekBarPreference>(PrefManager.NAV_HEIGHT) as SeekBarPreference
 
             preferenceManager.sharedPreferences.apply {
                 if (!contains(PrefManager.STATUS_HEIGHT)) statusHeight.progress = activity!!.resourceStatusBarHeight
