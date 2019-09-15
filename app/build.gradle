@@ -9,11 +9,11 @@ apply plugin: 'io.fabric'
 project.version = 24
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion 29
     defaultConfig {
         applicationId "com.xda.nachonotch"
         minSdkVersion 24
-        targetSdkVersion 28
+        targetSdkVersion 29
         versionCode project.version
         versionName project.version + ""
     }

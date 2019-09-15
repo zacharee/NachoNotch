@@ -11,6 +11,10 @@ import com.xda.nachonotch.views.immersive.VerticalImmersiveHelperView
 import kotlinx.coroutines.launch
 
 class ImmersiveHelperManager(private val context: Context) : ContentObserver(mainHandler) {
+    companion object {
+        const val POLICY_CONTROL = "policy_control"
+    }
+
     private val vertical = VerticalImmersiveHelperView(context, this) { left, top, right, bottom ->
         verticalLayout = Rect(left, top, right, bottom)
     }
@@ -48,7 +52,7 @@ class ImmersiveHelperManager(private val context: Context) : ContentObserver(mai
 
     override fun onChange(selfChange: Boolean, uri: Uri?) {
         when (uri) {
-            Settings.Global.getUriFor(Settings.Global.POLICY_CONTROL) -> {
+            Settings.Global.getUriFor(POLICY_CONTROL) -> {
                 updateImmersiveListener()
             }
         }
@@ -59,7 +63,7 @@ class ImmersiveHelperManager(private val context: Context) : ContentObserver(mai
     }
 
     fun add() {
-        context.contentResolver.registerContentObserver(Settings.Global.getUriFor(Settings.Global.POLICY_CONTROL), true, this)
+        context.contentResolver.registerContentObserver(Settings.Global.getUriFor(POLICY_CONTROL), true, this)
 
         tryAdd(verticalHelperAdded, vertical)
         tryAdd(horizontalHelperAdded, horizontal)
@@ -118,7 +122,7 @@ class ImmersiveHelperManager(private val context: Context) : ContentObserver(mai
         }
     }
 
-    fun isFullPolicyControl() = Settings.Global.getString(context.contentResolver, Settings.Global.POLICY_CONTROL)?.contains("immersive.full") == true
-    fun isNavPolicyControl() = Settings.Global.getString(context.contentResolver, Settings.Global.POLICY_CONTROL)?.contains("immersive.nav") == true
-    fun isStatusPolicyControl() = Settings.Global.getString(context.contentResolver, Settings.Global.POLICY_CONTROL)?.contains("immersive.status") == true
+    fun isFullPolicyControl() = Settings.Global.getString(context.contentResolver, POLICY_CONTROL)?.contains("immersive.full") == true
+    fun isNavPolicyControl() = Settings.Global.getString(context.contentResolver, POLICY_CONTROL)?.contains("immersive.nav") == true
+    fun isStatusPolicyControl() = Settings.Global.getString(context.contentResolver, POLICY_CONTROL)?.contains("immersive.status") == true
 }
