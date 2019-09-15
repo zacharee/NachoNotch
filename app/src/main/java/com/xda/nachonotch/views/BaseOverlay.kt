@@ -36,6 +36,10 @@ abstract class BaseOverlay(context: Context, backgroundResource: Int = 0, backgr
         } else if (backgroundColor != Int.MIN_VALUE) {
             setBackgroundColor(backgroundColor)
         }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            isForceDarkAllowed = false
+        }
     }
 
     override fun onAttachedToWindow() {
