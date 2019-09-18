@@ -5,14 +5,22 @@ import android.graphics.PixelFormat
 import android.os.Build
 import android.view.View
 import android.view.WindowManager
+import com.xda.nachonotch.services.BackgroundHandler
 
-abstract class BaseOverlay(context: Context, backgroundResource: Int = 0, backgroundColor: Int = Int.MIN_VALUE) : View(context) {
+abstract class BaseOverlay(
+        context: Context,
+        backgroundResource: Int = 0,
+        backgroundColor: Int = Int.MIN_VALUE
+) : View(context) {
     var isAdded = false
         set(value) {
             field = value
             isWaitingToAdd = false
         }
     var isWaitingToAdd = false
+
+    internal val service: BackgroundHandler
+        get() = context as BackgroundHandler
 
     open val params = WindowManager.LayoutParams().apply {
         flags = WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or

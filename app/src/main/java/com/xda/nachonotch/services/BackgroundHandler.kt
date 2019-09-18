@@ -37,13 +37,10 @@ class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeL
     private val rotationWatcher by lazy {
         object : IRotationWatcher.Stub() {
             override fun onRotationChanged(rotation: Int) {
-                cachedRotation = rotation
                 immersiveManager.add()
 
                 if (rotation == Surface.ROTATION_0) {
                     addAllOverlays()
-                } else {
-                    removeAllOverlays()
                 }
             }
         }
@@ -192,7 +189,7 @@ class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeL
         }
     }
 
-    private fun removeAllOverlays() {
+    fun removeAllOverlays() {
         removeTopOverlay()
         removeTopCorners()
         removeBottomOverlay()
