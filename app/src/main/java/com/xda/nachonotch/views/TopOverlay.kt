@@ -1,14 +1,11 @@
 package com.xda.nachonotch.views
 
 import android.content.Context
-import android.content.res.Configuration
 import android.graphics.Color
 import android.view.Gravity
-import android.view.Surface
 import android.view.WindowManager
 import android.view.WindowManager.LayoutParams.FLAG_DIM_BEHIND
 import android.view.WindowManager.LayoutParams.MATCH_PARENT
-import com.xda.nachonotch.util.cachedRotation
 import com.xda.nachonotch.util.prefManager
 
 class TopOverlay(context: Context) : BaseOverlay(context, backgroundColor = Color.BLACK) {
@@ -20,12 +17,4 @@ class TopOverlay(context: Context) : BaseOverlay(context, backgroundColor = Colo
             width = MATCH_PARENT
             height = context.prefManager.statusBarHeight
         }
-
-    override fun onConfigurationChanged(newConfig: Configuration?) {
-        super.onConfigurationChanged(newConfig)
-
-        if (cachedRotation != Surface.ROTATION_0) {
-            service.removeAllOverlays()
-        }
-    }
 }

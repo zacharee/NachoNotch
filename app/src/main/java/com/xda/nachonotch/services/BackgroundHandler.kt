@@ -40,7 +40,9 @@ class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeL
                 immersiveManager.add()
 
                 if (rotation == Surface.ROTATION_0) {
-                    addAllOverlays()
+                    showAllOverlays()
+                } else {
+                    hideAllOverlays()
                 }
             }
         }
@@ -77,24 +79,20 @@ class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeL
             val status = immersiveManager.isStatusImmersive()
 
             if (status) {
-                removeTopOverlay()
-                removeTopCorners()
+                hideTop()
             } else {
-                addTopOverlay()
-                addTopCorners()
+                showTop()
             }
 
             immersiveManager.isNavImmersive {
                 if (it) {
-                    removeBottomOverlay()
-                    removeBottomCorners()
+                    hideBottom()
                 } else {
-                    addBottomOverlay()
-                    addBottomCorners()
+                    showBottom()
                 }
             }
         } else {
-            removeAllOverlays()
+            hideAllOverlays()
         }
     }
 
@@ -194,6 +192,40 @@ class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeL
         removeTopCorners()
         removeBottomOverlay()
         removeBottomCorners()
+    }
+    
+    private fun showAllOverlays() {
+        showTop()
+        showBottom()
+    }
+
+    private fun showTop() {
+        topCover.show(wm)
+        topLeft.show(wm)
+        topRight.show(wm)
+    }
+
+    private fun showBottom() {
+        bottomCover.show(wm)
+        bottomLeft.show(wm)
+        bottomRight.show(wm)
+    }
+    
+    private fun hideAllOverlays() {
+        hideTop()
+        hideBottom()
+    }
+
+    private fun hideTop() {
+        topCover.hide(wm)
+        topLeft.hide(wm)
+        topRight.hide(wm)
+    }
+
+    private fun hideBottom() {
+        bottomCover.hide(wm)
+        bottomLeft.hide(wm)
+        bottomRight.hide(wm)
     }
 
     private fun addTopOverlay() {
