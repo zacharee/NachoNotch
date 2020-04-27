@@ -37,13 +37,12 @@ class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeL
     private val rotationWatcher by lazy {
         object : IRotationWatcher.Stub() {
             override fun onRotationChanged(rotation: Int) {
-                cachedRotation = rotation
                 immersiveManager.add()
 
                 if (rotation == Surface.ROTATION_0) {
-                    addAllOverlays()
+                    showAllOverlays()
                 } else {
-                    removeAllOverlays()
+                    hideAllOverlays()
                 }
             }
         }
@@ -60,14 +59,15 @@ class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeL
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         if (prefManager.isEnabled) addOverlayAndEnable()
-        else removeOverlayAndDisable()
+        else stopSelf()
 
         return START_STICKY
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        removeOverlayAndDisable()
+        stopForeground(true)
+        removeAllOverlays()
         immersiveManager.remove()
 
         prefManager.unregisterOnSharedPreferenceChangeListener(this)
@@ -79,24 +79,20 @@ class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeL
             val status = immersiveManager.isStatusImmersive()
 
             if (status) {
-                removeTopOverlay()
-                removeTopCorners()
+                hideTop()
             } else {
-                addTopOverlay()
-                addTopCorners()
+                showTop()
             }
 
             immersiveManager.isNavImmersive {
                 if (it) {
-                    removeBottomOverlay()
-                    removeBottomCorners()
+                    hideBottom()
                 } else {
-                    addBottomOverlay()
-                    addBottomCorners()
+                    showBottom()
                 }
             }
         } else {
-            removeAllOverlays()
+            hideAllOverlays()
         }
     }
 
@@ -176,13 +172,6 @@ class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeL
         addAllOverlays()
     }
 
-    private fun removeOverlayAndDisable() {
-        stopForeground(true)
-        removeAllOverlays()
-        immersiveManager.remove()
-        stopSelf()
-    }
-
     private fun addAllOverlays() {
         if (Settings.canDrawOverlays(this)) {
             if (cachedRotation == Surface.ROTATION_0) {
@@ -198,11 +187,45 @@ class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeL
         }
     }
 
-    private fun removeAllOverlays() {
+    fun removeAllOverlays() {
         removeTopOverlay()
         removeTopCorners()
         removeBottomOverlay()
         removeBottomCorners()
+    }
+    
+    private fun showAllOverlays() {
+        showTop()
+        showBottom()
+    }
+
+    private fun showTop() {
+        topCover.show(wm)
+        topLeft.show(wm)
+        topRight.show(wm)
+    }
+
+    private fun showBottom() {
+        bottomCover.show(wm)
+        bottomLeft.show(wm)
+        bottomRight.show(wm)
+    }
+    
+    private fun hideAllOverlays() {
+        hideTop()
+        hideBottom()
+    }
+
+    private fun hideTop() {
+        topCover.hide(wm)
+        topLeft.hide(wm)
+        topRight.hide(wm)
+    }
+
+    private fun hideBottom() {
+        bottomCover.hide(wm)
+        bottomLeft.hide(wm)
+        bottomRight.hide(wm)
     }
 
     private fun addTopOverlay() {

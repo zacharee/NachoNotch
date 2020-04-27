@@ -6,10 +6,10 @@ apply plugin: 'kotlin-android-extensions'
 
 apply plugin: 'io.fabric'
 
-project.version = 23
+project.version = 28
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion 29
     defaultConfig {
         applicationId "com.xda.nachonotch"
         minSdkVersion 24

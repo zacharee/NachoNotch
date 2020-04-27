@@ -3,6 +3,7 @@ package com.xda.nachonotch.util
 import android.content.Context
 import android.content.Intent
 import android.graphics.Point
+import android.graphics.Rect
 import android.net.Uri
 import android.os.Build
 import android.os.Handler
@@ -10,9 +11,10 @@ import android.os.Looper
 import android.provider.Settings
 import android.util.Log
 import android.util.TypedValue
+import android.view.Display
 import android.view.Surface
+import android.view.View
 import android.view.WindowManager
-import android.view.textclassifier.TextClassifier
 import android.widget.Toast
 import com.xda.nachonotch.App
 import com.xda.nachonotch.R
@@ -114,6 +116,16 @@ fun Throwable.logStack() {
     printStackTrace(printer)
 
     Log.e("NachoNotch", writer.toString())
+}
+
+fun Display.getOverscanInsets(out: Rect) {
+    Display::class.java.getMethod("getOverscanInsets", Rect::class.java)
+            .invoke(this, out)
+}
+
+fun View.getBoundsOnScreen(out: Rect) {
+    View::class.java.getMethod("getBoundsOnScreen", Rect::class.java)
+            .invoke(this, out)
 }
 
 object Utils {

@@ -30,6 +30,10 @@ open class BaseImmersiveHelperView(context: Context, val manager: ImmersiveHelpe
     init {
         alpha = 0f
         fitsSystemWindows = true
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            isForceDarkAllowed = false
+        }
     }
 
     private val rect = Rect()

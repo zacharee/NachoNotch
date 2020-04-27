@@ -6,7 +6,11 @@ import android.os.Build
 import android.view.View
 import android.view.WindowManager
 
-abstract class BaseOverlay(context: Context, backgroundResource: Int = 0, backgroundColor: Int = Int.MIN_VALUE) : View(context) {
+abstract class BaseOverlay(
+        context: Context,
+        backgroundResource: Int = 0,
+        backgroundColor: Int = Int.MIN_VALUE
+) : View(context) {
     var isAdded = false
         set(value) {
             field = value
@@ -36,6 +40,10 @@ abstract class BaseOverlay(context: Context, backgroundResource: Int = 0, backgr
         } else if (backgroundColor != Int.MIN_VALUE) {
             setBackgroundColor(backgroundColor)
         }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            isForceDarkAllowed = false
+        }
     }
 
     override fun onAttachedToWindow() {
@@ -46,6 +54,22 @@ abstract class BaseOverlay(context: Context, backgroundResource: Int = 0, backgr
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
         isAdded = false
+    }
+
+    open fun update(wm: WindowManager) {
+        try {
+            wm.updateViewLayout(this, params)
+        } catch (e: Exception) {}
+    }
+
+    open fun show(wm: WindowManager) {
+        params.alpha = 1f
+        update(wm)
+    }
+
+    open fun hide(wm: WindowManager) {
+        params.alpha = 0f
+        update(wm)
     }
 
     final override fun setBackgroundResource(resid: Int) {
