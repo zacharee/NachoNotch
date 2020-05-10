@@ -13,7 +13,7 @@ android {
     defaultConfig {
         applicationId "com.xda.nachonotch"
         minSdkVersion 24
-        targetSdkVersion 28
+        targetSdkVersion 29
         versionCode project.version
         versionName project.version + ""
     }
