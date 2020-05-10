@@ -11,13 +11,6 @@ abstract class BaseOverlay(
         backgroundResource: Int = 0,
         backgroundColor: Int = Int.MIN_VALUE
 ) : View(context) {
-    var isAdded = false
-        set(value) {
-            field = value
-            isWaitingToAdd = false
-        }
-    var isWaitingToAdd = false
-
     open val params = WindowManager.LayoutParams().apply {
         flags = WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
                 WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
@@ -44,17 +37,6 @@ abstract class BaseOverlay(
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             isForceDarkAllowed = false
         }
-    }
-
-    override fun onAttachedToWindow() {
-        super.onAttachedToWindow()
-        isWaitingToAdd = false
-        isAdded = true
-    }
-
-    override fun onDetachedFromWindow() {
-        super.onDetachedFromWindow()
-        isAdded = false
     }
 
     open fun update(wm: WindowManager) {
