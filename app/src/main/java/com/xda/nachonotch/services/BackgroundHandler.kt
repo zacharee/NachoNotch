@@ -8,7 +8,6 @@ import android.os.*
 import android.provider.Settings
 import android.view.IRotationWatcher
 import android.view.Surface
-import android.view.WindowManager
 import androidx.core.app.NotificationCompat
 import com.xda.nachonotch.R
 import com.xda.nachonotch.activities.SettingsActivity
@@ -20,8 +19,6 @@ class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeL
         const val SHOULD_RUN = "enabled"
         const val DELAY_MS = 200L
     }
-
-    private val windowManager by lazy { getSystemService(Context.WINDOW_SERVICE) as WindowManager }
 
     private val topCover by lazy { TopOverlay(this) }
     private val bottomCover by lazy { BottomOverlay(this) }
@@ -115,36 +112,34 @@ class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeL
                     } else removeBottomOverlay()
                 }
                 PrefManager.NAV_HEIGHT -> {
-                    if (prefManager.coverNav) try {
-                        windowManager.updateViewLayout(bottomCover, bottomCover.params)
-                    } catch (e: Exception) {}
-                    if (prefManager.useBottomCorners) try {
-                        windowManager.updateViewLayout(bottomLeft, bottomLeft.params)
-                        windowManager.updateViewLayout(bottomRight, bottomRight.params)
-                    } catch (e: Exception) {}
+                    if (prefManager.coverNav) {
+                        bottomCover.update(wm)
+                    }
+                    if (prefManager.useBottomCorners) {
+                        bottomLeft.update(wm)
+                        bottomRight.update(wm)
+                    }
                 }
                 PrefManager.STATUS_HEIGHT -> {
-                    try {
-                        windowManager.updateViewLayout(topCover, topCover.params)
-                    } catch (e: Exception) {}
-                    if (prefManager.useTopCorners) try {
-                        windowManager.updateViewLayout(topLeft, topLeft.params)
-                        windowManager.updateViewLayout(topRight, topRight.params)
-                    } catch (e: Exception) {}
+                    topCover.update(wm)
+                    if (prefManager.useTopCorners) {
+                        topLeft.update(wm)
+                        topRight.update(wm)
+                    }
                 }
                 PrefManager.TOP_CORNER_WIDTH,
                 PrefManager.TOP_CORNER_HEIGHT -> {
-                    if (prefManager.useTopCorners) try {
-                        windowManager.updateViewLayout(topLeft, topLeft.params)
-                        windowManager.updateViewLayout(topRight, topRight.params)
-                    } catch (e: Exception) {}
+                    if (prefManager.useTopCorners) {
+                        topLeft.update(wm)
+                        topRight.update(wm)
+                    }
                 }
                 PrefManager.BOTTOM_CORNER_WIDTH,
                 PrefManager.BOTTOM_CORNER_HEIGHT -> {
-                    if (prefManager.useBottomCorners) try {
-                        windowManager.updateViewLayout(bottomLeft, bottomLeft.params)
-                        windowManager.updateViewLayout(bottomRight, bottomRight.params)
-                    } catch (e: Exception) {}
+                    if (prefManager.useBottomCorners) {
+                        bottomLeft.update(wm)
+                        bottomRight.update(wm)
+                    }
                 }
             }
         }
@@ -230,26 +225,14 @@ class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeL
 
     private fun addTopOverlay() {
         handler.postDelayed({
-            if (!topCover.isAdded && !topCover.isWaitingToAdd) {
-                topCover.isWaitingToAdd = true
-                try {
-                    windowManager.addView(topCover, topCover.params)
-                } catch (e: Exception) {
-                    topCover.isWaitingToAdd = false
-                }
-            }
+            topCover.add(wm)
         }, DELAY_MS)
     }
 
     private fun addBottomOverlay() {
         handler.postDelayed({
-            if (prefManager.coverNav && !bottomCover.isAdded && !bottomCover.isWaitingToAdd) {
-                bottomCover.isWaitingToAdd = true
-                try {
-                    windowManager.addView(bottomCover, bottomCover.params)
-                } catch (e: Exception) {
-                    bottomCover.isWaitingToAdd = false
-                }
+            if (prefManager.coverNav) {
+                bottomCover.add(wm)
             }
         }, DELAY_MS)
     }
@@ -257,23 +240,8 @@ class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeL
     private fun addTopCorners() {
         handler.postDelayed({
             if (prefManager.useTopCorners) {
-                if (!topRight.isAdded && !topRight.isWaitingToAdd) {
-                    topRight.isWaitingToAdd = true
-                    try {
-                        windowManager.addView(topRight, topRight.params)
-                    } catch (e: Exception) {
-                        topRight.isWaitingToAdd = false
-                    }
-                }
-
-                if (!topLeft.isAdded && !topLeft.isWaitingToAdd) {
-                    topLeft.isWaitingToAdd = true
-                    try {
-                        windowManager.addView(topLeft, topLeft.params)
-                    } catch (e: Exception) {
-                        topLeft.isWaitingToAdd = false
-                    }
-                }
+                topRight.add(wm)
+                topLeft.add(wm)
             }
         }, DELAY_MS)
     }
@@ -281,57 +249,28 @@ class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeL
     private fun addBottomCorners() {
         handler.postDelayed({
             if (prefManager.useBottomCorners) {
-                if (!bottomRight.isAdded && !bottomRight.isWaitingToAdd) {
-                    bottomRight.isWaitingToAdd = true
-                    try {
-                        windowManager.addView(bottomRight, bottomRight.params)
-                    } catch (e: Exception) {
-                        bottomRight.isWaitingToAdd = false
-                    }
-                }
-
-                if (!bottomLeft.isAdded && !bottomLeft.isWaitingToAdd) {
-                    bottomLeft.isWaitingToAdd = true
-                    try {
-                        windowManager.addView(bottomLeft, bottomLeft.params)
-                    } catch (e: Exception) {
-                        bottomLeft.isWaitingToAdd = false
-                    }
-                }
+                bottomRight.add(wm)
+                bottomLeft.add(wm)
             }
         }, DELAY_MS)
     }
 
     private fun removeTopOverlay() {
-        try {
-            windowManager.removeView(topCover)
-        } catch (e: Exception) {}
+        topCover.remove(wm)
     }
 
     private fun removeBottomOverlay() {
-        try {
-            windowManager.removeView(bottomCover)
-        } catch (e: Exception) {}
+        bottomCover.remove(wm)
     }
 
     private fun removeTopCorners() {
-        try {
-            windowManager.removeView(topRight)
-        } catch (e: Exception) {}
-
-        try {
-            windowManager.removeView(topLeft)
-        } catch (e: Exception) {}
+        topLeft.remove(wm)
+        topRight.remove(wm)
     }
 
     private fun removeBottomCorners() {
-        try {
-            windowManager.removeView(bottomRight)
-        } catch (e: Exception) {}
-
-        try {
-            windowManager.removeView(bottomLeft)
-        } catch (e: Exception) {}
+        bottomLeft.remove(wm)
+        bottomRight.remove(wm)
     }
 
     override fun onBind(intent: Intent): IBinder? {

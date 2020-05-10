@@ -48,6 +48,7 @@ abstract class BaseOverlay(
 
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
+        isWaitingToAdd = false
         isAdded = true
     }
 
@@ -59,6 +60,18 @@ abstract class BaseOverlay(
     open fun update(wm: WindowManager) {
         try {
             wm.updateViewLayout(this, params)
+        } catch (e: Exception) {}
+    }
+
+    open fun add(wm: WindowManager) {
+        try {
+            wm.addView(this, params)
+        } catch (e: Exception) {}
+    }
+
+    open fun remove(wm: WindowManager) {
+        try {
+            wm.removeView(this)
         } catch (e: Exception) {}
     }
 
