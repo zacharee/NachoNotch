@@ -45,6 +45,7 @@ dependencies {
 
     //Mine
     implementation 'com.github.zacharee:SeekBarPreference:b0b9567cd0'
+    implementation 'com.github.zacharee:Unblacklister:1.1'
 
     //Other
     implementation 'ru.noties:markwon:2.0.1'
