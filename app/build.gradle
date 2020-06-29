@@ -3,7 +3,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'io.fabric'
 
-project.version = 28
+project.version = 29
 
 android {
     compileSdkVersion 29
