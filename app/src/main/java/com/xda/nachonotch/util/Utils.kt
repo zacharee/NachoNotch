@@ -109,6 +109,13 @@ fun Context.launchOverlaySettings() {
 val Context.app: App
     get() = applicationContext as App
 
+val Context.safeOverscanInsets: Rect
+    get() = Rect().apply {
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q) {
+            wm.defaultDisplay.getOverscanInsets(this)
+        }
+    }
+
 fun Throwable.logStack() {
     val writer = StringWriter()
     val printer = PrintWriter(writer)
@@ -116,16 +123,6 @@ fun Throwable.logStack() {
     printStackTrace(printer)
 
     Log.e("NachoNotch", writer.toString())
-}
-
-fun Display.getOverscanInsets(out: Rect) {
-    Display::class.java.getMethod("getOverscanInsets", Rect::class.java)
-            .invoke(this, out)
-}
-
-fun View.getBoundsOnScreen(out: Rect) {
-    View::class.java.getMethod("getBoundsOnScreen", Rect::class.java)
-            .invoke(this, out)
 }
 
 object Utils {

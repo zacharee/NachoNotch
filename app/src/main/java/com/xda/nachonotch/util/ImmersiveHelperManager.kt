@@ -107,7 +107,7 @@ class ImmersiveHelperManager(private val context: Context) : ContentObserver(mai
         logicScope.launch {
             synchronized(this) {
                 val screenSize = context.realScreenSize
-                val overscan = Rect().apply { context.wm.defaultDisplay.getOverscanInsets(this) }
+                val overscan = context.safeOverscanInsets
 
                 val isNav = if (isLandscape) {
                     horizontalLayout.left <= 0 && horizontalLayout.right >= screenSize.x - overscan.bottom
