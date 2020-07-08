@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="Null" parent="Theme.AppCompat">
+    <style name="Null" parent="Theme.MaterialComponents">
         <item name="android:windowAnimationStyle">@null</item>
         <item name="android:activityOpenEnterAnimation">@null</item>
         <item name="android:activityOpenExitAnimation">@null</item>

@@ -13,7 +13,7 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/Theme.AppCompat"
+        android:theme="@style/Theme.MaterialComponents"
         tools:ignore="AllowBackup,GoogleAppIndexingWarning">
         <service
             android:name=".services.ToggleService"
@@ -49,15 +49,14 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".activities.SettingsActivity"
-            android:theme="@style/Theme.AppCompat">
+            android:name=".activities.SettingsActivity">
             <intent-filter>
                 <action android:name="android.service.quicksettings.action.QS_TILE_PREFERENCES" />
             </intent-filter>
         </activity>
         <activity android:name=".activities.TermsActivity"
             android:launchMode="singleInstance"
-            android:theme="@style/Theme.AppCompat.NoActionBar"
+            android:theme="@style/Theme.MaterialComponents.NoActionBar"
             />
     </application>
 
