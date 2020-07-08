@@ -9,6 +9,7 @@ import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.provider.Settings
+import android.service.quicksettings.Tile
 import android.util.Log
 import android.util.TypedValue
 import android.view.Display
@@ -16,9 +17,11 @@ import android.view.Surface
 import android.view.View
 import android.view.WindowManager
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import com.xda.nachonotch.App
 import com.xda.nachonotch.R
 import com.xda.nachonotch.activities.TermsActivity
+import com.xda.nachonotch.services.BackgroundHandler
 import com.xda.nachonotch.util.Utils.TERMS_VERSION
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -125,10 +128,42 @@ fun Throwable.logStack() {
     Log.e("NachoNotch", writer.toString())
 }
 
-object Utils {
-    val IMMERSIVE_STATUS = 4
-    val IMMERSIVE_NAV = 2
-    val IMMERSIVE_FULL = IMMERSIVE_STATUS or IMMERSIVE_NAV
+//Safely launch a URL.
+//If no matching Activity is found, silently fail.
+fun Context.launchUrl(url: String) {
+    try {
+        val browserIntent =
+                Intent(Intent.ACTION_VIEW, Uri.parse(url))
+        startActivity(browserIntent)
+    } catch (e: Exception) {}
+}
 
-    val TERMS_VERSION = 1
+//Safely start an email draft.
+//If no matching email client is found, silently fail.
+fun Context.launchEmail(to: String, subject: String) {
+    try {
+        val intent = Intent(Intent.ACTION_SENDTO)
+        intent.type = "text/plain"
+        intent.data = Uri.parse("mailto:${Uri.encode(to)}?subject=${Uri.encode(subject)}")
+
+        startActivity(intent)
+    } catch (e: Exception) {}
+}
+
+fun Context.addOverlayAndEnable() {
+    prefManager.isEnabled = true
+
+    val service = Intent(this, BackgroundHandler::class.java)
+    ContextCompat.startForegroundService(this, service)
+}
+
+fun Context.removeOverlayAndDisable() {
+    val service = Intent(this, BackgroundHandler::class.java)
+    stopService(service)
+
+    prefManager.isEnabled = false
+}
+
+object Utils {
+    const val TERMS_VERSION = 1
 }

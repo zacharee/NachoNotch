@@ -22,6 +22,26 @@
     <string name="dimensions">Dimensions</string>
     <string name="settings">Settings</string>
 
+    <string name="hide_notch_desc">Hide the notch!</string>
+
+    <string name="main_screen_help">Tutorial</string>
+    <string name="main_screen_help_desc">Not sure how to add the QS tile? Tap here.</string>
+
+    <string name="main_screen_social_twitter">Twitter</string>
+    <string name="main_screen_social_twitter_desc">Follow me on Twitter for updates about my apps and random development-related nonsense.</string>
+
+    <string name="main_screen_social_website">Website</string>
+    <string name="main_screen_social_website_desc">Check out my website if you\'re that bored.</string>
+
+    <string name="main_screen_social_email">Email</string>
+    <string name="main_screen_social_email_desc">Send me an email if you have a question or problem. Please include as much detail as possible. Just telling me \"it doesn\'t work\" just wastes everyone\'s time.</string>
+
+    <string name="main_screen_social_telegram">Telegram</string>
+    <string name="main_screen_social_telegram_desc">If email isn\'t your thing, you can ask your question in my Telegram server. Please mention which app you\'re using, as this server is for all of the ones I\'ve developed.</string>
+
+    <string name="main_screen_social_github">GitHub</string>
+    <string name="main_screen_social_github_desc">Nacho Notch is open source! If you\'re a developer or tinkerer interested in helping to improve the project (or you just want to check out the source), tap here.</string>
+
     <!--Messages-->
     <string name="welcome_message">Hey! This screen doesn\'t do anything. Nacho Notch is using a QS Tile.\n\n<a href="https://youtu.be/HhH5wK1NokY">Tutorial</a></string>
     <string name="disable_activity">Disable this screen and hide the launcher icon</string>
@@ -29,4 +49,6 @@
     <string name="activity_enabled">Launcher activity enabled.</string>
     <string name="settings_prompt">Touch for settings</string>
     <string name="enable_overlay_permission">Please allow Nacho Notch to draw over other apps.</string>
+
+    <string name="settings_hint">Tap the overflow menu to check out the settings! You can choose to black out the navigation bar along with the status bar, enable rounded corners, and even manually adjust the sizing of the blackouts.</string>
 </resources>
