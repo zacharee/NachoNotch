@@ -115,7 +115,11 @@ val Context.app: App
 val Context.safeOverscanInsets: Rect
     get() = Rect().apply {
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q) {
-            wm.defaultDisplay.getOverscanInsets(this)
+            try {
+                wm.defaultDisplay.getOverscanInsets(this)
+            } catch (e: NoSuchMethodError) {
+                //It looks like Essential removed this method in later versions of Android 10?
+            }
         }
     }
 
