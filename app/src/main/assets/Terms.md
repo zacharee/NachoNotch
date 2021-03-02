@@ -50,9 +50,36 @@ Nacho Notch "hides" the notch by adding a black overlay underneath the status ba
 
 However, there are some limitations:
  - Nacho Notch does *not* function in landscape, as doing so would cut content off.
- - Nacho Notch does *not* push the display content below the notch area. While this is possible, it is not in the scope of this project and introduces overall usability issues.
+ - Nacho Notch does *not* function in fullscreen, as doing so would cut content off.
+ - Nacho Notch does *not* push the display content below the notch area.
  - Nacho Notch does *not* function on the lockscreen. This is a limitation in Android.
 
-Please understand that, while these limitations can be worked around, those workarounds could cause many other issues.
+Please understand that, while some of these limitations can be worked around, those workarounds could cause many other issues.
 
 Nacho Notch also forces the status bar icons to be white. On some devices, this process also forces the navigation bar buttons to be white, occasionally resulting in an issue where the buttons are white on a white background. See the *Usage* section for options.
+
+# FAQ
+
+## Will Nacho Notch work in landscape mode?
+No, and that's by design. Nacho Notch is simply a black overlay behind the status bar. Showing it in landscape, when the status bar is no longer around the notch, would cause content to be cut off.
+
+## Will Nacho Notch work in fullscreen?
+No, and that's by design. Nacho Notch is simply a black overlay behind the status bar. Showing it in fullscreen, when the status bar is hidden, would cause content to be cut off.
+
+## Can Nacho Notch push the status bar below the notch area?
+No, this isn't possible to do.
+
+## Can Nacho Notch work on the lock screen?
+No, this isn't possible to do.
+
+## Can Nacho Notch be set to function in only certain apps?
+While it is possible to track which app is currently showing, this is out of scope for Nacho Notch, and would cause significant battery usage.
+
+## Why does Nacho Notch disappear in some apps?
+Sensitive system apps, like some Settings pages, prevent any normal screen overlays from showing. This can't be worked around.
+
+## With Nacho Notch active, why isn't it possible to grant permissions or install APKs?
+Android has a security feature that prevents certain sensitive options being changed while overlays are displayed on screen. Nacho Notch and any other overlays need to be disabled to change these settings.
+
+## Does Nacho Notch have any settings?
+Yes. Access them by long-pressing the quick settings tile.
