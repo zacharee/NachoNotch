@@ -2,7 +2,7 @@ buildscript {
     ext.kotlin_version = '1.4.31'
     repositories {
         google()
-        jcenter()
+        mavenCentral()
         maven {
             url 'https://maven.fabric.io/public'
         }
@@ -12,14 +12,14 @@ buildscript {
         classpath 'com.android.tools.build:gradle:7.0.0-alpha08'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath 'com.google.gms:google-services:4.3.5'
-        classpath 'io.fabric.tools:gradle:1.28.0'
+        classpath 'com.google.firebase:firebase-crashlytics-gradle:2.5.1'
     }
 }
 
 allprojects {
     repositories {
         google()
-        jcenter()
+        mavenCentral()
         maven {
             url 'https://maven.fabric.io/public'
         }

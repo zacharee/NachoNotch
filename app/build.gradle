@@ -1,7 +1,7 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
-apply plugin: 'io.fabric'
+apply plugin: 'com.google.firebase.crashlytics'
 
 project.version = 31
 
@@ -42,7 +42,7 @@ dependencies {
     implementation 'androidx.preference:preference-ktx:1.1.1'
 
     //Google
-    implementation 'com.crashlytics.sdk.android:crashlytics:17.2.2'
+    implementation 'com.google.firebase:firebase-crashlytics-ktx:17.3.1'
     implementation 'com.google.android.material:material:1.4.0-alpha01'
 
     //Mine
