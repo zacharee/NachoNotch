@@ -28,6 +28,11 @@
             android:name=".services.BackgroundHandler"
             android:enabled="true"
             android:exported="true" />
+        <service android:name=".services.BackgroundJobService"
+            android:enabled="true"
+            android:exported="true"
+            android:permission="android.permission.BIND_JOB_SERVICE"
+            />
 
         <receiver
             android:name=".receivers.BootReceiver"

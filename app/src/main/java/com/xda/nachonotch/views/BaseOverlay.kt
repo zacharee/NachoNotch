@@ -5,6 +5,7 @@ import android.graphics.PixelFormat
 import android.os.Build
 import android.view.View
 import android.view.WindowManager
+import com.xda.nachonotch.util.prefManager
 
 abstract class BaseOverlay(
         context: Context,
@@ -96,6 +97,10 @@ abstract class BaseOverlay(
 
     final override fun setBackgroundColor(color: Int) {
         super.setBackgroundColor(color)
+    }
+
+    protected fun checkLandscape(): Boolean {
+        return !environmentStatus.contains(EnvironmentStatus.LANDSCAPE)
     }
 
     private fun onStatusUpdate(windowManager: WindowManager) {

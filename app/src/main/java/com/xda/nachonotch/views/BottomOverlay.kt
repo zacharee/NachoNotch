@@ -28,6 +28,6 @@ class BottomOverlay(context: Context) : BaseOverlay(context, backgroundColor = C
 
     override fun canShow(): Boolean {
         return !environmentStatus.contains(EnvironmentStatus.NAV_IMMERSIVE)
-                && !environmentStatus.contains(EnvironmentStatus.LANDSCAPE)
+                && checkLandscape()
     }
 }

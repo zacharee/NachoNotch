@@ -28,6 +28,6 @@ class BottomLeftCorner(context: Context) : BaseOverlay(context, R.drawable.corne
 
     override fun canShow(): Boolean {
         return !environmentStatus.contains(EnvironmentStatus.NAV_IMMERSIVE)
-                && !environmentStatus.contains(EnvironmentStatus.LANDSCAPE)
+                && checkLandscape()
     }
 }

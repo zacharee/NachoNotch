@@ -11,6 +11,7 @@ import android.os.PersistableBundle
 import android.provider.Settings
 import androidx.core.content.ContextCompat
 import com.xda.nachonotch.services.BackgroundHandler
+import com.xda.nachonotch.services.BackgroundJobService
 import com.xda.nachonotch.util.launchOverlaySettings
 import com.xda.nachonotch.util.prefManager
 import java.util.concurrent.TimeUnit
@@ -35,7 +36,7 @@ class BootReceiver : BroadcastReceiver() {
     }
 
     private fun scheduleService(context: Context): Boolean {
-        val serviceComponent = ComponentName(context, BackgroundHandler::class.java)
+        val serviceComponent = ComponentName(context, BackgroundJobService::class.java)
         val builder = JobInfo.Builder(100, serviceComponent)
 
         builder.setMinimumLatency(5 * 1000)

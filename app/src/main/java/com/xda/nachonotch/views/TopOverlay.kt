@@ -22,6 +22,6 @@ class TopOverlay(context: Context) : BaseOverlay(context, backgroundColor = Colo
 
     override fun canShow(): Boolean {
         return !environmentStatus.contains(EnvironmentStatus.STATUS_IMMERSIVE)
-                && !environmentStatus.contains(EnvironmentStatus.LANDSCAPE)
+                && checkLandscape()
     }
 }
