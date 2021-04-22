@@ -21,4 +21,13 @@ class BottomLeftCorner(context: Context) : BaseOverlay(context, R.drawable.corne
     init {
         scaleY = -1f
     }
+
+    override fun canAdd(): Boolean {
+        return context.prefManager.useBottomCorners
+    }
+
+    override fun canShow(): Boolean {
+        return !environmentStatus.contains(EnvironmentStatus.NAV_IMMERSIVE)
+                && !environmentStatus.contains(EnvironmentStatus.LANDSCAPE)
+    }
 }

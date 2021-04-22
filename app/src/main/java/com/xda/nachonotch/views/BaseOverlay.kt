@@ -11,6 +11,12 @@ abstract class BaseOverlay(
         backgroundResource: Int = 0,
         backgroundColor: Int = Int.MIN_VALUE
 ) : View(context) {
+    enum class EnvironmentStatus {
+        STATUS_IMMERSIVE,
+        NAV_IMMERSIVE,
+        LANDSCAPE
+    }
+
     open val params = WindowManager.LayoutParams().apply {
         flags = WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
                 WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
@@ -27,6 +33,8 @@ abstract class BaseOverlay(
         format = PixelFormat.TRANSLUCENT
     }
 
+    protected val environmentStatus = HashSet<EnvironmentStatus>()
+
     init {
         if (backgroundResource != 0) {
             setBackgroundResource(backgroundResource)
@@ -39,6 +47,9 @@ abstract class BaseOverlay(
         }
     }
 
+    protected abstract fun canAdd(): Boolean
+    protected abstract fun canShow(): Boolean
+
     open fun update(wm: WindowManager) {
         try {
             wm.updateViewLayout(this, params)
@@ -46,9 +57,11 @@ abstract class BaseOverlay(
     }
 
     open fun add(wm: WindowManager) {
-        try {
-            wm.addView(this, params)
-        } catch (e: Exception) {}
+        if (canAdd()) {
+            try {
+                wm.addView(this, params)
+            } catch (e: Exception) {}
+        }
     }
 
     open fun remove(wm: WindowManager) {
@@ -67,11 +80,29 @@ abstract class BaseOverlay(
         update(wm)
     }
 
+    fun addStatus(windowManager: WindowManager, vararg status: EnvironmentStatus) {
+        environmentStatus.addAll(status)
+        onStatusUpdate(windowManager)
+    }
+
+    fun removeStatus(windowManager: WindowManager, vararg status: EnvironmentStatus) {
+        environmentStatus.removeAll(status)
+        onStatusUpdate(windowManager)
+    }
+
     final override fun setBackgroundResource(resid: Int) {
         super.setBackgroundResource(resid)
     }
 
     final override fun setBackgroundColor(color: Int) {
         super.setBackgroundColor(color)
+    }
+
+    private fun onStatusUpdate(windowManager: WindowManager) {
+        if (canShow()) {
+            show(windowManager)
+        } else {
+            hide(windowManager)
+        }
     }
 }

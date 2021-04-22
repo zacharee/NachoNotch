@@ -15,4 +15,13 @@ class TopOverlay(context: Context) : BaseOverlay(context, backgroundColor = Colo
             width = MATCH_PARENT
             height = context.prefManager.statusBarHeight
         }
+
+    override fun canAdd(): Boolean {
+        return context.prefManager.isEnabled
+    }
+
+    override fun canShow(): Boolean {
+        return !environmentStatus.contains(EnvironmentStatus.STATUS_IMMERSIVE)
+                && !environmentStatus.contains(EnvironmentStatus.LANDSCAPE)
+    }
 }

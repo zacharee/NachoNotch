@@ -20,4 +20,13 @@ class TopRightCorner(context: Context) : BaseOverlay(context, R.drawable.corner_
     init {
         scaleX = -1f
     }
+
+    override fun canAdd(): Boolean {
+        return context.prefManager.useTopCorners
+    }
+
+    override fun canShow(): Boolean {
+        return !environmentStatus.contains(EnvironmentStatus.STATUS_IMMERSIVE)
+                && !environmentStatus.contains(EnvironmentStatus.LANDSCAPE)
+    }
 }

@@ -16,4 +16,13 @@ class TopLeftCorner(context: Context) : BaseOverlay(context, R.drawable.corner_l
             height = context.prefManager.cornerHeightTopPx
             y = context.prefManager.statusBarHeight
         }
+
+    override fun canAdd(): Boolean {
+        return context.prefManager.useTopCorners
+    }
+
+    override fun canShow(): Boolean {
+        return !environmentStatus.contains(EnvironmentStatus.STATUS_IMMERSIVE)
+                && !environmentStatus.contains(EnvironmentStatus.LANDSCAPE)
+    }
 }

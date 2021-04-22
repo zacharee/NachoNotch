@@ -17,15 +17,23 @@ import com.xda.nachonotch.views.*
 class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeListener, ImmersiveChangeListener {
     companion object {
         const val SHOULD_RUN = "enabled"
-        const val DELAY_MS = 200L
     }
 
-    private val topCover by lazy { TopOverlay(this) }
-    private val bottomCover by lazy { BottomOverlay(this) }
-    private val topLeft by lazy { TopLeftCorner(this) }
-    private val topRight by lazy { TopRightCorner(this) }
-    private val bottomLeft by lazy { BottomLeftCorner(this) }
-    private val bottomRight by lazy { BottomRightCorner(this) }
+    enum class BarPosition {
+        TOP,
+        BOTTOM
+    }
+
+    enum class CornerPosition {
+        TOP_LEFT,
+        TOP_RIGHT,
+        BOTTOM_LEFT,
+        BOTTOM_RIGHT
+    }
+
+    private val bars = HashMap<BarPosition, BaseOverlay>()
+    private val corners = HashMap<CornerPosition, BaseOverlay>()
+
     private val immersiveManager by lazy {
         ImmersiveHelperManager(this).apply {
             immersiveListener = this@BackgroundHandler
@@ -37,18 +45,24 @@ class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeL
                 immersiveManager.add()
 
                 if (rotation == Surface.ROTATION_0) {
-                    showAllOverlays()
+                    removeEnvironmentStatus(BaseOverlay.EnvironmentStatus.LANDSCAPE)
                 } else {
-                    hideAllOverlays()
+                    addEnvironmentStatus(BaseOverlay.EnvironmentStatus.LANDSCAPE)
                 }
             }
         }
     }
 
-    private val handler = Handler(Looper.getMainLooper())
-
     override fun onCreate() {
         super.onCreate()
+
+        bars[BarPosition.TOP] = TopOverlay(this)
+        bars[BarPosition.BOTTOM] = BottomOverlay(this)
+
+        corners[CornerPosition.TOP_LEFT] = TopLeftCorner(this)
+        corners[CornerPosition.TOP_RIGHT] = TopRightCorner(this)
+        corners[CornerPosition.BOTTOM_LEFT] = BottomLeftCorner(this)
+        corners[CornerPosition.BOTTOM_RIGHT] = BottomRightCorner(this)
 
         prefManager.registerOnSharedPreferenceChangeListener(this)
         app.rotationWatchers.add(rotationWatcher)
@@ -72,24 +86,20 @@ class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeL
     }
 
     override fun onImmersiveChange() {
-        if (cachedRotation == Surface.ROTATION_0) {
-            val status = immersiveManager.isStatusImmersive()
+        val status = immersiveManager.isStatusImmersive()
 
-            if (status) {
-                hideTop()
-            } else {
-                showTop()
-            }
-
-            immersiveManager.isNavImmersive {
-                if (it) {
-                    hideBottom()
-                } else {
-                    showBottom()
-                }
-            }
+        if (status) {
+            addEnvironmentStatus(BaseOverlay.EnvironmentStatus.STATUS_IMMERSIVE)
         } else {
-            hideAllOverlays()
+            removeEnvironmentStatus(BaseOverlay.EnvironmentStatus.STATUS_IMMERSIVE)
+        }
+
+        immersiveManager.isNavImmersive { nav ->
+            if (nav) {
+                addEnvironmentStatus(BaseOverlay.EnvironmentStatus.NAV_IMMERSIVE)
+            } else {
+                removeEnvironmentStatus(BaseOverlay.EnvironmentStatus.NAV_IMMERSIVE)
+            }
         }
     }
 
@@ -97,48 +107,41 @@ class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeL
         if (prefManager.isEnabled) {
             when (key) {
                 PrefManager.ROUNDED_CORNERS_TOP -> {
-                    if (prefManager.useTopCorners) {
-                        addTopCorners()
-                    } else removeTopCorners()
+                    removeCorners(CornerPosition.TOP_LEFT, CornerPosition.TOP_RIGHT)
+                    addCorners(CornerPosition.TOP_LEFT, CornerPosition.TOP_RIGHT)
                 }
                 PrefManager.ROUNDED_CORNERS_BOTTOM -> {
-                    if (prefManager.useBottomCorners) {
-                        addBottomCorners()
-                    } else removeBottomCorners()
+                    removeCorners(CornerPosition.BOTTOM_LEFT, CornerPosition.BOTTOM_RIGHT)
+                    addCorners(CornerPosition.BOTTOM_LEFT, CornerPosition.BOTTOM_RIGHT)
                 }
                 PrefManager.COVER_NAV -> {
-                    if (prefManager.coverNav) {
-                        addBottomOverlay()
-                    } else removeBottomOverlay()
+                    removeBars(BarPosition.BOTTOM)
+                    addBars(BarPosition.BOTTOM)
                 }
                 PrefManager.NAV_HEIGHT -> {
                     if (prefManager.coverNav) {
-                        bottomCover.update(wm)
+                        updateBars(BarPosition.BOTTOM)
                     }
                     if (prefManager.useBottomCorners) {
-                        bottomLeft.update(wm)
-                        bottomRight.update(wm)
+                        updateCorners(CornerPosition.BOTTOM_LEFT, CornerPosition.BOTTOM_RIGHT)
                     }
                 }
                 PrefManager.STATUS_HEIGHT -> {
-                    topCover.update(wm)
+                    updateBars(BarPosition.TOP)
                     if (prefManager.useTopCorners) {
-                        topLeft.update(wm)
-                        topRight.update(wm)
+                        updateCorners(CornerPosition.TOP_LEFT, CornerPosition.TOP_RIGHT)
                     }
                 }
                 PrefManager.TOP_CORNER_WIDTH,
                 PrefManager.TOP_CORNER_HEIGHT -> {
                     if (prefManager.useTopCorners) {
-                        topLeft.update(wm)
-                        topRight.update(wm)
+                        updateCorners(CornerPosition.TOP_LEFT, CornerPosition.TOP_RIGHT)
                     }
                 }
                 PrefManager.BOTTOM_CORNER_WIDTH,
                 PrefManager.BOTTOM_CORNER_HEIGHT -> {
                     if (prefManager.useBottomCorners) {
-                        bottomLeft.update(wm)
-                        bottomRight.update(wm)
+                        updateCorners(CornerPosition.BOTTOM_LEFT, CornerPosition.BOTTOM_RIGHT)
                     }
                 }
             }
@@ -155,10 +158,10 @@ class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeL
                 .setContentTitle(resources.getString(R.string.app_name))
                 .setContentText(resources.getString(R.string.settings_prompt))
                 .setContentIntent(PendingIntent.getActivity(this, 100,
-                        Intent(this, SettingsActivity::class.java), 0))
+                        Intent(this, SettingsActivity::class.java), PendingIntent.FLAG_IMMUTABLE))
                 .setSmallIcon(R.drawable.ic_space_bar_black_24dp)
                 .setPriority(if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
-                    Notification.PRIORITY_MIN else Notification.PRIORITY_LOW)
+                    NotificationCompat.PRIORITY_MIN else NotificationCompat.PRIORITY_LOW)
                 .build()
 
         startForeground(1, notification)
@@ -172,108 +175,66 @@ class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeL
             if (cachedRotation == Surface.ROTATION_0) {
                 removeAllOverlays()
 
-                addTopOverlay()
-                addTopCorners()
-                addBottomOverlay()
-                addBottomCorners()
+                addBars(*bars.keys.toTypedArray())
+                addCorners(*corners.keys.toTypedArray())
             }
         } else {
             launchOverlaySettings()
         }
     }
 
-    fun removeAllOverlays() {
-        removeTopOverlay()
-        removeTopCorners()
-        removeBottomOverlay()
-        removeBottomCorners()
-    }
-    
-    private fun showAllOverlays() {
-        showTop()
-        showBottom()
+    private fun removeAllOverlays() {
+        removeBars(*bars.keys.toTypedArray())
+        removeCorners(*corners.keys.toTypedArray())
     }
 
-    private fun showTop() {
-        topCover.show(wm)
-        topLeft.show(wm)
-        topRight.show(wm)
+    private fun addBars(vararg bars: BarPosition) {
+        bars.forEach {
+            this.bars[it]?.add(wm)
+        }
     }
 
-    private fun showBottom() {
-        bottomCover.show(wm)
-        bottomLeft.show(wm)
-        bottomRight.show(wm)
-    }
-    
-    private fun hideAllOverlays() {
-        hideTop()
-        hideBottom()
+    private fun updateBars(vararg bars: BarPosition) {
+        bars.forEach {
+            this.bars[it]?.update(wm)
+        }
     }
 
-    private fun hideTop() {
-        topCover.hide(wm)
-        topLeft.hide(wm)
-        topRight.hide(wm)
+    private fun removeBars(vararg bars: BarPosition) {
+        bars.forEach {
+            this.bars[it]?.remove(wm)
+        }
     }
 
-    private fun hideBottom() {
-        bottomCover.hide(wm)
-        bottomLeft.hide(wm)
-        bottomRight.hide(wm)
+    private fun addCorners(vararg corners: CornerPosition) {
+        corners.forEach {
+            this.corners[it]?.add(wm)
+        }
     }
 
-    private fun addTopOverlay() {
-        handler.postDelayed({
-            topCover.add(wm)
-        }, DELAY_MS)
+    private fun updateCorners(vararg corners: CornerPosition) {
+        corners.forEach {
+            this.corners[it]?.update(wm)
+        }
     }
 
-    private fun addBottomOverlay() {
-        handler.postDelayed({
-            if (prefManager.coverNav) {
-                bottomCover.add(wm)
-            }
-        }, DELAY_MS)
+    private fun removeCorners(vararg corners: CornerPosition) {
+        corners.forEach {
+            this.corners[it]?.remove(wm)
+        }
     }
 
-    private fun addTopCorners() {
-        handler.postDelayed({
-            if (prefManager.useTopCorners) {
-                topRight.add(wm)
-                topLeft.add(wm)
-            }
-        }, DELAY_MS)
+    private fun addEnvironmentStatus(vararg status: BaseOverlay.EnvironmentStatus) {
+        bars.values.forEach { it.addStatus(wm, *status) }
+        corners.values.forEach { it.addStatus(wm, *status) }
     }
 
-    private fun addBottomCorners() {
-        handler.postDelayed({
-            if (prefManager.useBottomCorners) {
-                bottomRight.add(wm)
-                bottomLeft.add(wm)
-            }
-        }, DELAY_MS)
+    private fun removeEnvironmentStatus(vararg status: BaseOverlay.EnvironmentStatus) {
+        bars.values.forEach { it.removeStatus(wm, *status) }
+        corners.values.forEach { it.removeStatus(wm, *status) }
     }
 
-    private fun removeTopOverlay() {
-        topCover.remove(wm)
-    }
-
-    private fun removeBottomOverlay() {
-        bottomCover.remove(wm)
-    }
-
-    private fun removeTopCorners() {
-        topLeft.remove(wm)
-        topRight.remove(wm)
-    }
-
-    private fun removeBottomCorners() {
-        bottomLeft.remove(wm)
-        bottomRight.remove(wm)
-    }
-
-    override fun onBind(intent: Intent): IBinder? {
+    override fun onBind(intent: Intent): IBinder {
         return Binder()
     }
 }

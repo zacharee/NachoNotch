@@ -21,4 +21,13 @@ class BottomOverlay(context: Context) : BaseOverlay(context, backgroundColor = C
             height = context.prefManager.navBarHeight
             y = -context.resourceNavBarHeight
         }
+
+    override fun canAdd(): Boolean {
+        return context.prefManager.coverNav
+    }
+
+    override fun canShow(): Boolean {
+        return !environmentStatus.contains(EnvironmentStatus.NAV_IMMERSIVE)
+                && !environmentStatus.contains(EnvironmentStatus.LANDSCAPE)
+    }
 }
