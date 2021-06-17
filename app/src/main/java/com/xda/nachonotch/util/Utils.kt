@@ -9,18 +9,18 @@ import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.provider.Settings
-import android.service.quicksettings.Tile
 import android.util.Log
 import android.util.TypedValue
-import android.view.Display
 import android.view.Surface
-import android.view.View
 import android.view.WindowManager
 import android.widget.Toast
 import androidx.core.content.ContextCompat
+import com.joaomgcd.taskerpluginlibrary.extensions.requestQuery
 import com.xda.nachonotch.App
 import com.xda.nachonotch.R
 import com.xda.nachonotch.activities.TermsActivity
+import com.xda.nachonotch.activities.tasker.TaskerDisableStateConfigureActivity
+import com.xda.nachonotch.activities.tasker.TaskerEnableStateConfigureActivity
 import com.xda.nachonotch.services.BackgroundHandler
 import com.xda.nachonotch.util.Utils.TERMS_VERSION
 import kotlinx.coroutines.CoroutineScope
@@ -159,6 +159,9 @@ fun Context.addOverlayAndEnable() {
 
     val service = Intent(this, BackgroundHandler::class.java)
     ContextCompat.startForegroundService(this, service)
+
+    TaskerEnableStateConfigureActivity::class.java.requestQuery(this)
+    TaskerDisableStateConfigureActivity::class.java.requestQuery(this)
 }
 
 fun Context.removeOverlayAndDisable() {
@@ -166,6 +169,9 @@ fun Context.removeOverlayAndDisable() {
     stopService(service)
 
     prefManager.isEnabled = false
+
+    TaskerEnableStateConfigureActivity::class.java.requestQuery(this)
+    TaskerDisableStateConfigureActivity::class.java.requestQuery(this)
 }
 
 object Utils {

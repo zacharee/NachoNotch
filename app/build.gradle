@@ -54,6 +54,7 @@ dependencies {
 
     //Other
     implementation 'ru.noties:markwon:2.0.2'
+    implementation 'com.joaomgcd:taskerpluginlibrary:0.4.1'
 }
 
 apply plugin: 'com.google.gms.google-services'

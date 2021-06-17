@@ -64,6 +64,41 @@
             android:launchMode="singleInstance"
             android:theme="@style/Theme.MaterialComponents.NoActionBar"
             />
+        <activity android:name=".activities.tasker.TaskerEnableConfigureActivity"
+            android:label="@string/hide_notch"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.twofortyfouram.locale.intent.action.EDIT_SETTING" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".activities.tasker.TaskerDisableConfigureActivity"
+            android:label="@string/show_notch"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.twofortyfouram.locale.intent.action.EDIT_SETTING" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".activities.tasker.TaskerEnableStateConfigureActivity"
+            android:label="@string/enabled"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.twofortyfouram.locale.intent.action.EDIT_CONDITION" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".activities.tasker.TaskerDisableStateConfigureActivity"
+            android:label="@string/disabled"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.twofortyfouram.locale.intent.action.EDIT_CONDITION" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".activities.tasker.TaskerEnabledConfigureActivity"
+            android:label="@string/enabled"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.twofortyfouram.locale.intent.action.EDIT_SETTING" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>
