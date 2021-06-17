@@ -1,6 +1,5 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
 apply plugin: 'com.google.firebase.crashlytics'
 
 project.version = 31
@@ -27,6 +26,10 @@ android {
     packagingOptions {
         exclude 'META-INF/atomicfu.kotlin_module'
         exclude 'META-INF/library_release.kotlin_module'
+    }
+
+    buildFeatures {
+        viewBinding true
     }
 }
 

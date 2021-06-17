@@ -7,46 +7,47 @@ import android.os.Handler
 import android.os.Looper
 import android.text.method.LinkMovementMethod
 import androidx.appcompat.app.AppCompatActivity
-import com.xda.nachonotch.R
+import com.xda.nachonotch.databinding.ActivityTermsBinding
 import com.xda.nachonotch.util.Utils
 import com.xda.nachonotch.util.prefManager
-import kotlinx.android.synthetic.main.activity_terms.*
 import ru.noties.markwon.Markwon
 import java.io.BufferedReader
 import java.io.InputStreamReader
 
 class TermsActivity : AppCompatActivity() {
+    private val binding by lazy { ActivityTermsBinding.inflate(layoutInflater) }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_terms)
+        setContentView(binding.root)
 
-        Markwon.setMarkdown(terms_text, getTermsText())
-        terms_text.movementMethod = LinkMovementMethod.getInstance()
+        Markwon.setMarkdown(binding.termsText, getTermsText())
+        binding.termsText.movementMethod = LinkMovementMethod.getInstance()
 
-        terms_button.setOnClickListener {
+        binding.termsButton.setOnClickListener {
             val termsIntent = Intent(
                     Intent.ACTION_VIEW,
                     Uri.parse("https://github.com/zacharee/NachoNotch/blob/master/app/src/main/assets/Terms.md"))
             startActivity(termsIntent)
 
             Handler(Looper.getMainLooper()).postDelayed({
-                agree_box.isEnabled = true
+                binding.agreeBox.isEnabled = true
             }, 2000)
         }
 
-        terms_holder.setOnScrollChangeListener { v, _, _, _, _ ->
-            if (terms_text.bottom - v.height - v.scrollY <= 0) {
-                agree_box.isEnabled = true
+        binding.termsHolder.setOnScrollChangeListener { v, _, _, _, _ ->
+            if (binding.termsText.bottom - v.height - v.scrollY <= 0) {
+                binding.agreeBox.isEnabled = true
             }
         }
 
-        agree_box.setOnCheckedChangeListener { _, isChecked ->
-            done.isClickable = isChecked
-            done.isFocusable = isChecked
+        binding.agreeBox.setOnCheckedChangeListener { _, isChecked ->
+            binding.done.isClickable = isChecked
+            binding.done.isFocusable = isChecked
         }
 
-        done.setOnClickListener {
-            if (agree_box.isChecked) {
+        binding.done.setOnClickListener {
+            if (binding.agreeBox.isChecked) {
                 prefManager.termsVersion = Utils.TERMS_VERSION
 
                 finish()
