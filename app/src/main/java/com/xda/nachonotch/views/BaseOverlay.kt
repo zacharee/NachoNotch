@@ -6,6 +6,7 @@ import android.os.Build
 import android.view.View
 import android.view.WindowManager
 import com.xda.nachonotch.util.prefManager
+import java.util.concurrent.ConcurrentHashMap
 
 abstract class BaseOverlay(
         context: Context,
@@ -34,7 +35,7 @@ abstract class BaseOverlay(
         format = PixelFormat.TRANSLUCENT
     }
 
-    protected val environmentStatus = HashSet<EnvironmentStatus>()
+    protected val environmentStatus = ConcurrentHashMap.newKeySet<EnvironmentStatus>()!!
 
     init {
         if (backgroundResource != 0) {
