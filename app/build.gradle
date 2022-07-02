@@ -5,11 +5,11 @@ apply plugin: 'com.google.firebase.crashlytics'
 project.version = 32
 
 android {
-    compileSdkVersion 29
+    compileSdkVersion 31
     defaultConfig {
         applicationId "com.xda.nachonotch"
         minSdkVersion 24
-        targetSdkVersion 29
+        targetSdkVersion 31
         versionCode project.version
         versionName project.version + ""
     }
