@@ -34,13 +34,13 @@ class SettingsActivity : AppCompatActivity() {
             val statusHeight = findPreference<SeekBarPreference>(PrefManager.STATUS_HEIGHT) as SeekBarPreference
             val navHeight = findPreference<SeekBarPreference>(PrefManager.NAV_HEIGHT) as SeekBarPreference
 
-            preferenceManager.sharedPreferences.apply {
-                if (!contains(PrefManager.STATUS_HEIGHT)) statusHeight.progress = activity!!.resourceStatusBarHeight
-                if (!contains(PrefManager.NAV_HEIGHT)) navHeight.progress = activity!!.resourceNavBarHeight
+            preferenceManager.sharedPreferences?.apply {
+                if (!contains(PrefManager.STATUS_HEIGHT)) statusHeight.progress = requireActivity().resourceStatusBarHeight
+                if (!contains(PrefManager.NAV_HEIGHT)) navHeight.progress = requireActivity().resourceNavBarHeight
             }
 
-            statusHeight.setDefaultValue(activity!!.resourceStatusBarHeight)
-            navHeight.setDefaultValue(activity!!.resourceNavBarHeight)
+            statusHeight.setDefaultValue(requireActivity().resourceStatusBarHeight)
+            navHeight.setDefaultValue(requireActivity().resourceNavBarHeight)
         }
     }
 }

@@ -12,7 +12,7 @@ import android.view.IRotationWatcher
 import com.xda.nachonotch.util.cachedRotation
 import com.xda.nachonotch.util.refreshScreenSize
 import com.xda.nachonotch.util.rotation
-import tk.zwander.unblacklister.disableApiBlacklist
+import org.lsposed.hiddenapibypass.HiddenApiBypass
 
 @SuppressLint("PrivateApi")
 class App : Application() {
@@ -33,7 +33,9 @@ class App : Application() {
     override fun onCreate() {
         super.onCreate()
 
-        disableApiBlacklist()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            HiddenApiBypass.setHiddenApiExemptions("")
+        }
 
         refreshScreenSize()
         cachedRotation = rotation

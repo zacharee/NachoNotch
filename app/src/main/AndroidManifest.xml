@@ -19,6 +19,7 @@
             android:name=".services.ToggleService"
             android:icon="@drawable/ic_space_bar_black_24dp"
             android:label="@string/hide_notch"
+            android:exported="true"
             android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
             <intent-filter>
                 <action android:name="android.service.quicksettings.action.QS_TILE" />
@@ -47,7 +48,8 @@
 
         <activity
             android:name=".MainActivity"
-            android:enabled="true">
+            android:enabled="true"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -55,7 +57,8 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".activities.SettingsActivity">
+            android:name=".activities.SettingsActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.service.quicksettings.action.QS_TILE_PREFERENCES" />
             </intent-filter>

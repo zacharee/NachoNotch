@@ -5,13 +5,12 @@ import android.graphics.PixelFormat
 import android.os.Build
 import android.view.View
 import android.view.WindowManager
-import com.xda.nachonotch.util.prefManager
 import java.util.concurrent.ConcurrentHashMap
 
 abstract class BaseOverlay(
-        context: Context,
-        backgroundResource: Int = 0,
-        backgroundColor: Int = Int.MIN_VALUE
+    context: Context,
+    backgroundResource: Int = 0,
+    backgroundColor: Int = Int.MIN_VALUE
 ) : View(context) {
     enum class EnvironmentStatus {
         STATUS_IMMERSIVE,
@@ -20,22 +19,28 @@ abstract class BaseOverlay(
     }
 
     open val params = WindowManager.LayoutParams().apply {
-        flags = WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
-                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
-                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE or
+        @Suppress("DEPRECATION")
+        flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
+                WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
                 WindowManager.LayoutParams.FLAG_LAYOUT_INSET_DECOR or
                 WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS
 
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
+            flags = flags or WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
+        }
+
         type = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+            @Suppress("DEPRECATION")
             WindowManager.LayoutParams.TYPE_PRIORITY_PHONE
         } else {
             WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
         }
 
-        format = PixelFormat.TRANSLUCENT
+        alpha = 1f
+        format = PixelFormat.RGBA_8888
     }
 
-    protected val environmentStatus = ConcurrentHashMap.newKeySet<EnvironmentStatus>()!!
+    protected val environmentStatus: ConcurrentHashMap.KeySetView<EnvironmentStatus, Boolean> = ConcurrentHashMap.newKeySet()
 
     init {
         if (backgroundResource != 0) {
@@ -55,21 +60,21 @@ abstract class BaseOverlay(
     open fun update(wm: WindowManager) {
         try {
             wm.updateViewLayout(this, params)
-        } catch (e: Exception) {}
+        } catch (_: Exception) { }
     }
 
     open fun add(wm: WindowManager) {
         if (canAdd()) {
             try {
                 wm.addView(this, params)
-            } catch (e: Exception) {}
+            } catch (_: Exception) { }
         }
     }
 
     open fun remove(wm: WindowManager) {
         try {
             wm.removeView(this)
-        } catch (e: Exception) {}
+        } catch (_: Exception) { }
     }
 
     open fun show(wm: WindowManager) {
@@ -88,7 +93,7 @@ abstract class BaseOverlay(
     }
 
     fun removeStatus(windowManager: WindowManager, vararg status: EnvironmentStatus) {
-        environmentStatus.removeAll(status)
+        environmentStatus.removeAll(status.toSet())
         onStatusUpdate(windowManager)
     }
 

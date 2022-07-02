@@ -1,16 +1,18 @@
 package com.xda.nachonotch.util
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.graphics.Point
 import android.graphics.Rect
+import android.hardware.display.DisplayManager
 import android.net.Uri
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.provider.Settings
-import android.util.Log
 import android.util.TypedValue
+import android.view.Display
 import android.view.Surface
 import android.view.WindowManager
 import android.widget.Toast
@@ -25,13 +27,15 @@ import com.xda.nachonotch.services.BackgroundHandler
 import com.xda.nachonotch.util.Utils.TERMS_VERSION
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import java.io.PrintWriter
-import java.io.StringWriter
+import kotlin.math.roundToInt
 
 val mainHandler = Handler(Looper.getMainLooper())
 
 val mainScope = CoroutineScope(Dispatchers.Main)
 val logicScope = CoroutineScope(Dispatchers.IO)
+
+val Context.displayCompat: Display
+    get() = (getSystemService(Context.DISPLAY_SERVICE) as DisplayManager).getDisplay(Display.DEFAULT_DISPLAY)
 
 val Context.realScreenSize: Point
     get() = Point(cachedScreenSize ?: refreshScreenSize())
@@ -40,7 +44,7 @@ var cachedRotation = Integer.MIN_VALUE
 
 val Context.rotation: Int
     get() {
-        return wm.defaultDisplay.rotation.also { cachedRotation = it }
+        return displayCompat.rotation.also { cachedRotation = it }
     }
 
 private var cachedScreenSize: Point? = null
@@ -49,8 +53,9 @@ private var cachedScreenSize: Point? = null
  * Try not to call this from the main Thread
  */
 fun Context.refreshScreenSize(): Point {
-    val display = wm.defaultDisplay
+    val display = displayCompat
 
+    @Suppress("DEPRECATION")
     val temp = Point().apply { display.getRealSize(this) }
     cachedScreenSize = temp
 
@@ -71,11 +76,13 @@ val Context.prefManager: PrefManager
     get() = PrefManager.getInstance(this)
 
 val Context.resourceNavBarHeight: Int
+    @SuppressLint("InternalInsetResource")
     get() = if (hasNavBar)
         resources.getDimensionPixelSize(
                 resources.getIdentifier("navigation_bar_height", "dimen", "android")) else 0
 
 val Context.resourceStatusBarHeight: Int
+    @SuppressLint("InternalInsetResource")
     get() = resources.getDimensionPixelSize(
             resources.getIdentifier("status_bar_height", "dimen", "android"))
 
@@ -83,7 +90,11 @@ val Context.wm: WindowManager
     get() = getSystemService(Context.WINDOW_SERVICE) as WindowManager
 
 fun Context.dpAsPx(dpVal: Number) =
-        Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dpVal.toFloat(), resources.displayMetrics))
+    TypedValue.applyDimension(
+        TypedValue.COMPLEX_UNIT_DIP,
+        dpVal.toFloat(),
+        resources.displayMetrics
+    ).roundToInt()
 
 fun Context.enforceTerms(): Boolean {
     return if (prefManager.termsVersion < TERMS_VERSION) {
@@ -116,21 +127,13 @@ val Context.safeOverscanInsets: Rect
     get() = Rect().apply {
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q) {
             try {
-                wm.defaultDisplay.getOverscanInsets(this)
+                Display::class.java.getMethod("getOverscanInsets", Rect::class.java)
+                    .invoke(displayCompat, this)
             } catch (e: NoSuchMethodError) {
-                //It looks like Essential removed this method in later versions of Android 10?
+                // It looks like Essential removed this method in later versions of Android 10?
             }
         }
     }
-
-fun Throwable.logStack() {
-    val writer = StringWriter()
-    val printer = PrintWriter(writer)
-
-    printStackTrace(printer)
-
-    Log.e("NachoNotch", writer.toString())
-}
 
 //Safely launch a URL.
 //If no matching Activity is found, silently fail.
@@ -139,7 +142,7 @@ fun Context.launchUrl(url: String) {
         val browserIntent =
                 Intent(Intent.ACTION_VIEW, Uri.parse(url))
         startActivity(browserIntent)
-    } catch (e: Exception) {}
+    } catch (_: Exception) {}
 }
 
 //Safely start an email draft.
@@ -147,11 +150,13 @@ fun Context.launchUrl(url: String) {
 fun Context.launchEmail(to: String, subject: String) {
     try {
         val intent = Intent(Intent.ACTION_SENDTO)
-        intent.type = "text/plain"
-        intent.data = Uri.parse("mailto:${Uri.encode(to)}?subject=${Uri.encode(subject)}")
+        intent.setDataAndType(
+            Uri.parse("mailto:${Uri.encode(to)}?subject=${Uri.encode(subject)}"),
+            "text/plain"
+        )
 
         startActivity(intent)
-    } catch (e: Exception) {}
+    } catch (_: Exception) {}
 }
 
 fun Context.addOverlayAndEnable() {
