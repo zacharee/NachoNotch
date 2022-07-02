@@ -7,14 +7,12 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.os.Build
-import android.os.PersistableBundle
 import android.provider.Settings
 import androidx.core.content.ContextCompat
 import com.xda.nachonotch.services.BackgroundHandler
 import com.xda.nachonotch.services.BackgroundJobService
 import com.xda.nachonotch.util.launchOverlaySettings
 import com.xda.nachonotch.util.prefManager
-import java.util.concurrent.TimeUnit
 
 
 class BootReceiver : BroadcastReceiver() {

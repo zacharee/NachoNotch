@@ -1,8 +1,10 @@
 package com.xda.nachonotch.views.immersive
 
+import android.annotation.SuppressLint
 import android.content.Context
 import com.xda.nachonotch.util.ImmersiveHelperManager
 
+@SuppressLint("ViewConstructor")
 class VerticalImmersiveHelperView(context: Context, manager: ImmersiveHelperManager,
                                   immersiveListener: (left: Int, top: Int, right: Int, bottom: Int) -> Unit) : BaseImmersiveHelperView(context, manager, immersiveListener) {
     override fun onAttachedToWindow() {

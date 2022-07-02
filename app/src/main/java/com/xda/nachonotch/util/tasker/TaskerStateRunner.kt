@@ -2,7 +2,6 @@ package com.xda.nachonotch.util.tasker
 
 import android.content.Context
 import com.joaomgcd.taskerpluginlibrary.condition.TaskerPluginRunnerConditionNoOutput
-import com.joaomgcd.taskerpluginlibrary.condition.TaskerPluginRunnerConditionNoOutputOrInputOrUpdateState
 import com.joaomgcd.taskerpluginlibrary.input.TaskerInput
 import com.joaomgcd.taskerpluginlibrary.runner.TaskerPluginResultCondition
 import com.joaomgcd.taskerpluginlibrary.runner.TaskerPluginResultConditionSatisfied

@@ -15,6 +15,7 @@ import kotlinx.coroutines.launch
 @Suppress("DEPRECATION")
 open class BaseImmersiveHelperView(context: Context, val manager: ImmersiveHelperManager,
                                    private val immersiveListener: (left: Int, top: Int, right: Int, bottom: Int) -> Unit) : View(context) {
+    @SuppressLint("RtlHardcoded")
     val params = WindowManager.LayoutParams().apply {
         type = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) WindowManager.LayoutParams.TYPE_PHONE
         else WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
@@ -61,7 +62,7 @@ open class BaseImmersiveHelperView(context: Context, val manager: ImmersiveHelpe
         mainScope.launch {
             try {
                 context.wm.updateViewLayout(this@BaseImmersiveHelperView, params)
-            } catch (e: Exception) {}
+            } catch (_: Exception) {}
         }
     }
 

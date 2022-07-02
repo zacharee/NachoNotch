@@ -5,17 +5,12 @@ import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
-import android.service.quicksettings.Tile
-import android.text.method.LinkMovementMethod
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.SwitchPreference
 import com.xda.nachonotch.activities.SettingsActivity
-import com.xda.nachonotch.services.BackgroundHandler
 import com.xda.nachonotch.util.*
 
 class MainActivity : AppCompatActivity() {

@@ -1,8 +1,7 @@
 package com.xda.nachonotch.views
 
+import android.annotation.SuppressLint
 import android.content.Context
-import android.graphics.Color
-import android.util.AttributeSet
 import android.view.Gravity
 import android.view.WindowManager
 import com.xda.nachonotch.R
@@ -11,6 +10,7 @@ import com.xda.nachonotch.util.resourceNavBarHeight
 
 class BottomLeftCorner(context: Context) : BaseOverlay(context, R.drawable.corner_left) {
     override val params: WindowManager.LayoutParams
+        @SuppressLint("RtlHardcoded")
         get() = super.params.apply {
             gravity = Gravity.BOTTOM or Gravity.LEFT
             width = context.prefManager.cornerWidthBottomPx

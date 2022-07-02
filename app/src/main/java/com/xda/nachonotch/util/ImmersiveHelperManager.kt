@@ -78,7 +78,7 @@ class ImmersiveHelperManager(private val context: Context) : ContentObserver(mai
             } else {
                 wm.updateViewLayout(view, view.params)
             }
-        } catch (e: Exception) {}
+        } catch (_: Exception) {}
     }
 
     fun remove() {
@@ -93,7 +93,7 @@ class ImmersiveHelperManager(private val context: Context) : ContentObserver(mai
 
         try {
             wm.removeView(view)
-        } catch (e: Exception) {}
+        } catch (_: Exception) {}
     }
 
     fun isStatusImmersive() = run {
