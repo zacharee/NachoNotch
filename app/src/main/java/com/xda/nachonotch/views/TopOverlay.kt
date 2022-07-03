@@ -4,6 +4,9 @@ import android.content.Context
 import android.graphics.Color
 import android.view.*
 import android.view.WindowManager.LayoutParams.*
+import com.xda.nachonotch.util.EnvironmentManager
+import com.xda.nachonotch.util.PrefManager
+import com.xda.nachonotch.util.environmentManager
 import com.xda.nachonotch.util.prefManager
 
 class TopOverlay(context: Context) : BaseOverlay(context, backgroundColor = Color.BLACK) {
@@ -16,12 +19,19 @@ class TopOverlay(context: Context) : BaseOverlay(context, backgroundColor = Colo
             height = context.prefManager.statusBarHeight
         }
 
+    override val listenKeys: List<String>
+        get() = listOf(PrefManager.STATUS_HEIGHT)
+
+    override fun onUpdateParams() {
+        params.height = context.prefManager.statusBarHeight
+    }
+
     override fun canAdd(): Boolean {
         return context.prefManager.isEnabled
     }
 
     override fun canShow(): Boolean {
-        return !environmentStatus.contains(EnvironmentStatus.STATUS_IMMERSIVE)
+        return !context.environmentManager.environmentStatus.contains(EnvironmentManager.EnvironmentStatus.STATUS_IMMERSIVE)
                 && checkLandscape()
     }
 }

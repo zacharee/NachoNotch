@@ -5,22 +5,42 @@ import android.database.ContentObserver
 import android.graphics.Rect
 import android.net.Uri
 import android.provider.Settings
+import android.view.View
 import com.xda.nachonotch.views.immersive.BaseImmersiveHelperView
 import com.xda.nachonotch.views.immersive.HorizontalImmersiveHelperView
 import com.xda.nachonotch.views.immersive.VerticalImmersiveHelperView
 import kotlinx.coroutines.launch
 
-class ImmersiveHelperManager(private val context: Context) : ContentObserver(mainHandler) {
+class ImmersiveHelperManager(private val context: Context, private val immersiveListener: ImmersiveChangeListener) : ContentObserver(mainHandler) {
     companion object {
         const val POLICY_CONTROL = "policy_control"
     }
 
-    private val vertical = VerticalImmersiveHelperView(context, this) { left, top, right, bottom ->
+    private val vertical = VerticalImmersiveHelperView(context) { left, top, right, bottom ->
         verticalLayout = Rect(left, top, right, bottom)
     }
 
-    private val horizontal = HorizontalImmersiveHelperView(context, this) { left, top, right, bottom ->
+    private val horizontal = HorizontalImmersiveHelperView(context) { left, top, right, bottom ->
         horizontalLayout = Rect(left, top, right, bottom)
+    }
+
+    private val verticalAttachListener = object : View.OnAttachStateChangeListener {
+        override fun onViewAttachedToWindow(v: View?) {
+            verticalHelperAdded = true
+        }
+
+        override fun onViewDetachedFromWindow(v: View?) {
+            verticalHelperAdded = false
+        }
+    }
+    private val horizontalAttachListener = object : View.OnAttachStateChangeListener {
+        override fun onViewAttachedToWindow(v: View?) {
+            horizontalHelperAdded = true
+        }
+
+        override fun onViewDetachedFromWindow(v: View?) {
+            horizontalHelperAdded = false
+        }
     }
 
     var verticalLayout = Rect()
@@ -48,8 +68,6 @@ class ImmersiveHelperManager(private val context: Context) : ContentObserver(mai
     var verticalHelperAdded = false
     var horizontalHelperAdded = false
 
-    var immersiveListener: ImmersiveChangeListener? = null
-
     override fun onChange(selfChange: Boolean, uri: Uri?) {
         when (uri) {
             Settings.Global.getUriFor(POLICY_CONTROL) -> {
@@ -59,12 +77,16 @@ class ImmersiveHelperManager(private val context: Context) : ContentObserver(mai
     }
 
     private fun updateImmersiveListener() {
-        immersiveListener?.onImmersiveChange()
+        immersiveListener.onImmersiveChange()
+    }
+
+    fun onCreate() {
+        context.contentResolver.registerContentObserver(Settings.Global.getUriFor(POLICY_CONTROL), true, this)
+        vertical.addOnAttachStateChangeListener(verticalAttachListener)
+        horizontal.addOnAttachStateChangeListener(horizontalAttachListener)
     }
 
     fun add() {
-        context.contentResolver.registerContentObserver(Settings.Global.getUriFor(POLICY_CONTROL), true, this)
-
         tryAdd(verticalHelperAdded, vertical)
         tryAdd(horizontalHelperAdded, horizontal)
     }
@@ -81,9 +103,14 @@ class ImmersiveHelperManager(private val context: Context) : ContentObserver(mai
         } catch (_: Exception) {}
     }
 
-    fun remove() {
+    fun onDestroy() {
         context.contentResolver.unregisterContentObserver(this)
+        vertical.removeOnAttachStateChangeListener(verticalAttachListener)
+        horizontal.removeOnAttachStateChangeListener(horizontalAttachListener)
+        remove()
+    }
 
+    fun remove() {
         tryRemove(vertical)
         tryRemove(horizontal)
     }

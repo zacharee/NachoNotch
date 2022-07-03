@@ -5,8 +5,7 @@ import android.content.Context
 import android.view.Gravity
 import android.view.WindowManager
 import com.xda.nachonotch.R
-import com.xda.nachonotch.util.prefManager
-import com.xda.nachonotch.util.resourceNavBarHeight
+import com.xda.nachonotch.util.*
 
 class BottomLeftCorner(context: Context) : BaseOverlay(context, R.drawable.corner_left) {
     override val params: WindowManager.LayoutParams
@@ -18,8 +17,17 @@ class BottomLeftCorner(context: Context) : BaseOverlay(context, R.drawable.corne
             y = context.prefManager.navBarHeight - context.resourceNavBarHeight
         }
 
+    override val listenKeys: List<String>
+        get() = listOf(PrefManager.NAV_HEIGHT, PrefManager.BOTTOM_CORNER_HEIGHT, PrefManager.BOTTOM_CORNER_WIDTH)
+
     init {
         scaleY = -1f
+    }
+
+    override fun onUpdateParams() {
+        params.width = context.prefManager.cornerWidthBottomPx
+        params.height = context.prefManager.cornerHeightBottomPx
+        params.y = context.prefManager.navBarHeight - context.resourceNavBarHeight
     }
 
     override fun canAdd(): Boolean {
@@ -27,7 +35,7 @@ class BottomLeftCorner(context: Context) : BaseOverlay(context, R.drawable.corne
     }
 
     override fun canShow(): Boolean {
-        return !environmentStatus.contains(EnvironmentStatus.NAV_IMMERSIVE)
+        return !context.environmentManager.environmentStatus.contains(EnvironmentManager.EnvironmentStatus.NAV_IMMERSIVE)
                 && checkLandscape()
     }
 }

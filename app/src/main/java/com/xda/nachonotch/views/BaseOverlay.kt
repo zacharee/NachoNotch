@@ -1,23 +1,19 @@
 package com.xda.nachonotch.views
 
 import android.content.Context
+import android.content.SharedPreferences
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import android.graphics.PixelFormat
 import android.os.Build
 import android.view.View
 import android.view.WindowManager
-import java.util.concurrent.ConcurrentHashMap
+import com.xda.nachonotch.util.*
 
 abstract class BaseOverlay(
     context: Context,
     backgroundResource: Int = 0,
     backgroundColor: Int = Int.MIN_VALUE
-) : View(context) {
-    enum class EnvironmentStatus {
-        STATUS_IMMERSIVE,
-        NAV_IMMERSIVE,
-        LANDSCAPE
-    }
-
+) : View(context), EventObserver, OnSharedPreferenceChangeListener {
     open val params = WindowManager.LayoutParams().apply {
         @Suppress("DEPRECATION")
         flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
@@ -40,7 +36,7 @@ abstract class BaseOverlay(
         format = PixelFormat.RGBA_8888
     }
 
-    protected val environmentStatus: ConcurrentHashMap.KeySetView<EnvironmentStatus, Boolean> = ConcurrentHashMap.newKeySet()
+    protected open val listenKeys: List<String> = listOf()
 
     init {
         if (backgroundResource != 0) {
@@ -54,54 +50,70 @@ abstract class BaseOverlay(
         }
     }
 
+    fun onCreate() {
+        context.eventManager.addObserver(this)
+        context.prefManager.registerOnSharedPreferenceChangeListener(this)
+    }
+
+    fun onDestroy() {
+        context.eventManager.removeObserver(this)
+        context.prefManager.unregisterOnSharedPreferenceChangeListener(this)
+    }
+
     protected abstract fun canAdd(): Boolean
     protected abstract fun canShow(): Boolean
 
-    open fun update(wm: WindowManager) {
+    override fun onEvent(event: Event) {
+        when (event) {
+            is Event.EnvironmentStatusUpdated -> onStatusUpdate()
+            else -> {}
+        }
+    }
+
+    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
+        if (listenKeys.contains(key)) {
+            onUpdateParams()
+            update()
+        }
+    }
+
+    open fun update() {
         try {
-            wm.updateViewLayout(this, params)
+            context.wm.updateViewLayout(this, params)
         } catch (_: Exception) { }
     }
 
-    open fun add(wm: WindowManager) {
+    open fun add() {
         if (canAdd()) {
             try {
-                wm.addView(this, params)
+                context.wm.addView(this, params)
             } catch (_: Exception) { }
         }
     }
 
-    open fun remove(wm: WindowManager) {
+    open fun remove() {
         try {
-            wm.removeView(this)
+            context.wm.removeView(this)
         } catch (_: Exception) { }
     }
 
-    open fun show(wm: WindowManager) {
+    open fun show() {
         params.alpha = 1f
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             params.flags = params.flags and WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE.inv()
         }
-        update(wm)
+        update()
     }
 
-    open fun hide(wm: WindowManager) {
+    open fun hide() {
         params.alpha = 0f
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             params.flags = params.flags or WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
         }
-        update(wm)
+        update()
     }
 
-    fun addStatus(windowManager: WindowManager, vararg status: EnvironmentStatus) {
-        environmentStatus.addAll(status)
-        onStatusUpdate(windowManager)
-    }
-
-    fun removeStatus(windowManager: WindowManager, vararg status: EnvironmentStatus) {
-        environmentStatus.removeAll(status.toSet())
-        onStatusUpdate(windowManager)
-    }
+    protected open fun onUpdateParams() {}
 
     final override fun setBackgroundResource(resid: Int) {
         super.setBackgroundResource(resid)
@@ -112,14 +124,14 @@ abstract class BaseOverlay(
     }
 
     protected fun checkLandscape(): Boolean {
-        return !environmentStatus.contains(EnvironmentStatus.LANDSCAPE)
+        return !context.environmentManager.environmentStatus.contains(EnvironmentManager.EnvironmentStatus.LANDSCAPE)
     }
 
-    private fun onStatusUpdate(windowManager: WindowManager) {
+    private fun onStatusUpdate() {
         if (canShow()) {
-            show(windowManager)
+            show()
         } else {
-            hide(windowManager)
+            hide()
         }
     }
 }

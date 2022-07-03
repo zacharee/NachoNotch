@@ -15,7 +15,6 @@ import kotlinx.coroutines.launch
 @Suppress("DEPRECATION")
 open class BaseImmersiveHelperView(
     context: Context,
-    val manager: ImmersiveHelperManager,
     private val immersiveListener: (left: Int, top: Int, right: Int, bottom: Int) -> Unit
 ) : View(context) {
     @SuppressLint("RtlHardcoded")
@@ -61,7 +60,7 @@ open class BaseImmersiveHelperView(
 
     open fun updateDimensions() {}
 
-    fun updateLayout() {
+    private fun updateLayout() {
         mainScope.launch {
             try {
                 context.wm.updateViewLayout(this@BaseImmersiveHelperView, params)
