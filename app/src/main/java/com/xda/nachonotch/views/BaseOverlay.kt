@@ -79,11 +79,17 @@ abstract class BaseOverlay(
 
     open fun show(wm: WindowManager) {
         params.alpha = 1f
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            params.flags = params.flags and WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE.inv()
+        }
         update(wm)
     }
 
     open fun hide(wm: WindowManager) {
         params.alpha = 0f
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            params.flags = params.flags or WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
+        }
         update(wm)
     }
 
