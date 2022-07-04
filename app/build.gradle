@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'com.google.firebase.crashlytics'
 
-project.version = 33
+project.version = 34
 
 android {
     compileSdkVersion 32
