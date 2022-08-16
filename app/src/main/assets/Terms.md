@@ -12,6 +12,10 @@ If you neglect to read this document, and you contact me with a question already
 
 Be aware that these terms may be updated. Please make sure you review them frequently. They will be linked in the Play Store description and in the app.
 
+# Privacy
+
+Nacho Notch implements Firebase Crashlytics to record crash logs. No personal information is collected or stored.
+
 # Usage
 
 Install the app and add the included Quick Settings Tile to your QS shade. Use it to toggle Nacho Notch's functionality.
