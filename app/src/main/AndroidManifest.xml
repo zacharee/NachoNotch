@@ -66,7 +66,6 @@
         </activity>
         <activity android:name=".activities.TermsActivity"
             android:launchMode="singleInstance"
-            android:theme="@style/Theme.MaterialComponents.NoActionBar"
             />
         <activity android:name=".activities.tasker.TaskerEnableConfigureActivity"
             android:label="@string/hide_notch"
