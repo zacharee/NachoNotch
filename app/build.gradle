@@ -31,7 +31,13 @@ android {
         viewBinding true
         aidl true
         buildConfig true
+        compose true
     }
+
+    composeOptions {
+        kotlinCompilerExtensionVersion '1.5.3'
+    }
+
     namespace 'com.xda.nachonotch'
 }
 
@@ -45,12 +51,18 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation 'androidx.preference:preference-ktx:1.2.1'
+    implementation("androidx.activity:activity-compose:1.8.0")
 
     //Google
     implementation 'com.google.android.material:material:1.10.0'
 
     //Mine
     implementation 'com.github.zacharee:SeekBarPreference:46a6643c79'
+
+    //Compose
+    api platform('dev.chrisbanes.compose:compose-bom:2023.11.00-alpha02')
+    implementation("androidx.compose.foundation:foundation")
+    implementation("androidx.compose.material3:material3")
 
     //Other
     implementation 'ru.noties:markwon:2.0.2'
