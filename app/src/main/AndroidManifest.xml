@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    package="com.xda.nachonotch">
-
+    xmlns:tools="http://schemas.android.com/tools">
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
 
     <application
         android:name=".App"
@@ -28,7 +27,9 @@
         <service
             android:name=".services.BackgroundHandler"
             android:enabled="true"
-            android:exported="true" />
+            android:exported="true"
+            android:foregroundServiceType="specialUse"
+            />
         <service android:name=".services.BackgroundJobService"
             android:enabled="true"
             android:exported="true"
@@ -102,6 +103,9 @@
                 <action android:name="com.twofortyfouram.locale.intent.action.EDIT_SETTING" />
             </intent-filter>
         </activity>
-    </application>
 
+        <meta-data
+            android:name="com.bugsnag.android.API_KEY"
+            android:value="4a133a85cc531d7fc93e9f88818ff85e"/>
+    </application>
 </manifest>

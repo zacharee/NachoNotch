@@ -9,6 +9,8 @@ import android.os.Build
 import android.os.IBinder
 import android.view.Display
 import android.view.IRotationWatcher
+import com.bugsnag.android.Bugsnag
+import com.bugsnag.android.performance.BugsnagPerformance
 import com.xda.nachonotch.util.cachedRotation
 import com.xda.nachonotch.util.refreshScreenSize
 import com.xda.nachonotch.util.rotation
@@ -36,6 +38,9 @@ class App : Application() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             HiddenApiBypass.setHiddenApiExemptions("")
         }
+
+        Bugsnag.start(this)
+        BugsnagPerformance.start(this)
 
         refreshScreenSize()
         cachedRotation = rotation
