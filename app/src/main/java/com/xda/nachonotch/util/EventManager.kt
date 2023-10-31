@@ -4,8 +4,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
-import com.xda.nachonotch.services.BackgroundHandler
-import com.xda.nachonotch.views.BaseOverlay
 import java.util.concurrent.ConcurrentLinkedQueue
 
 val Context.eventManager: EventManager
@@ -13,7 +11,6 @@ val Context.eventManager: EventManager
 
 class EventManager private constructor(private val context: Context) {
     companion object {
-        @Suppress("ObjectPropertyName")
         @SuppressLint("StaticFieldLeak")
         private var _instance: EventManager? = null
 
@@ -98,7 +95,7 @@ class EventManager private constructor(private val context: Context) {
 }
 
 sealed class Event {
-    object EnvironmentStatusUpdated : Event()
+    data object EnvironmentStatusUpdated : Event()
 }
 
 interface EventObserver {

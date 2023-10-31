@@ -13,5 +13,5 @@ class TaskerToggleData @JvmOverloads constructor(
 
 @TaskerOutputObject
 class TaskerToggleDataOutput(
-    @get:TaskerOutputVariable("enabled", R.string.enabled, R.string.enabled) val enabled: Boolean
+    @get:TaskerOutputVariable("enabled", labelResIdName = "enabled", htmlLabelResIdName = "enabled") val enabled: Boolean
 )

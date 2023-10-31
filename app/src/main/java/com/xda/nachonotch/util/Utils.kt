@@ -66,6 +66,7 @@ val isLandscape: Boolean
     get() = cachedRotation.run { this == Surface.ROTATION_90 || this == Surface.ROTATION_270 }
 
 val Context.hasNavBar: Boolean
+    @SuppressLint("DiscouragedApi")
     get() {
         val id = resources.getIdentifier("config_showNavigationBar", "bool", "android")
         return id > 0 && resources.getBoolean(id)
@@ -76,13 +77,13 @@ val Context.prefManager: PrefManager
     get() = PrefManager.getInstance(this)
 
 val Context.resourceNavBarHeight: Int
-    @SuppressLint("InternalInsetResource")
+    @SuppressLint("InternalInsetResource", "DiscouragedApi")
     get() = if (hasNavBar)
         resources.getDimensionPixelSize(
                 resources.getIdentifier("navigation_bar_height", "dimen", "android")) else 0
 
 val Context.resourceStatusBarHeight: Int
-    @SuppressLint("InternalInsetResource")
+    @SuppressLint("InternalInsetResource", "DiscouragedApi")
     get() = resources.getDimensionPixelSize(
             resources.getIdentifier("status_bar_height", "dimen", "android"))
 

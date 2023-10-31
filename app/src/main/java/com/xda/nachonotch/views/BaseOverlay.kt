@@ -66,7 +66,6 @@ abstract class BaseOverlay(
     override fun onEvent(event: Event) {
         when (event) {
             is Event.EnvironmentStatusUpdated -> onStatusUpdate()
-            else -> {}
         }
     }
 

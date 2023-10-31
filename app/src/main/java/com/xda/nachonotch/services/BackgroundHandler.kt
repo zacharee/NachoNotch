@@ -9,6 +9,7 @@ import android.provider.Settings
 import android.view.IRotationWatcher
 import android.view.Surface
 import androidx.core.app.NotificationCompat
+import androidx.core.app.ServiceCompat
 import com.xda.nachonotch.R
 import com.xda.nachonotch.activities.SettingsActivity
 import com.xda.nachonotch.util.*
@@ -75,7 +76,7 @@ class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeL
 
     override fun onDestroy() {
         super.onDestroy()
-        stopForeground(true)
+        ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE)
         removeAllOverlays()
         immersiveManager.onDestroy()
 
