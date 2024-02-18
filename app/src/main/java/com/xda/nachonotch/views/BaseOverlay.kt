@@ -12,7 +12,7 @@ import com.xda.nachonotch.util.*
 abstract class BaseOverlay(
     context: Context,
     backgroundResource: Int = 0,
-    backgroundColor: Int = Int.MIN_VALUE
+    backgroundColor: Int = Int.MIN_VALUE,
 ) : View(context), EventObserver, OnSharedPreferenceChangeListener {
     open val params = WindowManager.LayoutParams().apply {
         @Suppress("DEPRECATION")

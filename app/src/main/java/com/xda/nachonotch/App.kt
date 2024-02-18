@@ -2,16 +2,25 @@ package com.xda.nachonotch
 
 import android.annotation.SuppressLint
 import android.app.Application
+import android.app.job.JobInfo
+import android.app.job.JobScheduler
 import android.content.ComponentName
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.IBinder
+import android.provider.Settings
 import android.view.Display
 import android.view.IRotationWatcher
+import androidx.core.content.ContextCompat
 import com.bugsnag.android.Bugsnag
 import com.bugsnag.android.performance.BugsnagPerformance
+import com.xda.nachonotch.services.BackgroundHandler
+import com.xda.nachonotch.services.BackgroundJobService
 import com.xda.nachonotch.util.cachedRotation
+import com.xda.nachonotch.util.launchOverlaySettings
+import com.xda.nachonotch.util.prefManager
 import com.xda.nachonotch.util.refreshScreenSize
 import com.xda.nachonotch.util.rotation
 import org.lsposed.hiddenapibypass.HiddenApiBypass
@@ -45,6 +54,8 @@ class App : Application() {
         refreshScreenSize()
         cachedRotation = rotation
 
+        updateServiceState()
+
         val component = ComponentName(this, MainActivity::class.java)
 
         if (packageManager.getComponentEnabledSetting(component) != PackageManager.COMPONENT_ENABLED_STATE_ENABLED) {
@@ -72,6 +83,39 @@ class App : Application() {
                     }
         } catch (e: Exception) {
             0
+        }
+    }
+
+    fun updateServiceState() {
+        if (prefManager.isEnabled) {
+            if (Settings.canDrawOverlays(this)) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    scheduleService()
+                } else {
+                    val service = Intent(this, BackgroundHandler::class.java)
+                    ContextCompat.startForegroundService(this, service)
+                }
+            } else {
+                launchOverlaySettings()
+            }
+        } else {
+            stopService(Intent(this, BackgroundHandler::class.java))
+        }
+    }
+
+    private fun scheduleService(): Boolean {
+        val serviceComponent = ComponentName(this, BackgroundJobService::class.java)
+        val builder = JobInfo.Builder(100, serviceComponent)
+
+        builder.setMinimumLatency(1 * 1000)
+        builder.setOverrideDeadline(10 * 1000)
+
+        val jobScheduler = getSystemService(Context.JOB_SCHEDULER_SERVICE) as JobScheduler?
+
+        return if (jobScheduler != null) {
+            jobScheduler.schedule(builder.build()) == JobScheduler.RESULT_SUCCESS
+        } else {
+            false
         }
     }
 
