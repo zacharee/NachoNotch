@@ -2,15 +2,24 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <Preference
-        android:enabled="false"
-        android:summary="@string/settings_hint"
-        />
-
     <SwitchPreference
         android:title="@string/hide_notch"
         android:summary="@string/hide_notch_desc"
         android:key="enabled_indicator"
+        />
+
+    <Preference
+        android:title="@string/settings">
+        <intent
+            android:action="android.intent.action.MAIN"
+            android:targetPackage="@string/applicationId"
+            android:targetClass="com.xda.nachonotch.activities.SettingsActivity"
+             />
+    </Preference>
+
+    <com.xda.nachonotch.util.LinkPreference
+        android:title="@string/terms"
+        app:link="https://github.com/zacharee/NachoNotch/blob/master/app/src/main/assets/Terms.md"
         />
 
     <com.xda.nachonotch.util.LinkPreference

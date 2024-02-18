@@ -1,7 +1,11 @@
 package com.xda.nachonotch.activities
 
 import android.os.Bundle
+import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.preference.PreferenceFragmentCompat
 import com.xda.nachonotch.R
 import com.xda.nachonotch.util.PrefManager
@@ -10,15 +14,16 @@ import com.xda.nachonotch.util.resourceNavBarHeight
 import com.xda.nachonotch.util.resourceStatusBarHeight
 import tk.zwander.seekbarpreference.SeekBarPreference
 
-class SettingsActivity : AppCompatActivity() {
-
+class SettingsActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         if (!enforceTerms()) finish()
-        else {
-            setContentView(R.layout.activity_settings)
+    }
 
+    @Composable
+    override fun Content() {
+        AndroidView(factory = { layoutInflater.inflate(R.layout.activity_settings, null) }) {
             supportFragmentManager.beginTransaction().replace(R.id.content, MainFragment()).commit()
         }
     }

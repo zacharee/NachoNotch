@@ -15,6 +15,8 @@ android {
         targetSdk = 34
         versionCode = 34
         versionName = versionCode.toString()
+
+        resValue("string", "applicationId", "\"${applicationId}\"")
     }
 
     compileOptions {

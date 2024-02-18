@@ -9,7 +9,7 @@ class BackgroundJobService : JobService() {
     override fun onStartJob(params: JobParameters?): Boolean {
         ContextCompat.startForegroundService(
             this,
-            Intent(this, BackgroundHandler::class.java)
+            Intent(this, BackgroundHandler::class.java),
         )
 
         return false
