@@ -85,16 +85,22 @@ abstract class BaseOverlay(
 
     open fun add() {
         if (canAdd()) {
+            Bugsnag.leaveBreadcrumb("Adding ${this::class.java.name}")
             try {
                 context.wm.addView(this, params)
-            } catch (_: Exception) { }
+            } catch (e: Exception) {
+                Bugsnag.notify(IllegalStateException("Error adding ${this::class.java.name}", e))
+            }
         }
     }
 
     open fun remove() {
+        Bugsnag.leaveBreadcrumb("Removing ${this::class.java.name}")
         try {
             context.wm.removeView(this)
-        } catch (_: Exception) { }
+        } catch (e: Exception) {
+            Bugsnag.notify(IllegalStateException("Error removing ${this::class.java.name}", e))
+        }
     }
 
     open fun show() {
