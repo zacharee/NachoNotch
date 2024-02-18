@@ -46,6 +46,10 @@
     <string name="main_screen_social_github">GitHub</string>
     <string name="main_screen_social_github_desc">Nacho Notch is open source! If you\'re a developer or tinkerer interested in helping to improve the project (or you just want to check out the source), tap here.</string>
 
+    <string name="settings_desc">Change the size of the bar, add rounded corners, black out the navigation bar, and more.</string>
+
+    <string name="terms_desc">How to use Nacho Notch, what to expect from the app, and other things you should probably read over.</string>
+
     <!--Messages-->
     <string name="welcome_message">Hey! This screen doesn\'t do anything. Nacho Notch is using a QS Tile.\n\n<a href="https://youtu.be/HhH5wK1NokY">Tutorial</a></string>
     <string name="disable_activity">Disable this screen and hide the launcher icon</string>

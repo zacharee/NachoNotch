@@ -3,65 +3,64 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <SwitchPreference
-        android:title="@string/hide_notch"
-        android:summary="@string/hide_notch_desc"
         android:key="enabled_indicator"
-        />
+        android:summary="@string/hide_notch_desc"
+        android:title="@string/hide_notch" />
 
     <Preference
+        android:icon="@drawable/baseline_settings_24"
+        android:summary="@string/settings_desc"
         android:title="@string/settings">
         <intent
             android:action="android.intent.action.MAIN"
-            android:targetPackage="@string/applicationId"
             android:targetClass="com.xda.nachonotch.activities.SettingsActivity"
-             />
+            android:targetPackage="@string/applicationId" />
     </Preference>
 
     <com.xda.nachonotch.util.LinkPreference
+        android:icon="@drawable/baseline_short_text_24"
+        android:summary="@string/terms_desc"
         android:title="@string/terms"
-        app:link="https://github.com/zacharee/NachoNotch/blob/master/app/src/main/assets/Terms.md"
-        />
+        app:link="https://github.com/zacharee/NachoNotch/blob/master/app/src/main/assets/Terms.md" />
+
+    <Preference
+        android:enabled="false"
+        android:selectable="false" />
 
     <com.xda.nachonotch.util.LinkPreference
-        android:title="@string/main_screen_help"
-        android:summary="@string/main_screen_help_desc"
         android:icon="@drawable/ic_baseline_help_outline_24"
-        app:link="https://youtu.be/HhH5wK1NokY"
-        />
+        android:summary="@string/main_screen_help_desc"
+        android:title="@string/main_screen_help"
+        app:link="https://youtu.be/HhH5wK1NokY" />
 
     <com.xda.nachonotch.util.LinkPreference
-        android:title="@string/main_screen_social_mastodon"
-        android:summary="@string/main_screen_social_mastodon_desc"
         android:icon="@drawable/mastodon"
-        app:link="https://androiddev.social/@wander1236"
-        />
+        android:summary="@string/main_screen_social_mastodon_desc"
+        android:title="@string/main_screen_social_mastodon"
+        app:link="https://androiddev.social/@wander1236" />
 
     <com.xda.nachonotch.util.LinkPreference
-        android:title="@string/main_screen_social_website"
-        android:summary="@string/main_screen_social_website_desc"
         android:icon="@drawable/ic_baseline_earth_24"
-        app:link="https://zwander.dev"
-        />
+        android:summary="@string/main_screen_social_website_desc"
+        android:title="@string/main_screen_social_website"
+        app:link="https://zwander.dev" />
 
     <com.xda.nachonotch.util.LinkPreference
-        android:title="@string/main_screen_social_email"
-        android:summary="@string/main_screen_social_email_desc"
         android:icon="@drawable/ic_baseline_email_24"
-        app:link_type="email"
-        />
+        android:summary="@string/main_screen_social_email_desc"
+        android:title="@string/main_screen_social_email"
+        app:link_type="email" />
 
     <com.xda.nachonotch.util.LinkPreference
-        android:title="@string/main_screen_social_telegram"
-        android:summary="@string/main_screen_social_telegram_desc"
         android:icon="@drawable/ic_baseline_telegram_24"
-        app:link="https://bit.ly/ZachareeTG"
-        />
+        android:summary="@string/main_screen_social_telegram_desc"
+        android:title="@string/main_screen_social_telegram"
+        app:link="https://bit.ly/ZachareeTG" />
 
     <com.xda.nachonotch.util.LinkPreference
-        android:title="@string/main_screen_social_github"
-        android:summary="@string/main_screen_social_github_desc"
         android:icon="@drawable/ic_baseline_github_24"
-        app:link="https://github.com/zacharee/NachoNotch"
-        />
+        android:summary="@string/main_screen_social_github_desc"
+        android:title="@string/main_screen_social_github"
+        app:link="https://github.com/zacharee/NachoNotch" />
 
 </PreferenceScreen>
