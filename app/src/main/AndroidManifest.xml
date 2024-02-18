@@ -17,7 +17,7 @@
         tools:ignore="AllowBackup,GoogleAppIndexingWarning">
         <service
             android:name=".services.ToggleService"
-            android:icon="@drawable/ic_space_bar_black_24dp"
+            android:icon="@drawable/qs_tile_icon"
             android:label="@string/hide_notch"
             android:exported="true"
             android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">

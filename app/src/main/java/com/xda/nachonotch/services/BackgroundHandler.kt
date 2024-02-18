@@ -142,7 +142,7 @@ class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeL
                 .setContentText(resources.getString(R.string.settings_prompt))
                 .setContentIntent(PendingIntent.getActivity(this, 100,
                         Intent(this, SettingsActivity::class.java), PendingIntent.FLAG_IMMUTABLE))
-                .setSmallIcon(R.drawable.ic_space_bar_black_24dp)
+                .setSmallIcon(R.drawable.qs_tile_icon)
                 .setPriority(if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
                     NotificationCompat.PRIORITY_MIN else NotificationCompat.PRIORITY_LOW)
                 .build()

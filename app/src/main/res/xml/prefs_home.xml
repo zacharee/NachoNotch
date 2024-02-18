@@ -3,14 +3,17 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <SwitchPreference
+        android:icon="@drawable/ic_space_bar_black_24dp"
         android:key="enabled_indicator"
         android:summary="@string/hide_notch_desc"
-        android:title="@string/hide_notch" />
+        android:title="@string/hide_notch"
+        app:allowDividerBelow="true" />
 
     <Preference
         android:icon="@drawable/baseline_settings_24"
         android:summary="@string/settings_desc"
-        android:title="@string/settings">
+        android:title="@string/settings"
+        app:allowDividerAbove="true">
         <intent
             android:action="android.intent.action.MAIN"
             android:targetClass="com.xda.nachonotch.activities.SettingsActivity"
@@ -21,20 +24,20 @@
         android:icon="@drawable/baseline_short_text_24"
         android:summary="@string/terms_desc"
         android:title="@string/terms"
-        app:allowDividerBelow="true"
         app:link="https://github.com/zacharee/NachoNotch/blob/master/app/src/main/assets/Terms.md" />
 
     <com.xda.nachonotch.util.LinkPreference
         android:icon="@drawable/ic_baseline_help_outline_24"
         android:summary="@string/main_screen_help_desc"
         android:title="@string/main_screen_help"
-        app:allowDividerAbove="true"
+        app:allowDividerBelow="true"
         app:link="https://youtu.be/HhH5wK1NokY" />
 
     <com.xda.nachonotch.util.LinkPreference
         android:icon="@drawable/mastodon"
         android:summary="@string/main_screen_social_mastodon_desc"
         android:title="@string/main_screen_social_mastodon"
+        app:allowDividerAbove="true"
         app:link="https://androiddev.social/@wander1236" />
 
     <com.xda.nachonotch.util.LinkPreference
