@@ -1,5 +1,6 @@
 package com.xda.nachonotch.views
 
+import android.animation.ValueAnimator
 import android.content.Context
 import android.content.SharedPreferences
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
@@ -7,8 +8,15 @@ import android.graphics.PixelFormat
 import android.os.Build
 import android.view.View
 import android.view.WindowManager
+import androidx.core.animation.addListener
 import com.bugsnag.android.Bugsnag
-import com.xda.nachonotch.util.*
+import com.xda.nachonotch.util.EnvironmentManager
+import com.xda.nachonotch.util.Event
+import com.xda.nachonotch.util.EventObserver
+import com.xda.nachonotch.util.environmentManager
+import com.xda.nachonotch.util.eventManager
+import com.xda.nachonotch.util.prefManager
+import com.xda.nachonotch.util.wm
 
 abstract class BaseOverlay(
     context: Context,
@@ -33,11 +41,17 @@ abstract class BaseOverlay(
             WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
         }
 
-        alpha = 1f
+        alpha = 0f
         format = PixelFormat.RGBA_8888
     }
 
     protected open val listenKeys: List<String> = listOf()
+
+    private var animator: ValueAnimator? = null
+        set(value) {
+            field?.cancel()
+            field = value
+        }
 
     init {
         if (backgroundResource != 0) {
@@ -70,6 +84,12 @@ abstract class BaseOverlay(
         }
     }
 
+    override fun onAttachedToWindow() {
+        super.onAttachedToWindow()
+
+        onStatusUpdate()
+    }
+
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
         if (listenKeys.contains(key)) {
             onUpdateParams()
@@ -80,7 +100,7 @@ abstract class BaseOverlay(
     open fun update() {
         try {
             context.wm.updateViewLayout(this, params)
-        } catch (_: Exception) { }
+        } catch (_: Exception) {}
     }
 
     open fun add() {
@@ -96,31 +116,64 @@ abstract class BaseOverlay(
 
     open fun remove() {
         Bugsnag.leaveBreadcrumb("Removing ${this::class.java.name}")
-        try {
-            context.wm.removeView(this)
-        } catch (e: Exception) {
-            Bugsnag.notify(IllegalStateException("Error removing ${this::class.java.name}", e))
+
+        hide {
+            try {
+                context.wm.removeView(this)
+            } catch (e: Exception) {
+                Bugsnag.notify(IllegalStateException("Error removing ${this::class.java.name}", e))
+            }
         }
     }
 
-    open fun show() {
+    open fun show(animationComplete: (() -> Unit)? = null) {
         Bugsnag.leaveBreadcrumb("Showing ${this::class.java.name}.")
 
-        params.alpha = 1f
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            params.flags = params.flags and WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE.inv()
-        }
-        update()
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                params.flags = params.flags and WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE.inv()
+            }
+            update()
+
+            var canceled = false
+            animator = ValueAnimator.ofFloat(params.alpha, 1f)
+            animator?.addListener(
+                onEnd = {
+                    if (!canceled) {
+                        animationComplete?.invoke()
+                    }
+                },
+                onCancel = { canceled = true },
+            )
+            animator?.addUpdateListener {
+                params.alpha = it.animatedFraction
+                update()
+            }
+            animator?.start()
     }
 
-    open fun hide() {
+    open fun hide(animationComplete: (() -> Unit)? = null) {
         Bugsnag.leaveBreadcrumb("Hiding ${this::class.java.name}.")
 
-        params.alpha = 0f
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            params.flags = params.flags or WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
-        }
-        update()
+            var canceled = false
+            animator = ValueAnimator.ofFloat(params.alpha, 0f)
+            animator?.addListener(
+                onEnd = {
+                    if (!canceled) {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                            params.flags = params.flags or WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
+                        }
+                        update()
+
+                        animationComplete?.invoke()
+                    }
+                },
+                onCancel = { canceled = true },
+            )
+            animator?.addUpdateListener {
+                params.alpha = 1f - it.animatedFraction
+                update()
+            }
+            animator?.start()
     }
 
     protected open fun onUpdateParams() {}

@@ -31,14 +31,22 @@ class EnvironmentManager private constructor(private val context: Context) {
         get() = _environmentStatus
 
     fun addStatus(vararg status: EnvironmentStatus) {
+        val oldSet = _environmentStatus.toSet()
         Bugsnag.leaveBreadcrumb("Adding EnvironmentStatus ${status.contentToString()}")
         _environmentStatus.addAll(status.toSet())
-        context.eventManager.sendEvent(Event.EnvironmentStatusUpdated)
+
+        if (oldSet.size != _environmentStatus.size) {
+            context.eventManager.sendEvent(Event.EnvironmentStatusUpdated)
+        }
     }
 
     fun removeStatus(vararg status: EnvironmentStatus) {
+        val oldSet = _environmentStatus.toSet()
         Bugsnag.leaveBreadcrumb("Removing EnvironmentStatus ${status.contentToString()}")
         _environmentStatus.removeAll(status.toSet())
-        context.eventManager.sendEvent(Event.EnvironmentStatusUpdated)
+
+        if (oldSet.size != _environmentStatus.size) {
+            context.eventManager.sendEvent(Event.EnvironmentStatusUpdated)
+        }
     }
 }
