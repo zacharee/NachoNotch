@@ -17,6 +17,8 @@ android {
         versionName = versionCode.toString()
 
         resValue("string", "applicationId", "$applicationId")
+
+        base.archivesName.set("NachoNotch_${versionCode}")
     }
 
     compileOptions {
