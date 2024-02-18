@@ -16,7 +16,7 @@ android {
         versionCode = 34
         versionName = versionCode.toString()
 
-        resValue("string", "applicationId", "\"${applicationId}\"")
+        resValue("string", "applicationId", "$applicationId")
     }
 
     compileOptions {
