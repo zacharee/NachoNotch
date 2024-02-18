@@ -1,26 +1,21 @@
 package com.xda.nachonotch
 
-import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
-import android.view.Menu
-import android.view.MenuItem
-import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.SwitchPreference
 import com.xda.nachonotch.activities.BaseActivity
-import com.xda.nachonotch.activities.SettingsActivity
-import com.xda.nachonotch.util.*
+import com.xda.nachonotch.util.PrefManager
+import com.xda.nachonotch.util.addOverlayAndEnable
+import com.xda.nachonotch.util.enforceTerms
+import com.xda.nachonotch.util.launchOverlaySettings
+import com.xda.nachonotch.util.prefManager
+import com.xda.nachonotch.util.removeOverlayAndDisable
 
 class MainActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -38,29 +33,6 @@ class MainActivity : BaseActivity() {
     @Composable
     override fun Content() {
         AndroidView(factory = { layoutInflater.inflate(R.layout.activity_main, null) })
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.menu, menu)
-
-        return true
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        when (item?.itemId) {
-            R.id.action_terms -> {
-                val termsIntent = Intent(
-                        Intent.ACTION_VIEW,
-                        Uri.parse("https://github.com/zacharee/NachoNotch/blob/master/app/src/main/assets/Terms.md"))
-                startActivity(termsIntent)
-                return true
-            }
-            R.id.action_settings -> {
-                startActivity(Intent(this, SettingsActivity::class.java))
-            }
-        }
-
-        return super.onOptionsItemSelected(item)
     }
 
     class Prefs : PreferenceFragmentCompat(), SharedPreferences.OnSharedPreferenceChangeListener {
