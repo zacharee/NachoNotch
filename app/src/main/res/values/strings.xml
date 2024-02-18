@@ -31,8 +31,8 @@
     <string name="main_screen_help">Tutorial</string>
     <string name="main_screen_help_desc">Not sure how to add the QS tile? Tap here.</string>
 
-    <string name="main_screen_social_twitter">Twitter</string>
-    <string name="main_screen_social_twitter_desc">Follow me on Twitter for updates about my apps and random development-related nonsense.</string>
+    <string name="main_screen_social_mastodon">Mastodon</string>
+    <string name="main_screen_social_mastodon_desc">Follow me on Mastodon for updates about my apps and random development-related nonsense.</string>
 
     <string name="main_screen_social_website">Website</string>
     <string name="main_screen_social_website_desc">Check out my website if you\'re that bored.</string>

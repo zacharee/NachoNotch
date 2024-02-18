@@ -30,10 +30,10 @@
         />
 
     <com.xda.nachonotch.util.LinkPreference
-        android:title="@string/main_screen_social_twitter"
-        android:summary="@string/main_screen_social_twitter_desc"
-        android:icon="@drawable/ic_baseline_twitter_24"
-        app:link="https://twitter.com/Wander1236"
+        android:title="@string/main_screen_social_mastodon"
+        android:summary="@string/main_screen_social_mastodon_desc"
+        android:icon="@drawable/mastodon"
+        app:link="https://androiddev.social/@wander1236"
         />
 
     <com.xda.nachonotch.util.LinkPreference
