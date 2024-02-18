@@ -87,8 +87,11 @@ class App : Application() {
     }
 
     fun updateServiceState() {
+        Bugsnag.leaveBreadcrumb("Updating service state.")
         if (prefManager.isEnabled) {
+            Bugsnag.leaveBreadcrumb("Hide enabled.")
             if (Settings.canDrawOverlays(this)) {
+                Bugsnag.leaveBreadcrumb("Has permission to show, starting service.")
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                     scheduleService()
                 } else {
@@ -96,14 +99,17 @@ class App : Application() {
                     ContextCompat.startForegroundService(this, service)
                 }
             } else {
+                Bugsnag.leaveBreadcrumb("Has no permission, requesting.")
                 launchOverlaySettings()
             }
         } else {
+            Bugsnag.leaveBreadcrumb("Not enabled, stopping service.")
             stopService(Intent(this, BackgroundHandler::class.java))
         }
     }
 
     private fun scheduleService(): Boolean {
+        Bugsnag.leaveBreadcrumb("Scheduling service start.")
         val serviceComponent = ComponentName(this, BackgroundJobService::class.java)
         val builder = JobInfo.Builder(100, serviceComponent)
 
@@ -121,6 +127,7 @@ class App : Application() {
 
     inner class RotationWatcher : IRotationWatcher.Stub() {
         override fun onRotationChanged(rotation: Int) {
+            Bugsnag.leaveBreadcrumb("Rotation has changed to $rotation.")
             cachedRotation = rotation
             refreshScreenSize()
 

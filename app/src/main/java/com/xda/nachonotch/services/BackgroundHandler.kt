@@ -10,6 +10,7 @@ import android.view.IRotationWatcher
 import android.view.Surface
 import androidx.core.app.NotificationCompat
 import androidx.core.app.ServiceCompat
+import com.bugsnag.android.Bugsnag
 import com.xda.nachonotch.R
 import com.xda.nachonotch.activities.SettingsActivity
 import com.xda.nachonotch.util.*
@@ -51,6 +52,8 @@ class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeL
     override fun onCreate() {
         super.onCreate()
 
+        Bugsnag.leaveBreadcrumb("Service is creating.")
+
         immersiveManager.onCreate()
 
         overlays[OverlayPosition.TOP_BAR] = TopOverlay(this)
@@ -68,6 +71,8 @@ class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeL
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        Bugsnag.leaveBreadcrumb("Received start command. Is enabled? ${prefManager.isEnabled}")
+
         if (prefManager.isEnabled) addOverlayAndEnable()
         else stopSelf()
 
@@ -75,6 +80,7 @@ class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeL
     }
 
     override fun onDestroy() {
+        Bugsnag.leaveBreadcrumb("Service stopping.")
         super.onDestroy()
         ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE)
         removeAllOverlays()
@@ -124,6 +130,8 @@ class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeL
     }
 
     private fun addOverlayAndEnable() {
+        Bugsnag.leaveBreadcrumb("Adding overlays and notification.")
+
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.N_MR1) {
             val notifMan = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             notifMan.createNotificationChannel(NotificationChannel("nachonotch", resources.getString(R.string.app_name), NotificationManager.IMPORTANCE_LOW))
@@ -147,9 +155,8 @@ class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeL
 
     private fun addAllOverlays() {
         if (Settings.canDrawOverlays(this)) {
+            removeAllOverlays()
             if (cachedRotation == Surface.ROTATION_0) {
-                removeAllOverlays()
-
                 addOverlays(*overlays.keys.toTypedArray())
             }
         } else {

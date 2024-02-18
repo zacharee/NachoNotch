@@ -7,6 +7,7 @@ import android.graphics.PixelFormat
 import android.os.Build
 import android.view.View
 import android.view.WindowManager
+import com.bugsnag.android.Bugsnag
 import com.xda.nachonotch.util.*
 
 abstract class BaseOverlay(
@@ -97,6 +98,8 @@ abstract class BaseOverlay(
     }
 
     open fun show() {
+        Bugsnag.leaveBreadcrumb("Showing ${this::class.java.name}.")
+
         params.alpha = 1f
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             params.flags = params.flags and WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE.inv()
@@ -105,6 +108,8 @@ abstract class BaseOverlay(
     }
 
     open fun hide() {
+        Bugsnag.leaveBreadcrumb("Hiding ${this::class.java.name}.")
+
         params.alpha = 0f
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             params.flags = params.flags or WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE

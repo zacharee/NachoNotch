@@ -2,6 +2,7 @@ package com.xda.nachonotch.util
 
 import android.annotation.SuppressLint
 import android.content.Context
+import com.bugsnag.android.Bugsnag
 import java.util.concurrent.ConcurrentHashMap
 
 val Context.environmentManager: EnvironmentManager
@@ -30,11 +31,13 @@ class EnvironmentManager private constructor(private val context: Context) {
         get() = _environmentStatus
 
     fun addStatus(vararg status: EnvironmentStatus) {
-        _environmentStatus.addAll(status)
+        Bugsnag.leaveBreadcrumb("Adding EnvironmentStatus ${status.contentToString()}")
+        _environmentStatus.addAll(status.toSet())
         context.eventManager.sendEvent(Event.EnvironmentStatusUpdated)
     }
 
     fun removeStatus(vararg status: EnvironmentStatus) {
+        Bugsnag.leaveBreadcrumb("Removing EnvironmentStatus ${status.contentToString()}")
         _environmentStatus.removeAll(status.toSet())
         context.eventManager.sendEvent(Event.EnvironmentStatusUpdated)
     }

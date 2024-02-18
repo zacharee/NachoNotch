@@ -6,6 +6,7 @@ import android.graphics.Rect
 import android.net.Uri
 import android.provider.Settings
 import android.view.View
+import com.bugsnag.android.Bugsnag
 import com.xda.nachonotch.views.immersive.BaseImmersiveHelperView
 import com.xda.nachonotch.views.immersive.HorizontalImmersiveHelperView
 import com.xda.nachonotch.views.immersive.VerticalImmersiveHelperView
@@ -26,19 +27,23 @@ class ImmersiveHelperManager(private val context: Context, private val immersive
 
     private val verticalAttachListener = object : View.OnAttachStateChangeListener {
         override fun onViewAttachedToWindow(v: View?) {
+            Bugsnag.leaveBreadcrumb("Vertical helper attached.")
             verticalHelperAdded = true
         }
 
         override fun onViewDetachedFromWindow(v: View?) {
+            Bugsnag.leaveBreadcrumb("Vertical helper detached.")
             verticalHelperAdded = false
         }
     }
     private val horizontalAttachListener = object : View.OnAttachStateChangeListener {
         override fun onViewAttachedToWindow(v: View?) {
+            Bugsnag.leaveBreadcrumb("Horizontal helper attached.")
             horizontalHelperAdded = true
         }
 
         override fun onViewDetachedFromWindow(v: View?) {
+            Bugsnag.leaveBreadcrumb("Horizontal helper detached.")
             horizontalHelperAdded = false
         }
     }
@@ -48,6 +53,8 @@ class ImmersiveHelperManager(private val context: Context, private val immersive
             synchronized(this) {
                 if (field != value) {
                     field.set(value)
+
+                    Bugsnag.leaveBreadcrumb("New vertical layout $value. Screen size ${context.realScreenSize}. Overscan ${context.safeOverscanInsets}.")
 
                     updateImmersiveListener()
                 }
@@ -60,6 +67,8 @@ class ImmersiveHelperManager(private val context: Context, private val immersive
                 if (field != value) {
                     field.set(value)
 
+                    Bugsnag.leaveBreadcrumb("New horizontal layout $value. Screen size ${context.realScreenSize}. Overscan ${context.safeOverscanInsets}.")
+
                     updateImmersiveListener()
                 }
             }
@@ -71,12 +80,14 @@ class ImmersiveHelperManager(private val context: Context, private val immersive
     override fun onChange(selfChange: Boolean, uri: Uri?) {
         when (uri) {
             Settings.Global.getUriFor(POLICY_CONTROL) -> {
+                Bugsnag.leaveBreadcrumb("Policy control changed. ${Settings.Global.getString(context.contentResolver, POLICY_CONTROL)}")
                 updateImmersiveListener()
             }
         }
     }
 
     private fun updateImmersiveListener() {
+        Bugsnag.leaveBreadcrumb("Updating immersive listeners.")
         immersiveListener.onImmersiveChange()
     }
 
