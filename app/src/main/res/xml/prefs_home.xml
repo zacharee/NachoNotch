@@ -21,16 +21,14 @@
         android:icon="@drawable/baseline_short_text_24"
         android:summary="@string/terms_desc"
         android:title="@string/terms"
+        app:allowDividerBelow="true"
         app:link="https://github.com/zacharee/NachoNotch/blob/master/app/src/main/assets/Terms.md" />
-
-    <Preference
-        android:enabled="false"
-        android:selectable="false" />
 
     <com.xda.nachonotch.util.LinkPreference
         android:icon="@drawable/ic_baseline_help_outline_24"
         android:summary="@string/main_screen_help_desc"
         android:title="@string/main_screen_help"
+        app:allowDividerAbove="true"
         app:link="https://youtu.be/HhH5wK1NokY" />
 
     <com.xda.nachonotch.util.LinkPreference
