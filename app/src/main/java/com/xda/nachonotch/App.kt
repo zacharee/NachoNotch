@@ -113,8 +113,8 @@ class App : Application() {
         val serviceComponent = ComponentName(this, BackgroundJobService::class.java)
         val builder = JobInfo.Builder(100, serviceComponent)
 
-        builder.setMinimumLatency(1 * 1000)
-        builder.setOverrideDeadline(10 * 1000)
+        builder.setMinimumLatency(0)
+        builder.setOverrideDeadline(5 * 1000)
 
         val jobScheduler = getSystemService(Context.JOB_SCHEDULER_SERVICE) as JobScheduler?
 
