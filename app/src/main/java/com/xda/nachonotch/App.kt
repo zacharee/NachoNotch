@@ -29,13 +29,12 @@ import org.lsposed.hiddenapibypass.HiddenApiBypass
 class App : Application() {
     private val iWindowManagerClass: Class<*> = Class.forName("android.view.IWindowManager")
     private val iWindowManager: Any by lazy {
-        run {
-            val stubClass = Class.forName("android.view.IWindowManager\$Stub")
-            val serviceManagerClass = Class.forName("android.os.ServiceManager")
+        val stubClass = Class.forName("android.view.IWindowManager\$Stub")
+        val serviceManagerClass = Class.forName("android.os.ServiceManager")
 
-            val binder = serviceManagerClass.getMethod("checkService", String::class.java).invoke(null, Context.WINDOW_SERVICE)
-            stubClass.getMethod("asInterface", IBinder::class.java).invoke(null, binder)
-        }
+        val binder = serviceManagerClass.getMethod("checkService", String::class.java)
+            .invoke(null, Context.WINDOW_SERVICE)
+        stubClass.getMethod("asInterface", IBinder::class.java).invoke(null, binder)
     }
     private val rotationWatcher by lazy { RotationWatcher() }
 
@@ -60,9 +59,9 @@ class App : Application() {
 
         if (packageManager.getComponentEnabledSetting(component) != PackageManager.COMPONENT_ENABLED_STATE_ENABLED) {
             packageManager.setComponentEnabledSetting(
-                    component,
-                    PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
-                    PackageManager.DONT_KILL_APP
+                component,
+                PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
+                PackageManager.DONT_KILL_APP
             )
         }
 
@@ -71,16 +70,15 @@ class App : Application() {
 
     private fun watchRotation(watcher: IRotationWatcher, displayId: Int): Int {
         return try {
-            iWindowManagerClass
-                    .run {
-                        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-                            getMethod("watchRotation", IRotationWatcher::class.java)
-                                    .invoke(iWindowManager, watcher) as Int
-                        } else {
-                            getMethod("watchRotation", IRotationWatcher::class.java, Int::class.java)
-                                    .invoke(iWindowManager, watcher, displayId) as Int
-                        }
-                    }
+            iWindowManagerClass.run {
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+                    getMethod("watchRotation", IRotationWatcher::class.java)
+                        .invoke(iWindowManager, watcher) as Int
+                } else {
+                    getMethod("watchRotation", IRotationWatcher::class.java, Int::class.java)
+                        .invoke(iWindowManager, watcher, displayId) as Int
+                }
+            }
         } catch (e: Exception) {
             0
         }
