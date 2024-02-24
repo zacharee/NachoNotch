@@ -12,18 +12,35 @@ import com.xda.nachonotch.views.immersive.HorizontalImmersiveHelperView
 import com.xda.nachonotch.views.immersive.VerticalImmersiveHelperView
 import kotlinx.coroutines.launch
 
-class ImmersiveHelperManager(private val context: Context, private val immersiveListener: ImmersiveChangeListener) : ContentObserver(mainHandler) {
+class ImmersiveHelperManager(
+    private val context: Context,
+    private val immersiveListener: ImmersiveChangeListener
+) : ContentObserver(mainHandler) {
     companion object {
         const val POLICY_CONTROL = "policy_control"
     }
 
-    private val vertical = VerticalImmersiveHelperView(context) { left, top, right, bottom ->
-        verticalLayout = Rect(left, top, right, bottom)
-    }
+    private val vertical = VerticalImmersiveHelperView(
+        context = context,
+        immersiveListener = { nav, status ->
+            _isNavImmersive = nav
+            _isStatusImmersive = status
+        },
+        layoutListener = { left, top, right, bottom ->
+            verticalLayout = Rect(left, top, right, bottom)
+        },
+    )
 
-    private val horizontal = HorizontalImmersiveHelperView(context) { left, top, right, bottom ->
-        horizontalLayout = Rect(left, top, right, bottom)
-    }
+    private val horizontal = HorizontalImmersiveHelperView(
+        context = context,
+        immersiveListener = { nav, status ->
+            _isNavImmersive = nav
+            _isStatusImmersive = status
+        },
+        layoutListener = { left, top, right, bottom ->
+            horizontalLayout = Rect(left, top, right, bottom)
+        },
+    )
 
     private val verticalAttachListener = object : View.OnAttachStateChangeListener {
         override fun onViewAttachedToWindow(v: View?) {
@@ -74,13 +91,46 @@ class ImmersiveHelperManager(private val context: Context, private val immersive
             }
         }
 
+    private var _isNavImmersive = false
+        set(value) {
+            synchronized(this) {
+                if (field != value) {
+                    field = value
+
+                    Bugsnag.leaveBreadcrumb("New nav immersive state $value.")
+
+                    updateImmersiveListener()
+                }
+            }
+        }
+
+    private var _isStatusImmersive = false
+        set(value) {
+            synchronized(this) {
+                if (field != value) {
+                    field = value
+
+                    Bugsnag.leaveBreadcrumb("New status immersive state $value.")
+
+                    updateImmersiveListener()
+                }
+            }
+        }
+
     var verticalHelperAdded = false
     var horizontalHelperAdded = false
 
     override fun onChange(selfChange: Boolean, uri: Uri?) {
         when (uri) {
             Settings.Global.getUriFor(POLICY_CONTROL) -> {
-                Bugsnag.leaveBreadcrumb("Policy control changed. ${Settings.Global.getString(context.contentResolver, POLICY_CONTROL)}")
+                Bugsnag.leaveBreadcrumb(
+                    "Policy control changed. ${
+                        Settings.Global.getString(
+                            context.contentResolver,
+                            POLICY_CONTROL
+                        )
+                    }"
+                )
                 updateImmersiveListener()
             }
         }
@@ -92,7 +142,11 @@ class ImmersiveHelperManager(private val context: Context, private val immersive
     }
 
     fun onCreate() {
-        context.contentResolver.registerContentObserver(Settings.Global.getUriFor(POLICY_CONTROL), true, this)
+        context.contentResolver.registerContentObserver(
+            Settings.Global.getUriFor(POLICY_CONTROL),
+            true,
+            this
+        )
         vertical.addOnAttachStateChangeListener(verticalAttachListener)
         horizontal.addOnAttachStateChangeListener(horizontalAttachListener)
     }
@@ -111,7 +165,8 @@ class ImmersiveHelperManager(private val context: Context, private val immersive
             } else {
                 wm.updateViewLayout(view, view.params)
             }
-        } catch (_: Exception) {}
+        } catch (_: Exception) {
+        }
     }
 
     fun onDestroy() {
@@ -131,13 +186,14 @@ class ImmersiveHelperManager(private val context: Context, private val immersive
 
         try {
             wm.removeView(view)
-        } catch (_: Exception) {}
+        } catch (_: Exception) {
+        }
     }
 
     fun isStatusImmersive() = run {
         synchronized(this) {
             val top = verticalLayout.top
-            top <= 0 || isFullPolicyControl() || isStatusPolicyControl()
+            top <= 0 || isFullPolicyControl() || isStatusPolicyControl() || _isStatusImmersive
         }
     }
 
@@ -154,13 +210,18 @@ class ImmersiveHelperManager(private val context: Context, private val immersive
                 }
 
                 mainScope.launch {
-                    callback.invoke(isNav || isFullPolicyControl() || isNavPolicyControl())
+                    callback.invoke(isNav || isFullPolicyControl() || isNavPolicyControl() || _isNavImmersive)
                 }
             }
         }
     }
 
-    fun isFullPolicyControl() = Settings.Global.getString(context.contentResolver, POLICY_CONTROL)?.contains("immersive.full") == true
-    fun isNavPolicyControl() = Settings.Global.getString(context.contentResolver, POLICY_CONTROL)?.contains("immersive.nav") == true
-    fun isStatusPolicyControl() = Settings.Global.getString(context.contentResolver, POLICY_CONTROL)?.contains("immersive.status") == true
+    fun isFullPolicyControl() = Settings.Global.getString(context.contentResolver, POLICY_CONTROL)
+        ?.contains("immersive.full") == true
+
+    fun isNavPolicyControl() = Settings.Global.getString(context.contentResolver, POLICY_CONTROL)
+        ?.contains("immersive.nav") == true
+
+    fun isStatusPolicyControl() = Settings.Global.getString(context.contentResolver, POLICY_CONTROL)
+        ?.contains("immersive.status") == true
 }

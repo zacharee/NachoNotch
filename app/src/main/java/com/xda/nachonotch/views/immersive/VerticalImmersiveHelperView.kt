@@ -6,10 +6,12 @@ import android.content.Context
 @SuppressLint("ViewConstructor")
 class VerticalImmersiveHelperView(
     context: Context,
-    immersiveListener: (left: Int, top: Int, right: Int, bottom: Int) -> Unit
+    immersiveListener: (nav: Boolean, status: Boolean) -> Unit,
+    layoutListener: (left: Int, top: Int, right: Int, bottom: Int) -> Unit,
 ) : BaseImmersiveHelperView(
     context,
-    immersiveListener
+    immersiveListener,
+    layoutListener,
 ) {
     override fun updateDimensions() {
         params.width = 1

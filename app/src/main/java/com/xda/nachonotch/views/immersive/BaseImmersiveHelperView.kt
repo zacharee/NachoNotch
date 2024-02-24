@@ -7,15 +7,19 @@ import android.graphics.Rect
 import android.os.Build
 import android.view.Gravity
 import android.view.View
+import android.view.WindowInsets
 import android.view.WindowManager
-import com.xda.nachonotch.util.*
+import androidx.core.view.WindowInsetsCompat
+import com.xda.nachonotch.util.mainScope
+import com.xda.nachonotch.util.wm
 import kotlinx.coroutines.launch
 
 @SuppressLint("ViewConstructor")
 @Suppress("DEPRECATION")
 open class BaseImmersiveHelperView(
     context: Context,
-    private val immersiveListener: (left: Int, top: Int, right: Int, bottom: Int) -> Unit
+    private val immersiveListener: (nav: Boolean, status: Boolean) -> Unit,
+    private val layoutListener: (left: Int, top: Int, right: Int, bottom: Int) -> Unit,
 ) : View(context) {
     @SuppressLint("RtlHardcoded")
     val params = WindowManager.LayoutParams().apply {
@@ -23,11 +27,15 @@ open class BaseImmersiveHelperView(
         else WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
         flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
                 WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
+                WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS
         softInputMode = WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING
         format = PixelFormat.TRANSPARENT
         x = 0
         y = 0
         gravity = Gravity.LEFT or Gravity.BOTTOM
+
+        height = WindowManager.LayoutParams.MATCH_PARENT
+        width = WindowManager.LayoutParams.MATCH_PARENT
     }
 
     init {
@@ -42,10 +50,12 @@ open class BaseImmersiveHelperView(
     private val rect = Rect()
 
     override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
-        mainHandler.post {
-            rect.apply { getBoundsOnScreen(this) }
+        handleInsets(rootWindowInsets)
 
-            immersiveListener.invoke(rect.left, rect.top, rect.right, rect.bottom)
+        getBoundsOnScreen(rect)
+
+        mainScope.launch {
+            layoutListener(rect.left, rect.top, rect.right, rect.bottom)
         }
 
         super.onLayout(changed, left, top, right, bottom)
@@ -56,31 +66,32 @@ open class BaseImmersiveHelperView(
 
         updateDimensions()
         updateLayout()
+
+        setOnApplyWindowInsetsListener { _, insets ->
+            handleInsets(insets)
+
+            insets
+        }
     }
 
     open fun updateDimensions() {}
+
+    private fun handleInsets(insets: WindowInsets) {
+        val compat = WindowInsetsCompat.toWindowInsetsCompat(insets)
+
+        val navShowing = compat.isVisible(WindowInsetsCompat.Type.navigationBars())
+        val statusShowing = compat.isVisible(WindowInsetsCompat.Type.statusBars())
+
+        mainScope.launch {
+            immersiveListener(!navShowing, !statusShowing)
+        }
+    }
 
     private fun updateLayout() {
         mainScope.launch {
             try {
                 context.wm.updateViewLayout(this@BaseImmersiveHelperView, params)
             } catch (_: Exception) {}
-        }
-    }
-
-    fun enterNavImmersive() {
-        mainScope.launch {
-            systemUiVisibility = systemUiVisibility or
-                    SYSTEM_UI_FLAG_HIDE_NAVIGATION or
-                    SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-        }
-    }
-
-    fun exitNavImmersive() {
-        mainScope.launch {
-            systemUiVisibility = systemUiVisibility and
-                    SYSTEM_UI_FLAG_HIDE_NAVIGATION.inv() and
-                    SYSTEM_UI_FLAG_IMMERSIVE_STICKY.inv()
         }
     }
 }
