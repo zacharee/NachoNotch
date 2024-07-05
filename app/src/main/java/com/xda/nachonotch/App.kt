@@ -28,7 +28,7 @@ import org.lsposed.hiddenapibypass.HiddenApiBypass
 @SuppressLint("PrivateApi")
 class App : Application() {
     private val iWindowManagerClass: Class<*> = Class.forName("android.view.IWindowManager")
-    private val iWindowManager: Any by lazy {
+    private val iWindowManager by lazy {
         val stubClass = Class.forName("android.view.IWindowManager\$Stub")
         val serviceManagerClass = Class.forName("android.os.ServiceManager")
 
