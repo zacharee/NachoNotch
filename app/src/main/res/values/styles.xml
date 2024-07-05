@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="AppTheme" parent="Theme.Material3.DynamicColors.DayNight">
+    <style name="AppTheme" parent="Theme.Material3.DynamicColors.DayNight.NoActionBar">
         <item name="android:fitsSystemWindows">false</item>
         <item name="android:enforceNavigationBarContrast">false</item>
         <item name="android:enforceStatusBarContrast">false</item>
