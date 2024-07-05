@@ -1,18 +1,18 @@
 [versions]
-activityCompose = "1.8.2"
-androidGradlePlugin = "8.4.0-alpha10"
-appcompat = "1.6.1"
-bugsnagAndroid = "6.2.0"
+activityCompose = "1.9.0"
+androidGradlePlugin = "8.4.2"
+appcompat = "1.7.0"
+bugsnagAndroid = "6.6.1"
 bugsnagAndroidGradlePlugin = "8.1.0"
-bugsnagAndroidPerformance = "1.2.1"
-composeBom = "2024.02.00-alpha01"
-composeCompiler = "1.5.9"
+bugsnagAndroidPerformance = "1.4.0"
+composeBom = "2024.02.00-alpha02"
+composeCompiler = "1.5.14"
 constraintlayout = "2.1.4"
 hiddenapibypass = "4.3"
-kotlin = "1.9.22"
-kotlinxCoroutinesCore = "1.8.0"
+kotlin = "2.0.0"
+kotlinxCoroutinesCore = "1.9.0-RC"
 markwon = "2.0.2"
-material = "1.11.0"
+material = "1.12.0"
 preferenceKtx = "1.2.1"
 seekbarpreference = "46a6643c79"
 taskerpluginlibrary = "0.4.10"
@@ -41,3 +41,4 @@ taskerpluginlibrary = { module = "com.joaomgcd:taskerpluginlibrary", version.ref
 android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }
 bugsnag-android = { id = "com.bugsnag.android.gradle", version.ref = "bugsnagAndroidGradlePlugin" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
