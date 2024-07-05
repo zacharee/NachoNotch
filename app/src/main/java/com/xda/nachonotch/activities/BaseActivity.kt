@@ -1,5 +1,6 @@
 package com.xda.nachonotch.activities
 
+import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.compose.setContent
@@ -24,6 +25,11 @@ abstract class BaseActivity : AppCompatActivity() {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            window.isNavigationBarContrastEnforced = false
+        }
+        window.navigationBarColor = Color.TRANSPARENT
+
         setContent {
             val isSystemInDarkTheme = isSystemInDarkTheme()
 
@@ -44,9 +50,7 @@ abstract class BaseActivity : AppCompatActivity() {
                     modifier = Modifier.fillMaxSize(),
                 ) {
                     Box(
-                        modifier = Modifier
-                            .systemBarsPadding()
-                            .imePadding(),
+                        modifier = Modifier,
                     ) {
                         Content()
                     }

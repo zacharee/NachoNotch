@@ -5,17 +5,17 @@
     <PreferenceCategory
         android:title="@string/options">
 
-        <SwitchPreference
+        <com.xda.nachonotch.preferences.MaterialSwitchPreference
             android:title="@string/cover_nav"
             android:key="cover_nav"
             />
 
-        <SwitchPreference
+        <com.xda.nachonotch.preferences.MaterialSwitchPreference
             android:title="@string/rounded_corners_top"
             android:key="rounded_corners"
             />
 
-        <SwitchPreference
+        <com.xda.nachonotch.preferences.MaterialSwitchPreference
             android:title="@string/rounded_corners_bottom"
             android:key="rounded_corners_bottom"
             />

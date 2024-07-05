@@ -59,4 +59,6 @@
     <string name="enable_overlay_permission">Please allow Nacho Notch to draw over other apps.</string>
 
     <string name="settings_hint">Tap the overflow menu to check out the settings! You can choose to black out the navigation bar along with the status bar, enable rounded corners, and even manually adjust the sizing of the blackouts.</string>
+
+    <string name="back">Back</string>
 </resources>

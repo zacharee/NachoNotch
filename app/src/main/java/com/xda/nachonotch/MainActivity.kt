@@ -1,21 +1,40 @@
 package com.xda.nachonotch
 
-import android.content.SharedPreferences
+import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
-import android.provider.Settings
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.add
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.calculateEndPadding
+import androidx.compose.foundation.layout.calculateStartPadding
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.ime
+import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Switch
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.viewinterop.AndroidView
-import androidx.preference.PreferenceFragmentCompat
-import androidx.preference.SwitchPreference
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import com.xda.nachonotch.activities.BaseActivity
+import com.xda.nachonotch.components.CardItem
+import com.xda.nachonotch.components.LinkItem
+import com.xda.nachonotch.components.rememberNavigationLinks
+import com.xda.nachonotch.components.rememberSocialLinks
 import com.xda.nachonotch.util.PrefManager
-import com.xda.nachonotch.util.addOverlayAndEnable
 import com.xda.nachonotch.util.enforceTerms
-import com.xda.nachonotch.util.launchOverlaySettings
 import com.xda.nachonotch.util.prefManager
-import com.xda.nachonotch.util.removeOverlayAndDisable
+import com.xda.nachonotch.util.rememberPreferenceState
 
 class MainActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -30,49 +49,60 @@ class MainActivity : BaseActivity() {
         }
     }
 
+    @SuppressLint("InflateParams")
     @Composable
     override fun Content() {
-        AndroidView(factory = { layoutInflater.inflate(R.layout.activity_main, null) })
-    }
+        val layoutDirection = LocalLayoutDirection.current
 
-    class Prefs : PreferenceFragmentCompat(), SharedPreferences.OnSharedPreferenceChangeListener {
-        private val switch by lazy { findPreference<SwitchPreference>("enabled_indicator") }
+        val mainItems = rememberNavigationLinks()
+        val socialItems = rememberSocialLinks()
 
-        override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
-            setPreferencesFromResource(R.xml.prefs_home, rootKey)
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = WindowInsets.systemBars.add(WindowInsets.ime).asPaddingValues().run {
+                PaddingValues(
+                    start = 8.dp + calculateStartPadding(layoutDirection),
+                    end = 8.dp + calculateEndPadding(layoutDirection),
+                    top = 8.dp + calculateTopPadding(),
+                    bottom = 8.dp + calculateBottomPadding(),
+                )
+            },
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            item(key = "MainToggle") {
+                var isEnabled by rememberPreferenceState(
+                    key = PrefManager.SHOULD_RUN,
+                    value = { prefManager.isEnabled },
+                    onChanged = { prefManager.isEnabled = it },
+                )
 
-            requireContext().apply {
-                switch?.isChecked = prefManager.isEnabled
-                switch?.setOnPreferenceClickListener {
-                    if (Settings.canDrawOverlays(this)) {
-                        if (prefManager.isEnabled) removeOverlayAndDisable()
-                        else addOverlayAndEnable()
-                        true
-                    } else {
-                        launchOverlaySettings()
-                        false
-                    }
-                }
+                CardItem(
+                    onClick = {
+                        isEnabled = !isEnabled
+                    },
+                    icon = painterResource(R.drawable.ic_space_bar_black_24dp) to stringResource(R.string.hide_notch),
+                    title = stringResource(R.string.hide_notch),
+                    desc = stringResource(R.string.hide_notch_desc),
+                    modifier = Modifier.fillMaxWidth(),
+                    widget = {
+                        Switch(
+                            checked = isEnabled,
+                            onCheckedChange = { isEnabled = it },
+                        )
+                    },
+                )
             }
-        }
 
-        override fun onCreate(savedInstanceState: Bundle?) {
-            super.onCreate(savedInstanceState)
+            items(items = mainItems, key = { it.title }) {
+                LinkItem(
+                    option = it,
+                )
+            }
 
-            requireContext().prefManager.registerOnSharedPreferenceChangeListener(this)
-        }
-
-        override fun onDestroy() {
-            super.onDestroy()
-
-            requireContext().prefManager.unregisterOnSharedPreferenceChangeListener(this)
-        }
-
-        override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
-            when (key) {
-                PrefManager.SHOULD_RUN -> {
-                    switch?.isChecked = requireContext().prefManager.isEnabled
-                }
+            items(items = socialItems, key = { it.title }) {
+                LinkItem(
+                    option = it,
+                )
             }
         }
     }

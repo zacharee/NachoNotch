@@ -161,8 +161,6 @@ fun Context.launchEmail(to: String, subject: String) {
 }
 
 fun Context.addOverlayAndEnable() {
-    prefManager.isEnabled = true
-
     val service = Intent(this, BackgroundHandler::class.java)
     ContextCompat.startForegroundService(this, service)
 
@@ -173,8 +171,6 @@ fun Context.addOverlayAndEnable() {
 fun Context.removeOverlayAndDisable() {
     val service = Intent(this, BackgroundHandler::class.java)
     stopService(service)
-
-    prefManager.isEnabled = false
 
     TaskerEnableStateConfigureActivity::class.java.requestQuery(this)
     TaskerDisableStateConfigureActivity::class.java.requestQuery(this)

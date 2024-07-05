@@ -40,7 +40,7 @@ class ToggleService : TileService(), SharedPreferences.OnSharedPreferenceChangeL
     }
 
     private fun add() {
-        addOverlayAndEnable()
+        prefManager.isEnabled = true
 
         updateTileState()
     }
@@ -48,7 +48,7 @@ class ToggleService : TileService(), SharedPreferences.OnSharedPreferenceChangeL
     private fun rem() {
         updateTileState()
 
-        removeOverlayAndDisable()
+        prefManager.isEnabled = false
     }
 
     private fun updateTileState() {
