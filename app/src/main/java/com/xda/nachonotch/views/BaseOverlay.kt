@@ -6,6 +6,7 @@ import android.content.SharedPreferences
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import android.graphics.PixelFormat
 import android.os.Build
+import android.provider.Settings
 import android.view.View
 import android.view.WindowManager
 import androidx.core.animation.addListener
@@ -46,6 +47,13 @@ abstract class BaseOverlay(
     }
 
     protected open val listenKeys: List<String> = listOf()
+
+    protected val shouldAnimate: Boolean
+        get() = Settings.Global.getFloat(
+            context.contentResolver,
+            Settings.Global.ANIMATOR_DURATION_SCALE,
+            1.0f,
+        ) > 0.0f
 
     private var animator: ValueAnimator? = null
         set(value) {
@@ -134,26 +142,33 @@ abstract class BaseOverlay(
             }
             update()
 
-            var canceled = false
-            animator = ValueAnimator.ofFloat(params.alpha, 1f)
-            animator?.addListener(
-                onEnd = {
-                    if (!canceled) {
-                        animationComplete?.invoke()
-                    }
-                },
-                onCancel = { canceled = true },
-            )
-            animator?.addUpdateListener {
-                params.alpha = it.animatedFraction
+            if (shouldAnimate) {
+                var canceled = false
+                animator = ValueAnimator.ofFloat(params.alpha, 1f)
+                animator?.addListener(
+                    onEnd = {
+                        if (!canceled) {
+                            animationComplete?.invoke()
+                        }
+                    },
+                    onCancel = { canceled = true },
+                )
+                animator?.addUpdateListener {
+                    params.alpha = it.animatedFraction
+                    update()
+                }
+                animator?.start()
+            } else {
+                params.alpha = 1f
                 update()
+                animationComplete?.invoke()
             }
-            animator?.start()
     }
 
     open fun hide(animationComplete: (() -> Unit)? = null) {
         Bugsnag.leaveBreadcrumb("Hiding ${this::class.java.name}.")
 
+        if (shouldAnimate) {
             var canceled = false
             animator = ValueAnimator.ofFloat(params.alpha, 0f)
             animator?.addListener(
@@ -174,6 +189,11 @@ abstract class BaseOverlay(
                 update()
             }
             animator?.start()
+        } else {
+            params.alpha = 0f
+            update()
+            animationComplete?.invoke()
+        }
     }
 
     protected open fun onUpdateParams() {}
