@@ -19,6 +19,7 @@ class PrefManager private constructor(private val context: Context) {
         const val BOTTOM_CORNER_WIDTH = "bottom_corner_width"
         const val TOP_CORNER_HEIGHT = "top_corner_height"
         const val TOP_CORNER_WIDTH = "top_corner_width"
+        const val FORCE_LIGHT_STATUS_BAR_ICONS = "force_light_status_bar_icons"
 
         @SuppressLint("StaticFieldLeak")
         private var instance: PrefManager? = null
@@ -64,6 +65,9 @@ class PrefManager private constructor(private val context: Context) {
         set(value) {
             putBoolean(SHOULD_RUN, value)
         }
+
+    val forceLightStatusBarIcons: Boolean
+        get() = getBoolean(FORCE_LIGHT_STATUS_BAR_ICONS, true)
 
     val navBarHeight: Int
         get() = getInt(NAV_HEIGHT, context.resourceNavBarHeight)

@@ -51,14 +51,13 @@
     <string name="terms_desc">How to use Nacho Notch, what to expect from the app, and other things you should probably read over.</string>
 
     <!--Messages-->
-    <string name="welcome_message">Hey! This screen doesn\'t do anything. Nacho Notch is using a QS Tile.\n\n<a href="https://youtu.be/HhH5wK1NokY">Tutorial</a></string>
-    <string name="disable_activity">Disable this screen and hide the launcher icon</string>
-    <string name="activity_disabled">Launcher activity disabled.</string>
-    <string name="activity_enabled">Launcher activity enabled.</string>
     <string name="settings_prompt">Touch for settings</string>
     <string name="enable_overlay_permission">Please allow Nacho Notch to draw over other apps.</string>
 
     <string name="settings_hint">Tap the overflow menu to check out the settings! You can choose to black out the navigation bar along with the status bar, enable rounded corners, and even manually adjust the sizing of the blackouts.</string>
+
+    <string name="force_light_status_bar_icons">Force Light Status Bar Icons</string>
+    <string name="force_light_status_bar_icons_desc">Forces icons in the status bar to always be white. This may also cause the navigation bar buttons to turn white, in which case you can consider enabling \"Black-Out Navigation Bar\".</string>
 
     <string name="back">Back</string>
 </resources>

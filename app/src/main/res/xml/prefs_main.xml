@@ -20,6 +20,12 @@
             android:key="rounded_corners_bottom"
             />
 
+        <com.xda.nachonotch.preferences.MaterialSwitchPreference
+            android:title="@string/force_light_status_bar_icons"
+            android:summary="@string/force_light_status_bar_icons_desc"
+            android:key="force_light_status_bar_icons"
+            />
+
     </PreferenceCategory>
 
     <PreferenceCategory
