@@ -6,13 +6,11 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.os.*
 import android.provider.Settings
-import android.util.Log
 import android.view.DisplayInfo
 import android.view.IRotationWatcher
 import android.view.Surface
 import androidx.core.app.NotificationCompat
 import androidx.core.app.ServiceCompat
-import androidx.core.view.WindowInsetsCompat
 import com.bugsnag.android.Bugsnag
 import com.xda.nachonotch.R
 import com.xda.nachonotch.activities.SettingsActivity
@@ -168,7 +166,7 @@ class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeL
     private fun addAllOverlays() {
         if (Settings.canDrawOverlays(this)) {
             removeAllOverlays()
-            if (cachedRotation == Surface.ROTATION_0) {
+            if (!environmentManager.environmentStatus.contains(EnvironmentManager.EnvironmentStatus.LANDSCAPE)) {
                 addOverlays(*overlays.keys.toTypedArray())
             }
         } else {
