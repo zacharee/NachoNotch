@@ -29,7 +29,8 @@ abstract class BaseOverlay(
         flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
                 WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
                 WindowManager.LayoutParams.FLAG_LAYOUT_INSET_DECOR or
-                WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS
+                WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS or
+                WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
             flags = flags or WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
@@ -212,6 +213,7 @@ abstract class BaseOverlay(
 
     private fun onStatusUpdate() {
         if (canShow()) {
+            onUpdateParams()
             show()
         } else {
             hide()

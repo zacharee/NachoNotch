@@ -12,9 +12,14 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.IBinder
 import android.provider.Settings
+import android.util.Log
 import android.view.Display
 import android.view.IRotationWatcher
+import android.view.Surface
 import androidx.core.content.ContextCompat
+import androidx.core.view.DisplayCompat
+import androidx.core.view.DisplayCutoutCompat
+import androidx.core.view.WindowInsetsCompat
 import com.bugsnag.android.Bugsnag
 import com.bugsnag.android.performance.BugsnagPerformance
 import com.xda.nachonotch.services.BackgroundHandler
@@ -22,6 +27,7 @@ import com.xda.nachonotch.services.BackgroundJobService
 import com.xda.nachonotch.util.PrefManager
 import com.xda.nachonotch.util.addOverlayAndEnable
 import com.xda.nachonotch.util.cachedRotation
+import com.xda.nachonotch.util.displayCompat
 import com.xda.nachonotch.util.launchOverlaySettings
 import com.xda.nachonotch.util.prefManager
 import com.xda.nachonotch.util.refreshScreenSize
@@ -42,7 +48,12 @@ class App : Application(), SharedPreferences.OnSharedPreferenceChangeListener {
     }
     private val rotationWatcher by lazy { RotationWatcher() }
 
-    val rotationWatchers = ArrayList<IRotationWatcher>()
+    val rotationWatchers = object : ArrayList<IRotationWatcher>() {
+        override fun add(element: IRotationWatcher): Boolean {
+            element.onRotationChanged(cachedRotation)
+            return super.add(element)
+        }
+    }
 
     override fun onCreate() {
         super.onCreate()
@@ -70,6 +81,7 @@ class App : Application(), SharedPreferences.OnSharedPreferenceChangeListener {
         }
 
         watchRotation(rotationWatcher, Display.DEFAULT_DISPLAY)
+        rotationWatcher.onRotationChanged(cachedRotation)
         prefManager.registerOnSharedPreferenceChangeListener(this)
     }
 

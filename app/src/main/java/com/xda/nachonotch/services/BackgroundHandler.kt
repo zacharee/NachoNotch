@@ -6,10 +6,13 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.os.*
 import android.provider.Settings
+import android.util.Log
+import android.view.DisplayInfo
 import android.view.IRotationWatcher
 import android.view.Surface
 import androidx.core.app.NotificationCompat
 import androidx.core.app.ServiceCompat
+import androidx.core.view.WindowInsetsCompat
 import com.bugsnag.android.Bugsnag
 import com.xda.nachonotch.R
 import com.xda.nachonotch.activities.SettingsActivity
@@ -40,7 +43,16 @@ class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeL
             override fun onRotationChanged(rotation: Int) {
                 immersiveManager.add()
 
-                if (rotation == Surface.ROTATION_0) {
+                val displayInfo = DisplayInfo()
+                displayCompat.getDisplayInfo(displayInfo)
+
+                val hideBars = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                    (displayInfo.displayCutout?.safeInsets?.top?.let { it <= 0 }) ?: (rotation != Surface.ROTATION_0)
+                } else {
+                    rotation != Surface.ROTATION_0
+                }
+
+                if (!hideBars) {
                     environmentManager.removeStatus(EnvironmentManager.EnvironmentStatus.LANDSCAPE)
                 } else {
                     environmentManager.addStatus(EnvironmentManager.EnvironmentStatus.LANDSCAPE)

@@ -7,13 +7,17 @@ import android.os.Bundle
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.add
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
+import androidx.compose.foundation.layout.displayCutout
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.ime
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -56,14 +60,17 @@ class MainActivity : BaseActivity() {
 
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
-            contentPadding = WindowInsets.systemBars.add(WindowInsets.ime).asPaddingValues().run {
-                PaddingValues(
-                    start = 8.dp + calculateStartPadding(layoutDirection),
-                    end = 8.dp + calculateEndPadding(layoutDirection),
-                    top = 8.dp + calculateTopPadding(),
-                    bottom = 8.dp + calculateBottomPadding(),
-                )
-            },
+            contentPadding = WindowInsets.systemBars
+                .add(WindowInsets.ime)
+                .add(WindowInsets.displayCutout.only(WindowInsetsSides.Horizontal))
+                .asPaddingValues().run {
+                    PaddingValues(
+                        start = 8.dp + calculateStartPadding(layoutDirection),
+                        end = 8.dp + calculateEndPadding(layoutDirection),
+                        top = 8.dp + calculateTopPadding(),
+                        bottom = 8.dp + calculateBottomPadding(),
+                    )
+                },
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             item(key = "MainToggle") {
@@ -77,7 +84,10 @@ class MainActivity : BaseActivity() {
                     if (isEnabled) {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                             if (checkCallingOrSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
-                                requestPermissions(arrayOf(android.Manifest.permission.POST_NOTIFICATIONS), 100)
+                                requestPermissions(
+                                    arrayOf(android.Manifest.permission.POST_NOTIFICATIONS),
+                                    100
+                                )
                             }
                         }
                     }

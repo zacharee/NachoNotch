@@ -170,10 +170,10 @@ class ImmersiveHelperManager(
     }
 
     fun onDestroy() {
+        remove()
         context.contentResolver.unregisterContentObserver(this)
         vertical.removeOnAttachStateChangeListener(verticalAttachListener)
         horizontal.removeOnAttachStateChangeListener(horizontalAttachListener)
-        remove()
     }
 
     fun remove() {

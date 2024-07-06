@@ -35,8 +35,10 @@ class EnvironmentManager private constructor(private val context: Context) {
         Bugsnag.leaveBreadcrumb("Adding EnvironmentStatus ${status.contentToString()}")
         _environmentStatus.addAll(status.toSet())
 
-        if (oldSet.size != _environmentStatus.size) {
-            context.eventManager.sendEvent(Event.EnvironmentStatusUpdated)
+        mainHandler.post {
+            if (oldSet.size != _environmentStatus.size) {
+                context.eventManager.sendEvent(Event.EnvironmentStatusUpdated)
+            }
         }
     }
 
@@ -45,8 +47,10 @@ class EnvironmentManager private constructor(private val context: Context) {
         Bugsnag.leaveBreadcrumb("Removing EnvironmentStatus ${status.contentToString()}")
         _environmentStatus.removeAll(status.toSet())
 
-        if (oldSet.size != _environmentStatus.size) {
-            context.eventManager.sendEvent(Event.EnvironmentStatusUpdated)
+        mainHandler.post {
+            if (oldSet.size != _environmentStatus.size) {
+                context.eventManager.sendEvent(Event.EnvironmentStatusUpdated)
+            }
         }
     }
 }
