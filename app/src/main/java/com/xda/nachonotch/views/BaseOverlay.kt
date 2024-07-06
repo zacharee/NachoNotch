@@ -109,7 +109,8 @@ abstract class BaseOverlay(
     open fun update() {
         try {
             context.wm.updateViewLayout(this, params)
-        } catch (_: Exception) {}
+        } catch (_: Exception) {
+        }
     }
 
     open fun add() {
@@ -118,7 +119,7 @@ abstract class BaseOverlay(
             try {
                 context.wm.addView(this, params)
             } catch (e: Exception) {
-                Bugsnag.notify(IllegalStateException("Error adding ${this::class.java.name}", e))
+                Bugsnag.leaveBreadcrumb("Error adding ${this::class.java.name}: ${e.message}")
             }
         }
     }
@@ -130,7 +131,7 @@ abstract class BaseOverlay(
             try {
                 context.wm.removeView(this)
             } catch (e: Exception) {
-                Bugsnag.notify(IllegalStateException("Error removing ${this::class.java.name}", e))
+                Bugsnag.leaveBreadcrumb("Error removing ${this::class.java.name}: ${e.message}")
             }
         }
     }
@@ -138,32 +139,32 @@ abstract class BaseOverlay(
     open fun show(animationComplete: (() -> Unit)? = null) {
         Bugsnag.leaveBreadcrumb("Showing ${this::class.java.name}.")
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                params.flags = params.flags and WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE.inv()
-            }
-            update()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            params.flags = params.flags and WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE.inv()
+        }
+        update()
 
-            if (shouldAnimate) {
-                var canceled = false
-                animator = ValueAnimator.ofFloat(params.alpha, 1f)
-                animator?.addListener(
-                    onEnd = {
-                        if (!canceled) {
-                            animationComplete?.invoke()
-                        }
-                    },
-                    onCancel = { canceled = true },
-                )
-                animator?.addUpdateListener {
-                    params.alpha = it.animatedFraction
-                    update()
-                }
-                animator?.start()
-            } else {
-                params.alpha = 1f
+        if (shouldAnimate) {
+            var canceled = false
+            animator = ValueAnimator.ofFloat(params.alpha, 1f)
+            animator?.addListener(
+                onEnd = {
+                    if (!canceled) {
+                        animationComplete?.invoke()
+                    }
+                },
+                onCancel = { canceled = true },
+            )
+            animator?.addUpdateListener {
+                params.alpha = it.animatedFraction
                 update()
-                animationComplete?.invoke()
             }
+            animator?.start()
+        } else {
+            params.alpha = 1f
+            update()
+            animationComplete?.invoke()
+        }
     }
 
     open fun hide(animationComplete: (() -> Unit)? = null) {
@@ -176,7 +177,8 @@ abstract class BaseOverlay(
                 onEnd = {
                     if (!canceled) {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                            params.flags = params.flags or WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
+                            params.flags =
+                                params.flags or WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
                         }
                         update()
 
