@@ -97,11 +97,17 @@ fun Context.dpAsPx(dpVal: Number) =
         resources.displayMetrics
     ).roundToInt()
 
-fun Context.enforceTerms(): Boolean {
+fun Context.enforceTerms(fromMainActivity: Boolean = false): Boolean {
     return if (prefManager.termsVersion < TERMS_VERSION) {
         startActivity(
-                Intent(this, TermsActivity::class.java)
-                        .apply { addFlags(Intent.FLAG_ACTIVITY_NEW_TASK) })
+                Intent(this, TermsActivity::class.java).apply {
+                    if (!fromMainActivity) {
+                        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    } else {
+                        setFlags(0)
+                    }
+                    putExtra(TermsActivity.FROM_MAIN_ACTIVITY, fromMainActivity)
+                })
         false
     } else true
 }

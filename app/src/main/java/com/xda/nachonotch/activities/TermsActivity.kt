@@ -33,6 +33,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
+import com.xda.nachonotch.MainActivity
 import com.xda.nachonotch.R
 import com.xda.nachonotch.util.Utils
 import com.xda.nachonotch.util.prefManager
@@ -41,6 +42,12 @@ import java.io.BufferedReader
 import java.io.InputStreamReader
 
 class TermsActivity : BaseActivity() {
+    companion object {
+        const val FROM_MAIN_ACTIVITY = "from_main_activity"
+    }
+
+    private val fromMainActivity by lazy { intent.getBooleanExtra(FROM_MAIN_ACTIVITY, false) }
+
     @Composable
     override fun Content() {
         var agreedToTerms by remember {
@@ -114,6 +121,10 @@ class TermsActivity : BaseActivity() {
                         prefManager.termsVersion = Utils.TERMS_VERSION
 
                         finish()
+
+                        if (fromMainActivity) {
+                            startActivity(Intent(this@TermsActivity, MainActivity::class.java))
+                        }
                     },
                     enabled = agreedToTerms,
                     modifier = Modifier.align(Alignment.CenterEnd),
