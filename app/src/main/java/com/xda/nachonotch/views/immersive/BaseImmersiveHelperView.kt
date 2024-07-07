@@ -23,8 +23,11 @@ open class BaseImmersiveHelperView(
 ) : View(context) {
     @SuppressLint("RtlHardcoded")
     val params = WindowManager.LayoutParams().apply {
-        type = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) WindowManager.LayoutParams.TYPE_PHONE
-        else WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
+        type = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+            WindowManager.LayoutParams.TYPE_PHONE
+        } else {
+            WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
+        }
         flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
                 WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
                 WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS

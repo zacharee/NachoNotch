@@ -14,7 +14,7 @@ import kotlinx.coroutines.launch
 
 class ImmersiveHelperManager(
     private val context: Context,
-    private val immersiveListener: ImmersiveChangeListener
+    private val immersiveListener: ImmersiveChangeListener,
 ) : ContentObserver(mainHandler) {
     companion object {
         const val POLICY_CONTROL = "policy_control"
