@@ -17,7 +17,7 @@ class BottomOverlay(context: Context) : BaseOverlay(context, backgroundColor = C
             gravity = Gravity.BOTTOM
             width = WindowManager.LayoutParams.MATCH_PARENT
             height = context.prefManager.navBarHeight
-            y = -context.resourceNavBarHeight
+            y = -context.prefManager.navBarHeight
         }
 
     override val listenKeys: List<String>

@@ -38,7 +38,7 @@ val Context.displayCompat: Display
     get() = (getSystemService(Context.DISPLAY_SERVICE) as DisplayManager).getDisplay(Display.DEFAULT_DISPLAY)
 
 val Context.realScreenSize: Point
-    get() = Point(cachedScreenSize ?: refreshScreenSize())
+    get() = Point(refreshScreenSize())
 
 var cachedRotation = Integer.MIN_VALUE
 
@@ -46,8 +46,6 @@ val Context.rotation: Int
     get() {
         return displayCompat.rotation.also { cachedRotation = it }
     }
-
-private var cachedScreenSize: Point? = null
 
 /**
  * Try not to call this from the main Thread
@@ -57,9 +55,7 @@ fun Context.refreshScreenSize(): Point {
 
     @Suppress("DEPRECATION")
     val temp = Point().apply { display.getRealSize(this) }
-    cachedScreenSize = temp
-
-    return cachedScreenSize!!
+    return temp
 }
 
 val isLandscape: Boolean
