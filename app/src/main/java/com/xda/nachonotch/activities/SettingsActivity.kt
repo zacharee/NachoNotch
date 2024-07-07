@@ -5,11 +5,17 @@ import android.os.Bundle
 import android.view.View
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.add
 import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.displayCutout
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.navigationBars
-import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.only
+import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -39,14 +45,21 @@ class SettingsActivity : BaseActivity() {
     override fun Content() {
         Surface(
             modifier = Modifier.fillMaxSize()
-                .statusBarsPadding(),
+                .windowInsetsPadding(
+                    WindowInsets.systemBars.add(WindowInsets.ime)
+                        .add(WindowInsets.displayCutout.only(WindowInsetsSides.Horizontal))
+                        .only(WindowInsetsSides.Top + WindowInsetsSides.Horizontal),
+                ),
         ) {
             Column(
                 modifier = Modifier.fillMaxSize(),
             ) {
                 TitleBar(title = title.toString())
 
-                val bottomPadding = with(LocalDensity.current) { WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding().toPx() }
+                val bottomPadding = with(LocalDensity.current) {
+                    WindowInsets.navigationBars.add(WindowInsets.ime)
+                        .asPaddingValues().calculateBottomPadding().toPx()
+                }
 
                 AndroidView(
                     factory = {
