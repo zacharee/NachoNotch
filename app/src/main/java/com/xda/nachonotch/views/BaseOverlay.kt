@@ -10,10 +10,10 @@ import android.provider.Settings
 import android.view.View
 import android.view.WindowManager
 import androidx.core.animation.addListener
-import com.bugsnag.android.Bugsnag
 import com.xda.nachonotch.util.EnvironmentManager
 import com.xda.nachonotch.util.Event
 import com.xda.nachonotch.util.EventObserver
+import com.xda.nachonotch.util.LoggingBugsnag
 import com.xda.nachonotch.util.environmentManager
 import com.xda.nachonotch.util.eventManager
 import com.xda.nachonotch.util.prefManager
@@ -115,29 +115,29 @@ abstract class BaseOverlay(
 
     open fun add() {
         if (canAdd()) {
-            Bugsnag.leaveBreadcrumb("Adding ${this::class.java.name}")
+            LoggingBugsnag.leaveBreadcrumb("Adding ${this::class.java.name}")
             try {
                 context.wm.addView(this, params)
             } catch (e: Exception) {
-                Bugsnag.leaveBreadcrumb("Error adding ${this::class.java.name}: ${e.message}")
+                LoggingBugsnag.leaveBreadcrumb("Error adding ${this::class.java.name}: ${e.message}")
             }
         }
     }
 
     open fun remove() {
-        Bugsnag.leaveBreadcrumb("Removing ${this::class.java.name}")
+        LoggingBugsnag.leaveBreadcrumb("Removing ${this::class.java.name}")
 
         hide {
             try {
                 context.wm.removeView(this)
             } catch (e: Exception) {
-                Bugsnag.leaveBreadcrumb("Error removing ${this::class.java.name}: ${e.message}")
+                LoggingBugsnag.leaveBreadcrumb("Error removing ${this::class.java.name}: ${e.message}")
             }
         }
     }
 
     open fun show(animationComplete: (() -> Unit)? = null) {
-        Bugsnag.leaveBreadcrumb("Showing ${this::class.java.name}.")
+        LoggingBugsnag.leaveBreadcrumb("Showing ${this::class.java.name}.")
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             params.flags = params.flags and WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE.inv()
@@ -168,7 +168,7 @@ abstract class BaseOverlay(
     }
 
     open fun hide(animationComplete: (() -> Unit)? = null) {
-        Bugsnag.leaveBreadcrumb("Hiding ${this::class.java.name}.")
+        LoggingBugsnag.leaveBreadcrumb("Hiding ${this::class.java.name}.")
 
         if (shouldAnimate) {
             var canceled = false

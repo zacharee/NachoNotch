@@ -10,6 +10,7 @@ import android.view.View
 import android.view.WindowInsets
 import android.view.WindowManager
 import androidx.core.view.WindowInsetsCompat
+import com.xda.nachonotch.util.LoggingBugsnag
 import com.xda.nachonotch.util.mainScope
 import com.xda.nachonotch.util.wm
 import kotlinx.coroutines.launch
@@ -30,7 +31,6 @@ open class BaseImmersiveHelperView(
         }
         flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
                 WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
-                WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS
         softInputMode = WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING
         format = PixelFormat.TRANSPARENT
         x = 0
@@ -57,8 +57,20 @@ open class BaseImmersiveHelperView(
 
         getBoundsOnScreen(rect)
 
+        LoggingBugsnag.leaveBreadcrumb("Laying out ${this::class.java.name} with insets $rootWindowInsets and layout ${rect}.")
+
         mainScope.launch {
-            layoutListener(rect.left, rect.top, rect.right, rect.bottom)
+            var realTop = rect.top
+
+            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.P) {
+                val insetsTop = WindowInsetsCompat.toWindowInsetsCompat(rootWindowInsets).stableInsets.top
+
+                if (realTop == 0 && insetsTop > 0) {
+                    realTop = insetsTop
+                }
+            }
+
+            layoutListener(rect.left, realTop, rect.right, rect.bottom)
         }
 
         super.onLayout(changed, left, top, right, bottom)
@@ -71,6 +83,7 @@ open class BaseImmersiveHelperView(
         updateLayout()
 
         setOnApplyWindowInsetsListener { _, insets ->
+            LoggingBugsnag.leaveBreadcrumb("Applying window insets $insets for ${this::class.java.name}.")
             handleInsets(insets)
 
             insets
@@ -80,13 +93,15 @@ open class BaseImmersiveHelperView(
     open fun updateDimensions() {}
 
     private fun handleInsets(insets: WindowInsets) {
-        val compat = WindowInsetsCompat.toWindowInsetsCompat(insets)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            val compat = WindowInsetsCompat.toWindowInsetsCompat(insets)
 
-        val navShowing = compat.isVisible(WindowInsetsCompat.Type.navigationBars())
-        val statusShowing = compat.isVisible(WindowInsetsCompat.Type.statusBars())
+            val navShowing = compat.isVisible(WindowInsetsCompat.Type.navigationBars())
+            val statusShowing = compat.isVisible(WindowInsetsCompat.Type.statusBars())
 
-        mainScope.launch {
-            immersiveListener(!navShowing, !statusShowing)
+            mainScope.launch {
+                immersiveListener(!navShowing, !statusShowing)
+            }
         }
     }
 
@@ -94,7 +109,8 @@ open class BaseImmersiveHelperView(
         mainScope.launch {
             try {
                 context.wm.updateViewLayout(this@BaseImmersiveHelperView, params)
-            } catch (_: Exception) {}
+            } catch (_: Exception) {
+            }
         }
     }
 }

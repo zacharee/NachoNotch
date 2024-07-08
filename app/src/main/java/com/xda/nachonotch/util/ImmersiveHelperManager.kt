@@ -6,7 +6,6 @@ import android.graphics.Rect
 import android.net.Uri
 import android.provider.Settings
 import android.view.View
-import com.bugsnag.android.Bugsnag
 import com.xda.nachonotch.views.immersive.BaseImmersiveHelperView
 import com.xda.nachonotch.views.immersive.HorizontalImmersiveHelperView
 import com.xda.nachonotch.views.immersive.VerticalImmersiveHelperView
@@ -44,23 +43,23 @@ class ImmersiveHelperManager(
 
     private val verticalAttachListener = object : View.OnAttachStateChangeListener {
         override fun onViewAttachedToWindow(v: View?) {
-            Bugsnag.leaveBreadcrumb("Vertical helper attached.")
+            LoggingBugsnag.leaveBreadcrumb("Vertical helper attached.")
             verticalHelperAdded = true
         }
 
         override fun onViewDetachedFromWindow(v: View?) {
-            Bugsnag.leaveBreadcrumb("Vertical helper detached.")
+            LoggingBugsnag.leaveBreadcrumb("Vertical helper detached.")
             verticalHelperAdded = false
         }
     }
     private val horizontalAttachListener = object : View.OnAttachStateChangeListener {
         override fun onViewAttachedToWindow(v: View?) {
-            Bugsnag.leaveBreadcrumb("Horizontal helper attached.")
+            LoggingBugsnag.leaveBreadcrumb("Horizontal helper attached.")
             horizontalHelperAdded = true
         }
 
         override fun onViewDetachedFromWindow(v: View?) {
-            Bugsnag.leaveBreadcrumb("Horizontal helper detached.")
+            LoggingBugsnag.leaveBreadcrumb("Horizontal helper detached.")
             horizontalHelperAdded = false
         }
     }
@@ -71,7 +70,7 @@ class ImmersiveHelperManager(
                 if (field != value) {
                     field.set(value)
 
-                    Bugsnag.leaveBreadcrumb("New vertical layout $value. Screen size ${context.realScreenSize}. Overscan ${context.safeOverscanInsets}.")
+                    LoggingBugsnag.leaveBreadcrumb("New vertical layout $value. Screen size ${context.realScreenSize}. Overscan ${context.safeOverscanInsets}.")
 
                     updateImmersiveListener()
                 }
@@ -84,7 +83,7 @@ class ImmersiveHelperManager(
                 if (field != value) {
                     field.set(value)
 
-                    Bugsnag.leaveBreadcrumb("New horizontal layout $value. Screen size ${context.realScreenSize}. Overscan ${context.safeOverscanInsets}.")
+                    LoggingBugsnag.leaveBreadcrumb("New horizontal layout $value. Screen size ${context.realScreenSize}. Overscan ${context.safeOverscanInsets}.")
 
                     updateImmersiveListener()
                 }
@@ -97,7 +96,7 @@ class ImmersiveHelperManager(
                 if (field != value) {
                     field = value
 
-                    Bugsnag.leaveBreadcrumb("New nav immersive state $value.")
+                    LoggingBugsnag.leaveBreadcrumb("New nav immersive state $value.")
 
                     updateImmersiveListener()
                 }
@@ -110,7 +109,7 @@ class ImmersiveHelperManager(
                 if (field != value) {
                     field = value
 
-                    Bugsnag.leaveBreadcrumb("New status immersive state $value.")
+                    LoggingBugsnag.leaveBreadcrumb("New status immersive state $value.")
 
                     updateImmersiveListener()
                 }
@@ -123,11 +122,11 @@ class ImmersiveHelperManager(
     override fun onChange(selfChange: Boolean, uri: Uri?) {
         when (uri) {
             Settings.Global.getUriFor(POLICY_CONTROL) -> {
-                Bugsnag.leaveBreadcrumb(
+                LoggingBugsnag.leaveBreadcrumb(
                     "Policy control changed. ${
                         Settings.Global.getString(
                             context.contentResolver,
-                            POLICY_CONTROL
+                            POLICY_CONTROL,
                         )
                     }"
                 )
@@ -137,7 +136,7 @@ class ImmersiveHelperManager(
     }
 
     private fun updateImmersiveListener() {
-        Bugsnag.leaveBreadcrumb("Updating immersive listeners.")
+        LoggingBugsnag.leaveBreadcrumb("Updating immersive listeners.")
         immersiveListener.onImmersiveChange()
     }
 
@@ -165,7 +164,8 @@ class ImmersiveHelperManager(
             } else {
                 wm.updateViewLayout(view, view.params)
             }
-        } catch (_: Exception) {
+        } catch (e: Exception) {
+            LoggingBugsnag.leaveBreadcrumb("Unable to add ${view::class.java.name}, alreadyAdded: ${alreadyAdded}: ${e.message}")
         }
     }
 
@@ -186,7 +186,8 @@ class ImmersiveHelperManager(
 
         try {
             wm.removeView(view)
-        } catch (_: Exception) {
+        } catch (e: Exception) {
+            LoggingBugsnag.leaveBreadcrumb("Unable to remove ${view::class.java.name}: ${e.message}")
         }
     }
 

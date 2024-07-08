@@ -1,21 +1,40 @@
 package com.xda.nachonotch.services
 
-import android.app.*
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
+import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
-import android.os.*
+import android.os.Binder
+import android.os.Build
+import android.os.IBinder
 import android.provider.Settings
 import android.view.DisplayInfo
 import android.view.IRotationWatcher
 import android.view.Surface
 import androidx.core.app.NotificationCompat
 import androidx.core.app.ServiceCompat
-import com.bugsnag.android.Bugsnag
 import com.xda.nachonotch.R
 import com.xda.nachonotch.activities.SettingsActivity
-import com.xda.nachonotch.util.*
-import com.xda.nachonotch.views.*
+import com.xda.nachonotch.util.EnvironmentManager
+import com.xda.nachonotch.util.ImmersiveChangeListener
+import com.xda.nachonotch.util.ImmersiveHelperManager
+import com.xda.nachonotch.util.LoggingBugsnag
+import com.xda.nachonotch.util.PrefManager
+import com.xda.nachonotch.util.app
+import com.xda.nachonotch.util.displayCompat
+import com.xda.nachonotch.util.environmentManager
+import com.xda.nachonotch.util.launchOverlaySettings
+import com.xda.nachonotch.util.prefManager
+import com.xda.nachonotch.views.BaseOverlay
+import com.xda.nachonotch.views.BottomLeftCorner
+import com.xda.nachonotch.views.BottomOverlay
+import com.xda.nachonotch.views.BottomRightCorner
+import com.xda.nachonotch.views.TopLeftCorner
+import com.xda.nachonotch.views.TopOverlay
+import com.xda.nachonotch.views.TopRightCorner
 
 class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeListener, ImmersiveChangeListener {
     companion object {
@@ -45,7 +64,10 @@ class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeL
                 displayCompat.getDisplayInfo(displayInfo)
 
                 val hideBars = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                    (displayInfo.displayCutout?.safeInsets?.top?.let { it <= 0 }) ?: (rotation != Surface.ROTATION_0)
+                    val topCutoutInset = displayInfo.displayCutout?.safeInsets?.top
+                    LoggingBugsnag.leaveBreadcrumb("Top cutout inset $topCutoutInset")
+
+                    (topCutoutInset?.let { it <= 0 }) ?: (rotation != Surface.ROTATION_0)
                 } else {
                     rotation != Surface.ROTATION_0
                 }
@@ -62,7 +84,7 @@ class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeL
     override fun onCreate() {
         super.onCreate()
 
-        Bugsnag.leaveBreadcrumb("Service is creating.")
+        LoggingBugsnag.leaveBreadcrumb("Service is creating.")
 
         immersiveManager.onCreate()
 
@@ -81,7 +103,7 @@ class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeL
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        Bugsnag.leaveBreadcrumb("Received start command. Is enabled? ${prefManager.isEnabled}")
+        LoggingBugsnag.leaveBreadcrumb("Received start command. Is enabled? ${prefManager.isEnabled}")
 
         if (prefManager.isEnabled) addOverlayAndEnable()
         else stopSelf()
@@ -90,7 +112,7 @@ class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeL
     }
 
     override fun onDestroy() {
-        Bugsnag.leaveBreadcrumb("Service stopping.")
+        LoggingBugsnag.leaveBreadcrumb("Service stopping.")
         super.onDestroy()
         ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE)
         removeAllOverlays()
@@ -140,7 +162,7 @@ class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeL
     }
 
     private fun addOverlayAndEnable() {
-        Bugsnag.leaveBreadcrumb("Adding overlays and notification.")
+        LoggingBugsnag.leaveBreadcrumb("Adding overlays and notification.")
 
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.N_MR1) {
             val notifMan = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager

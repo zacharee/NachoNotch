@@ -12,22 +12,17 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.IBinder
 import android.provider.Settings
-import android.util.Log
 import android.view.Display
 import android.view.IRotationWatcher
-import android.view.Surface
 import androidx.core.content.ContextCompat
-import androidx.core.view.DisplayCompat
-import androidx.core.view.DisplayCutoutCompat
-import androidx.core.view.WindowInsetsCompat
 import com.bugsnag.android.Bugsnag
 import com.bugsnag.android.performance.BugsnagPerformance
 import com.xda.nachonotch.services.BackgroundHandler
 import com.xda.nachonotch.services.BackgroundJobService
+import com.xda.nachonotch.util.LoggingBugsnag
 import com.xda.nachonotch.util.PrefManager
 import com.xda.nachonotch.util.addOverlayAndEnable
 import com.xda.nachonotch.util.cachedRotation
-import com.xda.nachonotch.util.displayCompat
 import com.xda.nachonotch.util.launchOverlaySettings
 import com.xda.nachonotch.util.prefManager
 import com.xda.nachonotch.util.refreshScreenSize
@@ -116,11 +111,11 @@ class App : Application(), SharedPreferences.OnSharedPreferenceChangeListener {
     }
 
     fun updateServiceState() {
-        Bugsnag.leaveBreadcrumb("Updating service state.")
+        LoggingBugsnag.leaveBreadcrumb("Updating service state.")
         if (prefManager.isEnabled) {
-            Bugsnag.leaveBreadcrumb("Hide enabled.")
+            LoggingBugsnag.leaveBreadcrumb("Hide enabled.")
             if (Settings.canDrawOverlays(this)) {
-                Bugsnag.leaveBreadcrumb("Has permission to show, starting service.")
+                LoggingBugsnag.leaveBreadcrumb("Has permission to show, starting service.")
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                     scheduleService()
                 } else {
@@ -128,17 +123,17 @@ class App : Application(), SharedPreferences.OnSharedPreferenceChangeListener {
                     ContextCompat.startForegroundService(this, service)
                 }
             } else {
-                Bugsnag.leaveBreadcrumb("Has no permission, requesting.")
+                LoggingBugsnag.leaveBreadcrumb("Has no permission, requesting.")
                 launchOverlaySettings()
             }
         } else {
-            Bugsnag.leaveBreadcrumb("Not enabled, stopping service.")
+            LoggingBugsnag.leaveBreadcrumb("Not enabled, stopping service.")
             stopService(Intent(this, BackgroundHandler::class.java))
         }
     }
 
     private fun scheduleService(): Boolean {
-        Bugsnag.leaveBreadcrumb("Scheduling service start.")
+        LoggingBugsnag.leaveBreadcrumb("Scheduling service start.")
         val serviceComponent = ComponentName(this, BackgroundJobService::class.java)
         val builder = JobInfo.Builder(100, serviceComponent)
 
@@ -156,7 +151,7 @@ class App : Application(), SharedPreferences.OnSharedPreferenceChangeListener {
 
     inner class RotationWatcher : IRotationWatcher.Stub() {
         override fun onRotationChanged(rotation: Int) {
-            Bugsnag.leaveBreadcrumb("Rotation has changed to $rotation.")
+            LoggingBugsnag.leaveBreadcrumb("Rotation has changed to $rotation.")
             cachedRotation = rotation
             refreshScreenSize()
 
