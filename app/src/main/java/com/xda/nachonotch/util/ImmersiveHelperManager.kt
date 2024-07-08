@@ -22,8 +22,8 @@ class ImmersiveHelperManager(
     private val vertical = VerticalImmersiveHelperView(
         context = context,
         immersiveListener = { nav, status ->
-            _isNavImmersive = nav
-            _isStatusImmersive = status
+            _isNavImmersive = nav ?: _isNavImmersive
+            _isStatusImmersive = status ?: _isStatusImmersive
         },
         layoutListener = { left, top, right, bottom ->
             verticalLayout = Rect(left, top, right, bottom)
@@ -33,8 +33,8 @@ class ImmersiveHelperManager(
     private val horizontal = HorizontalImmersiveHelperView(
         context = context,
         immersiveListener = { nav, status ->
-            _isNavImmersive = nav
-            _isStatusImmersive = status
+            _isNavImmersive = nav ?: _isNavImmersive
+            _isStatusImmersive = status ?: _isStatusImmersive
         },
         layoutListener = { left, top, right, bottom ->
             horizontalLayout = Rect(left, top, right, bottom)
@@ -64,11 +64,11 @@ class ImmersiveHelperManager(
         }
     }
 
-    var verticalLayout = Rect()
+    var verticalLayout: Rect? = null
         set(value) {
             synchronized(this) {
                 if (field != value) {
-                    field.set(value)
+                    field = value
 
                     LoggingBugsnag.leaveBreadcrumb("New vertical layout $value. Screen size ${context.realScreenSize}. Overscan ${context.safeOverscanInsets}.")
 
@@ -77,11 +77,11 @@ class ImmersiveHelperManager(
             }
         }
 
-    var horizontalLayout = Rect()
+    var horizontalLayout: Rect? = null
         set(value) {
             synchronized(this) {
                 if (field != value) {
-                    field.set(value)
+                    field = value
 
                     LoggingBugsnag.leaveBreadcrumb("New horizontal layout $value. Screen size ${context.realScreenSize}. Overscan ${context.safeOverscanInsets}.")
 
@@ -193,7 +193,7 @@ class ImmersiveHelperManager(
 
     fun isStatusImmersive() = run {
         synchronized(this) {
-            val top = verticalLayout.top
+            val top = verticalLayout?.top ?: Int.MAX_VALUE
             top <= 0 || isFullPolicyControl() || isStatusPolicyControl() || _isStatusImmersive
         }
     }
@@ -205,9 +205,9 @@ class ImmersiveHelperManager(
                 val overscan = context.safeOverscanInsets
 
                 val isNav = if (isLandscape) {
-                    horizontalLayout.left <= 0 && horizontalLayout.right >= screenSize.x - overscan.bottom
+                    (horizontalLayout?.left ?: Int.MAX_VALUE) <= 0 && (horizontalLayout?.right ?: Int.MIN_VALUE) >= screenSize.x - overscan.bottom
                 } else {
-                    verticalLayout.bottom >= screenSize.y - overscan.bottom
+                    (verticalLayout?.bottom ?: Int.MIN_VALUE) >= screenSize.y - overscan.bottom
                 }
 
                 mainScope.launch {
