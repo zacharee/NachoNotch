@@ -95,22 +95,24 @@ fun Context.dpAsPx(dpVal: Number) =
 
 fun Context.enforceTerms(fromMainActivity: Boolean = false): Boolean {
     return if (prefManager.termsVersion < TERMS_VERSION) {
-        startActivity(
-                Intent(this, TermsActivity::class.java).apply {
-                    if (!fromMainActivity) {
-                        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                    } else {
-                        setFlags(0)
-                    }
-                    putExtra(TermsActivity.FROM_MAIN_ACTIVITY, fromMainActivity)
-                })
+        startActivity(getTermsIntent(fromMainActivity))
         false
     } else true
 }
 
+fun Context.getTermsIntent(fromMainActivity: Boolean = false): Intent {
+    return Intent(this, TermsActivity::class.java).apply {
+        if (!fromMainActivity) {
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        } else {
+            setFlags(0)
+        }
+        putExtra(TermsActivity.FROM_MAIN_ACTIVITY, fromMainActivity)
+    }
+}
+
 fun Context.launchOverlaySettings() {
-    val intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:$packageName"))
-    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+    val intent = getOverlaySettingsIntent()
 
     try {
         startActivity(intent)
@@ -121,6 +123,13 @@ fun Context.launchOverlaySettings() {
     }
 
     Toast.makeText(this, R.string.enable_overlay_permission, Toast.LENGTH_SHORT).show()
+}
+
+fun Context.getOverlaySettingsIntent(): Intent {
+    val intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:$packageName"))
+    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+
+    return intent
 }
 
 val Context.app: App
