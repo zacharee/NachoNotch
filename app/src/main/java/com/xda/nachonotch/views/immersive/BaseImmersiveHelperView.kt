@@ -71,24 +71,26 @@ open class BaseImmersiveHelperView(
     private val rect = Rect()
 
     override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
-        handleInsets(rootWindowInsets)
+        rootWindowInsets?.let { handleInsets(it) }
 
         getBoundsOnScreen(rect)
 
         LoggingBugsnag.leaveBreadcrumb("Laying out ${this::class.java.name} with insets $rootWindowInsets and layout ${rect}.")
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
-            mainScope.launch {
-                var realTop = rect.top
+            var realTop = rect.top
 
-                if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.P) {
-                    val insetsTop = WindowInsetsCompat.toWindowInsetsCompat(rootWindowInsets).stableInsets.top
+            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.P) {
+                rootWindowInsets?.let {
+                    val insetsTop = WindowInsetsCompat.toWindowInsetsCompat(it).stableInsets.top
 
                     if (realTop == 0 && insetsTop > 0) {
                         realTop = insetsTop
                     }
                 }
+            }
 
+            mainScope.launch {
                 layoutListener(rect.left, realTop, rect.right, rect.bottom)
             }
         }
@@ -103,9 +105,11 @@ open class BaseImmersiveHelperView(
         updateLayout()
 
         rootView.setOnApplyWindowInsetsListener { _, insets ->
-            if (!rootWindowInsets.isConsumed) {
-                LoggingBugsnag.leaveBreadcrumb("Applying window insets $rootWindowInsets for ${this::class.java.name}.")
-                handleInsets(rootWindowInsets)
+            rootWindowInsets?.let {
+                if (it.isConsumed) {
+                    LoggingBugsnag.leaveBreadcrumb("Applying window insets $rootWindowInsets for ${this::class.java.name}.")
+                    handleInsets(it)
+                }
             }
 
             insets
