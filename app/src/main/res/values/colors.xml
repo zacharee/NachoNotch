@@ -3,4 +3,7 @@
     <color name="colorAccent">?android:colorAccent</color>
     <color name="colorPrimary">?android:colorPrimary</color>
     <color name="colorPrimaryDark">?android:colorPrimaryDark</color>
+
+    <color name="ic_launcher_background">#483DDC</color>
+    <color name="ic_launcher_foreground">#ffffff</color>
 </resources>
