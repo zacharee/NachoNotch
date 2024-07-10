@@ -3,6 +3,7 @@ package com.xda.nachonotch.util
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
+import android.content.res.Resources
 import android.graphics.Point
 import android.graphics.Rect
 import android.hardware.display.DisplayManager
@@ -61,22 +62,17 @@ fun Context.refreshScreenSize(): Point {
 val isLandscape: Boolean
     get() = cachedRotation.run { this == Surface.ROTATION_90 || this == Surface.ROTATION_270 }
 
-val Context.hasNavBar: Boolean
-    @SuppressLint("DiscouragedApi")
-    get() {
-        val id = resources.getIdentifier("config_showNavigationBar", "bool", "android")
-        return id > 0 && resources.getBoolean(id)
-                || Build.MODEL.contains("Android SDK built for x86")
-    }
-
 val Context.prefManager: PrefManager
     get() = PrefManager.getInstance(this)
 
 val Context.resourceNavBarHeight: Int
     @SuppressLint("InternalInsetResource", "DiscouragedApi")
-    get() = if (hasNavBar)
+    get() = try {
         resources.getDimensionPixelSize(
-                resources.getIdentifier("navigation_bar_height", "dimen", "android")) else 0
+            resources.getIdentifier("navigation_bar_height", "dimen", "android"))
+    } catch (e: Resources.NotFoundException) {
+        0
+    }
 
 val Context.resourceStatusBarHeight: Int
     @SuppressLint("InternalInsetResource", "DiscouragedApi")

@@ -11,14 +11,13 @@ import com.xda.nachonotch.util.environmentManager
 import com.xda.nachonotch.util.prefManager
 
 class TopOverlay(context: Context) : BaseOverlay(context, backgroundColor = Color.BLACK) {
-    override val params: WindowManager.LayoutParams
-        get() = super.params.apply {
-            flags = flags or if (context.prefManager.forceLightStatusBarIcons) FLAG_DIM_BEHIND else 0
-            dimAmount = 0.000001f
-            gravity = Gravity.TOP
-            width = MATCH_PARENT
-            height = context.prefManager.statusBarHeight
-        }
+    override val params: WindowManager.LayoutParams = super.params.apply {
+        flags = flags or if (context.prefManager.forceLightStatusBarIcons) FLAG_DIM_BEHIND else 0
+        dimAmount = 0.000001f
+        gravity = Gravity.TOP
+        width = MATCH_PARENT
+        height = context.prefManager.statusBarHeight
+    }
 
     override val listenKeys: List<String>
         get() = listOf(PrefManager.STATUS_HEIGHT)

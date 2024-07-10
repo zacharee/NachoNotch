@@ -11,14 +11,13 @@ import com.xda.nachonotch.util.environmentManager
 import com.xda.nachonotch.util.prefManager
 
 class TopRightCorner(context: Context) : BaseOverlay(context, R.drawable.corner_left) {
-    override val params: WindowManager.LayoutParams
-        @SuppressLint("RtlHardcoded")
-        get() = super.params.apply {
-            gravity = Gravity.TOP or Gravity.RIGHT
-            width = context.prefManager.cornerWidthTopPx
-            height = context.prefManager.cornerHeightTopPx
-            y = context.prefManager.statusBarHeight
-        }
+    @SuppressLint("RtlHardcoded")
+    override val params: WindowManager.LayoutParams = super.params.apply {
+        gravity = Gravity.TOP or Gravity.RIGHT
+        width = context.prefManager.cornerWidthTopPx
+        height = context.prefManager.cornerHeightTopPx
+        y = context.prefManager.statusBarHeight
+    }
 
     override val listenKeys: List<String>
         get() = listOf(PrefManager.STATUS_HEIGHT, PrefManager.TOP_CORNER_HEIGHT, PrefManager.TOP_CORNER_WIDTH)
@@ -30,7 +29,7 @@ class TopRightCorner(context: Context) : BaseOverlay(context, R.drawable.corner_
     override fun onUpdateParams() {
         params.width = context.prefManager.cornerWidthTopPx
         params.height = context.prefManager.cornerHeightTopPx
-        params.y = context.prefManager.navBarHeight
+        params.y = context.prefManager.statusBarHeight
     }
 
     override fun canAdd(): Boolean {

@@ -44,7 +44,7 @@ abstract class BaseActivity : AppCompatActivity() {
                     else -> {
                         if (isSystemInDarkTheme) darkColorScheme() else lightColorScheme()
                     }
-                }
+                },
             ) {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
