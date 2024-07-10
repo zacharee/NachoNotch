@@ -6,7 +6,6 @@ bugsnagAndroid = "6.6.1"
 bugsnagAndroidGradlePlugin = "8.1.0"
 bugsnagAndroidPerformance = "1.4.0"
 composeBom = "2024.02.00-alpha02"
-composeCompiler = "1.5.14"
 constraintlayout = "2.1.4"
 hiddenapibypass = "4.3"
 kotlin = "2.0.0"
@@ -23,7 +22,6 @@ appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat"
 bugsnag-android = { module = "com.bugsnag:bugsnag-android", version.ref = "bugsnagAndroid" }
 bugsnag-android-performance = { module = "com.bugsnag:bugsnag-android-performance", version.ref = "bugsnagAndroidPerformance" }
 compose-bom = { module = "dev.chrisbanes.compose:compose-bom", version.ref = "composeBom" }
-compose-compiler = { module = "androidx.compose.compiler:compiler", version.ref = "composeCompiler" }
 compose-foundation = { module = "androidx.compose.foundation:foundation" }
 compose-material3 = { module = "androidx.compose.material3:material3" }
 constraintlayout = { module = "androidx.constraintlayout:constraintlayout", version.ref = "constraintlayout" }
