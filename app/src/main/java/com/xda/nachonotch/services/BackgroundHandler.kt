@@ -86,6 +86,23 @@ class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeL
 
         LoggingBugsnag.leaveBreadcrumb("Service is creating.")
 
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.N_MR1) {
+            val notifMan = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notifMan.createNotificationChannel(NotificationChannel("nachonotch", resources.getString(R.string.app_name), NotificationManager.IMPORTANCE_LOW))
+        }
+
+        val notification = NotificationCompat.Builder(this, "nachonotch")
+            .setContentTitle(resources.getString(R.string.app_name))
+            .setContentText(resources.getString(R.string.settings_prompt))
+            .setContentIntent(PendingIntent.getActivity(this, 100,
+                Intent(this, SettingsActivity::class.java), PendingIntent.FLAG_IMMUTABLE))
+            .setSmallIcon(R.drawable.qs_tile_icon)
+            .setPriority(if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
+                NotificationCompat.PRIORITY_MIN else NotificationCompat.PRIORITY_LOW)
+            .build()
+
+        startForeground(1, notification)
+
         immersiveManager.onCreate()
 
         overlays[OverlayPosition.TOP_BAR] = TopOverlay(this)
@@ -162,26 +179,9 @@ class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeL
     }
 
     private fun addOverlayAndEnable() {
-        LoggingBugsnag.leaveBreadcrumb("Adding overlays and notification.")
+        LoggingBugsnag.leaveBreadcrumb("Adding overlays.")
 
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.N_MR1) {
-            val notifMan = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            notifMan.createNotificationChannel(NotificationChannel("nachonotch", resources.getString(R.string.app_name), NotificationManager.IMPORTANCE_LOW))
-        }
-
-        val notification = NotificationCompat.Builder(this, "nachonotch")
-                .setContentTitle(resources.getString(R.string.app_name))
-                .setContentText(resources.getString(R.string.settings_prompt))
-                .setContentIntent(PendingIntent.getActivity(this, 100,
-                        Intent(this, SettingsActivity::class.java), PendingIntent.FLAG_IMMUTABLE))
-                .setSmallIcon(R.drawable.qs_tile_icon)
-                .setPriority(if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
-                    NotificationCompat.PRIORITY_MIN else NotificationCompat.PRIORITY_LOW)
-                .build()
-
-        startForeground(1, notification)
         immersiveManager.add()
-
         addAllOverlays()
     }
 
