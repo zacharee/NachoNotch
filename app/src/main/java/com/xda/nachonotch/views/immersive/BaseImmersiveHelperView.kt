@@ -36,7 +36,7 @@ open class BaseImmersiveHelperView(
         flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
                 WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             flags = flags or WindowManager.LayoutParams.FLAG_LAYOUT_INSET_DECOR or
                     WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
                     WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS or
@@ -53,7 +53,7 @@ open class BaseImmersiveHelperView(
         height = WindowManager.LayoutParams.MATCH_PARENT
         width = WindowManager.LayoutParams.MATCH_PARENT
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             this.fitInsetsSides = 0
             this.fitInsetsTypes = 0
         }
@@ -61,7 +61,7 @@ open class BaseImmersiveHelperView(
 
     init {
         alpha = 0f
-        fitsSystemWindows = Build.VERSION.SDK_INT < Build.VERSION_CODES.R
+        fitsSystemWindows = Build.VERSION.SDK_INT < Build.VERSION_CODES.S
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             isForceDarkAllowed = false
@@ -77,7 +77,7 @@ open class BaseImmersiveHelperView(
 
         LoggingBugsnag.leaveBreadcrumb("Laying out ${this::class.java.name} with insets $rootWindowInsets and layout ${rect}.")
 
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
             var realTop = rect.top
 
             if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.P) {
@@ -119,7 +119,7 @@ open class BaseImmersiveHelperView(
     open fun updateDimensions() {}
 
     private fun handleInsets(insets: WindowInsets) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             val compat = WindowInsetsCompat.toWindowInsetsCompat(insets)
 
             val navShowing = compat.getInsetsIgnoringVisibility(WindowInsetsCompat.Type.navigationBars()) != Insets.NONE
