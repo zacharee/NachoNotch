@@ -11,7 +11,9 @@ class BackgroundJobService : JobService() {
         LoggingBugsnag.leaveBreadcrumb("Running service start job.")
         ContextCompat.startForegroundService(
             this,
-            Intent(this, BackgroundHandler::class.java),
+            Intent(this, BackgroundHandler::class.java).apply {
+                putExtra(BackgroundHandler.EXTRA_WAS_SCHEDULED, true)
+            },
         )
 
         return false

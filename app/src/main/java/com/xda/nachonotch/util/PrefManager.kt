@@ -12,7 +12,7 @@ class PrefManager private constructor(private val context: Context) {
         const val NAV_HEIGHT = "nav_height"
         const val ROUNDED_CORNERS_BOTTOM = "rounded_corners_bottom"
         const val ROUNDED_CORNERS_TOP = "rounded_corners"
-        const val SHOULD_RUN = BackgroundHandler.SHOULD_RUN
+        const val SHOULD_RUN = "enabled"
         const val STATUS_HEIGHT = "status_height"
         const val TERMS_VERSION = "terms_version"
         const val BOTTOM_CORNER_HEIGHT = "bottom_corner_height"

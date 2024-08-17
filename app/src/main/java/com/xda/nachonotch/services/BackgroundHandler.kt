@@ -16,7 +16,6 @@ import android.view.IRotationWatcher
 import android.view.Surface
 import androidx.core.app.NotificationCompat
 import androidx.core.app.ServiceCompat
-import com.bugsnag.android.Bugsnag
 import com.xda.nachonotch.R
 import com.xda.nachonotch.activities.SettingsActivity
 import com.xda.nachonotch.util.EnvironmentManager
@@ -40,7 +39,7 @@ import com.xda.nachonotch.views.TopRightCorner
 
 class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeListener, ImmersiveChangeListener {
     companion object {
-        const val SHOULD_RUN = "enabled"
+        const val EXTRA_WAS_SCHEDULED = "was_scheduled"
     }
 
     enum class OverlayPosition {
@@ -93,28 +92,6 @@ class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeL
             notifMan.createNotificationChannel(NotificationChannel("nachonotch", resources.getString(R.string.app_name), NotificationManager.IMPORTANCE_LOW))
         }
 
-        val notification = NotificationCompat.Builder(this, "nachonotch")
-            .setContentTitle(resources.getString(R.string.app_name))
-            .setContentText(resources.getString(R.string.settings_prompt))
-            .setContentIntent(PendingIntent.getActivity(this, 100,
-                Intent(this, SettingsActivity::class.java), PendingIntent.FLAG_IMMUTABLE))
-            .setSmallIcon(R.drawable.qs_tile_icon)
-            .setPriority(if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
-                NotificationCompat.PRIORITY_MIN else NotificationCompat.PRIORITY_LOW)
-            .build()
-
-        try {
-            LoggingBugsnag.leaveBreadcrumb("Attempting to start in foreground.")
-            startForeground(1, notification)
-        } catch (e: Throwable) {
-            LoggingBugsnag.leaveBreadcrumb(
-                message = "Unable to start in foreground, attempting a scheduled start.",
-                error = e,
-            )
-            stopSelf()
-            scheduleService()
-        }
-
         immersiveManager.onCreate()
 
         overlays[OverlayPosition.TOP_BAR] = TopOverlay(this)
@@ -134,7 +111,43 @@ class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeL
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         LoggingBugsnag.leaveBreadcrumb("Received start command. Is enabled? ${prefManager.isEnabled}")
 
-        if (prefManager.isEnabled) addOverlayAndEnable()
+        if (prefManager.isEnabled) {
+            LoggingBugsnag.leaveBreadcrumb("Attempting to start in foreground.")
+
+            val notification = NotificationCompat.Builder(this, "nachonotch")
+                .setContentTitle(resources.getString(R.string.app_name))
+                .setContentText(resources.getString(R.string.settings_prompt))
+                .setContentIntent(PendingIntent.getActivity(this, 100,
+                    Intent(this, SettingsActivity::class.java), PendingIntent.FLAG_IMMUTABLE))
+                .setSmallIcon(R.drawable.qs_tile_icon)
+                .setPriority(if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
+                    NotificationCompat.PRIORITY_MIN else NotificationCompat.PRIORITY_LOW)
+                .build()
+
+            try {
+                LoggingBugsnag.leaveBreadcrumb("Attempting to start in foreground.")
+                startForeground(1, notification)
+            } catch (e: Throwable) {
+                LoggingBugsnag.leaveBreadcrumb(
+                    message = "Unable to start in foreground.",
+                    error = e,
+                )
+
+                val wasScheduled = intent?.getBooleanExtra(EXTRA_WAS_SCHEDULED, false) ?: false
+
+                stopSelf()
+
+                if (wasScheduled) {
+                    LoggingBugsnag.leaveBreadcrumb("Attempting to restart using scheduler.")
+                    scheduleService()
+                } else {
+                    LoggingBugsnag.leaveBreadcrumb("Already started using scheduler, avoiding start loop and throwing.")
+                    throw e
+                }
+            }
+
+            addOverlayAndEnable()
+        }
         else stopSelf()
 
         return START_STICKY
