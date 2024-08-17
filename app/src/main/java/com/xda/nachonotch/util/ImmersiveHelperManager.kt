@@ -165,7 +165,7 @@ class ImmersiveHelperManager(
                 wm.updateViewLayout(view, view.params)
             }
         } catch (e: Exception) {
-            LoggingBugsnag.leaveBreadcrumb("Unable to add ${view::class.java.name}, alreadyAdded: ${alreadyAdded}: ${e.message}")
+            LoggingBugsnag.leaveBreadcrumb("Unable to add ${view::class.java.name}, alreadyAdded: ${alreadyAdded}.", error = e)
         }
     }
 
@@ -187,7 +187,7 @@ class ImmersiveHelperManager(
         try {
             wm.removeView(view)
         } catch (e: Exception) {
-            LoggingBugsnag.leaveBreadcrumb("Unable to remove ${view::class.java.name}: ${e.message}")
+            LoggingBugsnag.leaveBreadcrumb("Unable to remove ${view::class.java.name}", error = e)
         }
     }
 

@@ -7,6 +7,7 @@ import android.service.quicksettings.TileService
 import android.widget.Toast
 import androidx.core.service.quicksettings.PendingIntentActivityWrapper
 import androidx.core.service.quicksettings.TileServiceCompat
+import com.bugsnag.android.Bugsnag
 import com.xda.nachonotch.R
 import com.xda.nachonotch.util.*
 import com.xda.nachonotch.util.Utils.TERMS_VERSION
@@ -33,11 +34,13 @@ class ToggleService : TileService(), SharedPreferences.OnSharedPreferenceChangeL
     }
 
     override fun onClick() {
+        LoggingBugsnag.leaveBreadcrumb("Tile clicked.")
         if (prefManager.termsVersion >= TERMS_VERSION) {
             if (Settings.canDrawOverlays(this)) {
                 if (prefManager.isEnabled) rem()
                 else add()
             } else {
+                LoggingBugsnag.leaveBreadcrumb("No overlay permission.")
                 val launchIntent = PendingIntentActivityWrapper(this, 100, getOverlaySettingsIntent(), 0, false)
 
                 try {
@@ -56,6 +59,7 @@ class ToggleService : TileService(), SharedPreferences.OnSharedPreferenceChangeL
                 Toast.makeText(this, R.string.enable_overlay_permission, Toast.LENGTH_LONG).show()
             }
         } else {
+            LoggingBugsnag.leaveBreadcrumb("Terms not accepted.")
             val launchIntent = getTermsIntent()
 
             TileServiceCompat.startActivityAndCollapse(
@@ -66,18 +70,25 @@ class ToggleService : TileService(), SharedPreferences.OnSharedPreferenceChangeL
     }
 
     private fun add() {
+        LoggingBugsnag.leaveBreadcrumb("Adding overlay from ToggleService.")
+
         prefManager.isEnabled = true
+
+        updateServiceState()
 
         updateTileState()
     }
 
     private fun rem() {
+        LoggingBugsnag.leaveBreadcrumb("Removing overlay from ToggleService.")
         updateTileState()
 
         prefManager.isEnabled = false
     }
 
     private fun updateTileState() {
+        LoggingBugsnag.leaveBreadcrumb("Updating tile state. Enabled: ${prefManager.isEnabled}.")
+
         if (prefManager.isEnabled) {
             qsTile?.state = Tile.STATE_ACTIVE
             qsTile?.label = resources.getString(R.string.show_notch)

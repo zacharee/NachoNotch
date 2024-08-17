@@ -10,16 +10,15 @@ object LoggingBugsnag {
         message: String,
         metadata: Map<String, Any?>? = null,
         type: BreadcrumbType? = null,
+        error: Throwable? = null
     ) {
         if (BuildConfig.DEBUG) {
             Log.e("NachoNotch", "$message, ${metadata}, $type")
         }
 
-        when {
-            metadata == null && type != null -> Bugsnag.leaveBreadcrumb(message, mapOf(), type)
-            metadata != null && type != null -> Bugsnag.leaveBreadcrumb(message, metadata, type)
-            metadata != null && type == null -> Bugsnag.leaveBreadcrumb(message, metadata, BreadcrumbType.MANUAL)
-            else -> Bugsnag.leaveBreadcrumb(message)
-        }
+        val realMetadata = HashMap(metadata ?: mapOf())
+        realMetadata["error"] = error?.printStackTrace()
+
+        Bugsnag.leaveBreadcrumb(message, realMetadata, type ?: BreadcrumbType.MANUAL)
     }
 }

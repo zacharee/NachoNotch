@@ -16,6 +16,7 @@ import android.view.IRotationWatcher
 import android.view.Surface
 import androidx.core.app.NotificationCompat
 import androidx.core.app.ServiceCompat
+import com.bugsnag.android.Bugsnag
 import com.xda.nachonotch.R
 import com.xda.nachonotch.activities.SettingsActivity
 import com.xda.nachonotch.util.EnvironmentManager
@@ -28,6 +29,7 @@ import com.xda.nachonotch.util.displayCompat
 import com.xda.nachonotch.util.environmentManager
 import com.xda.nachonotch.util.launchOverlaySettings
 import com.xda.nachonotch.util.prefManager
+import com.xda.nachonotch.util.scheduleService
 import com.xda.nachonotch.views.BaseOverlay
 import com.xda.nachonotch.views.BottomLeftCorner
 import com.xda.nachonotch.views.BottomOverlay
@@ -101,7 +103,17 @@ class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeL
                 NotificationCompat.PRIORITY_MIN else NotificationCompat.PRIORITY_LOW)
             .build()
 
-        startForeground(1, notification)
+        try {
+            LoggingBugsnag.leaveBreadcrumb("Attempting to start in foreground.")
+            startForeground(1, notification)
+        } catch (e: Throwable) {
+            LoggingBugsnag.leaveBreadcrumb(
+                message = "Unable to start in foreground, attempting a scheduled start.",
+                error = e,
+            )
+            stopSelf()
+            scheduleService()
+        }
 
         immersiveManager.onCreate()
 

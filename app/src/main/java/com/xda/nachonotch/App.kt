@@ -1,6 +1,7 @@
 package com.xda.nachonotch
 
 import android.annotation.SuppressLint
+import android.annotation.TargetApi
 import android.app.Application
 import android.app.job.JobInfo
 import android.app.job.JobScheduler
@@ -28,6 +29,7 @@ import com.xda.nachonotch.util.prefManager
 import com.xda.nachonotch.util.refreshScreenSize
 import com.xda.nachonotch.util.removeOverlayAndDisable
 import com.xda.nachonotch.util.rotation
+import com.xda.nachonotch.util.updateServiceState
 import org.lsposed.hiddenapibypass.HiddenApiBypass
 
 @SuppressLint("PrivateApi")
@@ -107,45 +109,6 @@ class App : Application(), SharedPreferences.OnSharedPreferenceChangeListener {
             }
         } catch (e: Exception) {
             0
-        }
-    }
-
-    fun updateServiceState() {
-        LoggingBugsnag.leaveBreadcrumb("Updating service state.")
-        if (prefManager.isEnabled) {
-            LoggingBugsnag.leaveBreadcrumb("Hide enabled.")
-            if (Settings.canDrawOverlays(this)) {
-                LoggingBugsnag.leaveBreadcrumb("Has permission to show, starting service.")
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                    scheduleService()
-                } else {
-                    val service = Intent(this, BackgroundHandler::class.java)
-                    ContextCompat.startForegroundService(this, service)
-                }
-            } else {
-                LoggingBugsnag.leaveBreadcrumb("Has no permission, requesting.")
-                launchOverlaySettings()
-            }
-        } else {
-            LoggingBugsnag.leaveBreadcrumb("Not enabled, stopping service.")
-            stopService(Intent(this, BackgroundHandler::class.java))
-        }
-    }
-
-    private fun scheduleService(): Boolean {
-        LoggingBugsnag.leaveBreadcrumb("Scheduling service start.")
-        val serviceComponent = ComponentName(this, BackgroundJobService::class.java)
-        val builder = JobInfo.Builder(100, serviceComponent)
-
-        builder.setMinimumLatency(0)
-        builder.setOverrideDeadline(5 * 1000)
-
-        val jobScheduler = getSystemService(Context.JOB_SCHEDULER_SERVICE) as JobScheduler?
-
-        return if (jobScheduler != null) {
-            jobScheduler.schedule(builder.build()) == JobScheduler.RESULT_SUCCESS
-        } else {
-            false
         }
     }
 

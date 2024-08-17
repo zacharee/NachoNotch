@@ -119,7 +119,7 @@ abstract class BaseOverlay(
             try {
                 context.wm.addView(this, params)
             } catch (e: Exception) {
-                LoggingBugsnag.leaveBreadcrumb("Error adding ${this::class.java.name}: ${e.message}")
+                LoggingBugsnag.leaveBreadcrumb("Error adding ${this::class.java.name}.", error = e)
             }
         }
     }
@@ -131,7 +131,7 @@ abstract class BaseOverlay(
             try {
                 context.wm.removeView(this)
             } catch (e: Exception) {
-                LoggingBugsnag.leaveBreadcrumb("Error removing ${this::class.java.name}: ${e.message}")
+                LoggingBugsnag.leaveBreadcrumb("Error removing ${this::class.java.name}.", error = e)
             }
         }
     }
