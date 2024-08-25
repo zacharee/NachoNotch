@@ -84,6 +84,8 @@ class ToggleService : TileService(), SharedPreferences.OnSharedPreferenceChangeL
         updateTileState()
 
         prefManager.isEnabled = false
+
+        updateServiceState()
     }
 
     private fun updateTileState() {

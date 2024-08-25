@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.displayCutout
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.ime
-import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.lazy.LazyColumn
@@ -40,6 +39,7 @@ import com.xda.nachonotch.util.PrefManager
 import com.xda.nachonotch.util.enforceTerms
 import com.xda.nachonotch.util.prefManager
 import com.xda.nachonotch.util.rememberPreferenceState
+import com.xda.nachonotch.util.updateServiceState
 
 class MainActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -77,7 +77,10 @@ class MainActivity : BaseActivity() {
                 var isEnabled by rememberPreferenceState(
                     key = PrefManager.SHOULD_RUN,
                     value = { prefManager.isEnabled },
-                    onChanged = { prefManager.isEnabled = it },
+                    onChanged = {
+                        prefManager.isEnabled = it
+                        updateServiceState()
+                    },
                 )
 
                 LaunchedEffect(key1 = isEnabled) {

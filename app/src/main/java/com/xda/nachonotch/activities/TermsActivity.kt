@@ -2,6 +2,7 @@ package com.xda.nachonotch.activities
 
 import android.content.Intent
 import android.net.Uri
+import android.os.Bundle
 import android.text.method.LinkMovementMethod
 import android.widget.TextView
 import androidx.compose.foundation.layout.Arrangement
@@ -34,6 +35,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.xda.nachonotch.MainActivity
 import com.xda.nachonotch.R
+import com.xda.nachonotch.util.LoggingBugsnag
 import com.xda.nachonotch.util.Utils
 import com.xda.nachonotch.util.prefManager
 import ru.noties.markwon.Markwon
@@ -46,6 +48,12 @@ class TermsActivity : BaseActivity() {
     }
 
     private val fromMainActivity by lazy { intent.getBooleanExtra(FROM_MAIN_ACTIVITY, false) }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        LoggingBugsnag.leaveBreadcrumb("Terms Activity created.")
+
+        super.onCreate(savedInstanceState)
+    }
 
     @Composable
     override fun Content() {

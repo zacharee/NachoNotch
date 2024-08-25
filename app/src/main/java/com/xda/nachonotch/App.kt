@@ -1,39 +1,25 @@
 package com.xda.nachonotch
 
 import android.annotation.SuppressLint
-import android.annotation.TargetApi
 import android.app.Application
-import android.app.job.JobInfo
-import android.app.job.JobScheduler
 import android.content.ComponentName
 import android.content.Context
-import android.content.Intent
-import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.IBinder
-import android.provider.Settings
 import android.view.Display
 import android.view.IRotationWatcher
-import androidx.core.content.ContextCompat
 import com.bugsnag.android.Bugsnag
 import com.bugsnag.android.performance.BugsnagPerformance
-import com.xda.nachonotch.services.BackgroundHandler
-import com.xda.nachonotch.services.BackgroundJobService
 import com.xda.nachonotch.util.LoggingBugsnag
-import com.xda.nachonotch.util.PrefManager
-import com.xda.nachonotch.util.addOverlayAndEnable
 import com.xda.nachonotch.util.cachedRotation
-import com.xda.nachonotch.util.launchOverlaySettings
-import com.xda.nachonotch.util.prefManager
 import com.xda.nachonotch.util.refreshScreenSize
-import com.xda.nachonotch.util.removeOverlayAndDisable
 import com.xda.nachonotch.util.rotation
 import com.xda.nachonotch.util.updateServiceState
 import org.lsposed.hiddenapibypass.HiddenApiBypass
 
 @SuppressLint("PrivateApi")
-class App : Application(), SharedPreferences.OnSharedPreferenceChangeListener {
+class App : Application() {
     private val iWindowManagerClass: Class<*> = Class.forName("android.view.IWindowManager")
     private val iWindowManager by lazy {
         val stubClass = Class.forName("android.view.IWindowManager\$Stub")
@@ -79,21 +65,6 @@ class App : Application(), SharedPreferences.OnSharedPreferenceChangeListener {
 
         watchRotation(rotationWatcher, Display.DEFAULT_DISPLAY)
         rotationWatcher.onRotationChanged(cachedRotation)
-        prefManager.registerOnSharedPreferenceChangeListener(this)
-    }
-
-    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
-        when (key) {
-            PrefManager.SHOULD_RUN -> {
-                if (Settings.canDrawOverlays(this)) {
-                    if (!prefManager.isEnabled) removeOverlayAndDisable()
-                    else addOverlayAndEnable()
-                } else if (prefManager.isEnabled) {
-                    launchOverlaySettings()
-                    prefManager.isEnabled = false
-                }
-            }
-        }
     }
 
     private fun watchRotation(watcher: IRotationWatcher, displayId: Int): Int {
