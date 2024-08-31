@@ -5,16 +5,21 @@ import android.app.job.JobService
 import android.content.Intent
 import androidx.core.content.ContextCompat
 import com.xda.nachonotch.util.LoggingBugsnag
+import com.xda.nachonotch.util.prefManager
 
 class BackgroundJobService : JobService() {
     override fun onStartJob(params: JobParameters?): Boolean {
-        LoggingBugsnag.leaveBreadcrumb("Running service start job.")
-        ContextCompat.startForegroundService(
-            this,
-            Intent(this, BackgroundHandler::class.java).apply {
-                putExtra(BackgroundHandler.EXTRA_WAS_SCHEDULED, true)
-            },
-        )
+        if (prefManager.isEnabled) {
+            LoggingBugsnag.leaveBreadcrumb("Running service start job.")
+            ContextCompat.startForegroundService(
+                this,
+                Intent(this, BackgroundHandler::class.java).apply {
+                    putExtra(BackgroundHandler.EXTRA_WAS_SCHEDULED, true)
+                },
+            )
+        } else {
+            LoggingBugsnag.leaveBreadcrumb("Not running service start job since not enabled.")
+        }
 
         return false
     }

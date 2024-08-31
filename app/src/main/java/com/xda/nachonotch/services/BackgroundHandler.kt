@@ -147,8 +147,7 @@ class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeL
             }
 
             addOverlayAndEnable()
-        }
-        else stopSelf()
+        } else stopSelf()
 
         return START_STICKY
     }
