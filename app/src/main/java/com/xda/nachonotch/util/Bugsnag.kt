@@ -17,7 +17,7 @@ object LoggingBugsnag {
         }
 
         val realMetadata = HashMap(metadata ?: mapOf())
-        realMetadata["error"] = error?.printStackTrace()
+        realMetadata["error"] = error?.stackTraceToString()
 
         Bugsnag.leaveBreadcrumb(message, realMetadata, type ?: BreadcrumbType.MANUAL)
     }
