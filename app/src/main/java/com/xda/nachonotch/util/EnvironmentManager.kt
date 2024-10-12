@@ -26,8 +26,14 @@ class EnvironmentManager private constructor(private val context: Context) {
     }
 
     private val _environmentStatus: ConcurrentHashMap.KeySetView<EnvironmentStatus, Boolean> = ConcurrentHashMap.newKeySet()
-    val environmentStatus: Set<EnvironmentStatus>
-        get() = _environmentStatus
+
+    fun hasAllStatuses(vararg status: EnvironmentStatus): Boolean {
+        return status.all { _environmentStatus.contains(it) }
+    }
+
+    fun hasAnyStatuses(vararg status: EnvironmentStatus): Boolean {
+        return status.any { _environmentStatus.contains(it) }
+    }
 
     fun addStatus(vararg status: EnvironmentStatus) {
         val oldSet = ConcurrentHashMap(_environmentStatus.map)

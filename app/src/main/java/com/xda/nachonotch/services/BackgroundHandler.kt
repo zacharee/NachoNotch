@@ -212,7 +212,7 @@ class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeL
     private fun addAllOverlays() {
         if (Settings.canDrawOverlays(this)) {
             removeAllOverlays()
-            if (!environmentManager.environmentStatus.contains(EnvironmentManager.EnvironmentStatus.LANDSCAPE)) {
+            if (!environmentManager.hasAllStatuses(EnvironmentManager.EnvironmentStatus.LANDSCAPE)) {
                 addOverlays(*overlays.keys.toTypedArray())
             }
         } else {

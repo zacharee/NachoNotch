@@ -210,7 +210,7 @@ abstract class BaseOverlay(
     }
 
     protected fun checkLandscape(): Boolean {
-        return !context.environmentManager.environmentStatus.contains(EnvironmentManager.EnvironmentStatus.LANDSCAPE)
+        return !context.environmentManager.hasAllStatuses(EnvironmentManager.EnvironmentStatus.LANDSCAPE)
     }
 
     private fun onStatusUpdate() {
