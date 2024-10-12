@@ -30,7 +30,7 @@ class EnvironmentManager private constructor(private val context: Context) {
         get() = _environmentStatus
 
     fun addStatus(vararg status: EnvironmentStatus) {
-        val oldSet = _environmentStatus.toSet()
+        val oldSet = ConcurrentHashMap(_environmentStatus.map)
         LoggingBugsnag.leaveBreadcrumb("Adding EnvironmentStatus ${status.contentToString()}")
         _environmentStatus.addAll(status.toSet())
 
@@ -42,7 +42,7 @@ class EnvironmentManager private constructor(private val context: Context) {
     }
 
     fun removeStatus(vararg status: EnvironmentStatus) {
-        val oldSet = _environmentStatus.toSet()
+        val oldSet = ConcurrentHashMap(_environmentStatus.map)
         LoggingBugsnag.leaveBreadcrumb("Removing EnvironmentStatus ${status.contentToString()}")
         _environmentStatus.removeAll(status.toSet())
 
