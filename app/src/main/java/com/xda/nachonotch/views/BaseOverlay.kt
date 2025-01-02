@@ -129,7 +129,9 @@ abstract class BaseOverlay(
 
         hide {
             try {
-                context.wm.removeView(this)
+                if (isAttachedToWindow) {
+                    context.wm.removeView(this)
+                }
             } catch (e: Exception) {
                 LoggingBugsnag.leaveBreadcrumb("Error removing ${this::class.java.name}.", error = e)
             } finally {

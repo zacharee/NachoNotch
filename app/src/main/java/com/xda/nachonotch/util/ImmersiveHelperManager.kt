@@ -185,7 +185,9 @@ class ImmersiveHelperManager(
         val wm = context.wm
 
         try {
-            wm.removeView(view)
+            if (view.isAttachedToWindow) {
+                wm.removeView(view)
+            }
         } catch (e: Exception) {
             LoggingBugsnag.leaveBreadcrumb("Unable to remove ${view::class.java.name}", error = e)
         }
