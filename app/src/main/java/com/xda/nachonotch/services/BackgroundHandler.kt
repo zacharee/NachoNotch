@@ -27,6 +27,7 @@ import com.xda.nachonotch.util.app
 import com.xda.nachonotch.util.displayCompat
 import com.xda.nachonotch.util.environmentManager
 import com.xda.nachonotch.util.launchOverlaySettings
+import com.xda.nachonotch.util.mainHandler
 import com.xda.nachonotch.util.prefManager
 import com.xda.nachonotch.util.scheduleService
 import com.xda.nachonotch.views.BaseOverlay
@@ -127,6 +128,7 @@ class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeL
             try {
                 LoggingBugsnag.leaveBreadcrumb("Attempting to start in foreground.")
                 startForeground(1, notification)
+                addOverlayAndEnable()
             } catch (e: Throwable) {
                 LoggingBugsnag.leaveBreadcrumb(
                     message = "Unable to start in foreground.",
@@ -145,8 +147,6 @@ class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeL
                     throw e
                 }
             }
-
-            addOverlayAndEnable()
         } else stopSelf()
 
         return START_STICKY
@@ -187,16 +187,19 @@ class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeL
         if (prefManager.isEnabled) {
             when (key) {
                 PrefManager.ROUNDED_CORNERS_TOP -> {
-                    removeOverlays(OverlayPosition.TOP_LEFT_CORNER, OverlayPosition.TOP_RIGHT_CORNER)
-                    addOverlays(OverlayPosition.TOP_LEFT_CORNER, OverlayPosition.TOP_RIGHT_CORNER)
+                    removeOverlays(OverlayPosition.TOP_LEFT_CORNER, OverlayPosition.TOP_RIGHT_CORNER) {
+                        addOverlays(OverlayPosition.TOP_LEFT_CORNER, OverlayPosition.TOP_RIGHT_CORNER)
+                    }
                 }
                 PrefManager.ROUNDED_CORNERS_BOTTOM -> {
-                    removeOverlays(OverlayPosition.BOTTOM_LEFT_CORNER, OverlayPosition.BOTTOM_RIGHT_CORNER)
-                    addOverlays(OverlayPosition.BOTTOM_LEFT_CORNER, OverlayPosition.BOTTOM_RIGHT_CORNER)
+                    removeOverlays(OverlayPosition.BOTTOM_LEFT_CORNER, OverlayPosition.BOTTOM_RIGHT_CORNER) {
+                        addOverlays(OverlayPosition.BOTTOM_LEFT_CORNER, OverlayPosition.BOTTOM_RIGHT_CORNER)
+                    }
                 }
                 PrefManager.COVER_NAV -> {
-                    removeOverlays(OverlayPosition.BOTTOM_BAR)
-                    addOverlays(OverlayPosition.BOTTOM_BAR)
+                    removeOverlays(OverlayPosition.BOTTOM_BAR) {
+                        addOverlays(OverlayPosition.BOTTOM_BAR)
+                    }
                 }
             }
         }
@@ -211,17 +214,18 @@ class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeL
 
     private fun addAllOverlays() {
         if (Settings.canDrawOverlays(this)) {
-            removeAllOverlays()
-            if (!environmentManager.hasAllStatuses(EnvironmentManager.EnvironmentStatus.LANDSCAPE)) {
-                addOverlays(*overlays.keys.toTypedArray())
+            removeAllOverlays {
+                if (!environmentManager.hasAllStatuses(EnvironmentManager.EnvironmentStatus.LANDSCAPE)) {
+                    addOverlays(*overlays.keys.toTypedArray())
+                }
             }
         } else {
             launchOverlaySettings()
         }
     }
 
-    private fun removeAllOverlays() {
-        removeOverlays(*overlays.keys.toTypedArray())
+    private fun removeAllOverlays(finishedListener: (() -> Unit)? = null) {
+        removeOverlays(*overlays.keys.toTypedArray(), finishedListener = finishedListener)
     }
 
     private fun addOverlays(vararg overlays: OverlayPosition) {
@@ -230,9 +234,17 @@ class BackgroundHandler : Service(), SharedPreferences.OnSharedPreferenceChangeL
         }
     }
 
-    private fun removeOverlays(vararg overlays: OverlayPosition) {
+    private fun removeOverlays(vararg overlays: OverlayPosition, finishedListener: (() -> Unit)? = null) {
+        var removed = 0
+
         overlays.forEach {
-            this.overlays[it]?.remove()
+            this.overlays[it]?.remove {
+                removed++
+
+                if (removed == overlays.size) {
+                    finishedListener?.invoke()
+                }
+            }
         }
     }
 

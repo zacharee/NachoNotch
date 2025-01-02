@@ -13,7 +13,7 @@ object LoggingBugsnag {
         error: Throwable? = null
     ) {
         if (BuildConfig.DEBUG) {
-            Log.e("NachoNotch", "$message, ${metadata}, $type")
+            Log.e("NachoNotch", "$message, ${metadata}, $type", error)
         }
 
         val realMetadata = HashMap(metadata ?: mapOf())

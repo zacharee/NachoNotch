@@ -124,7 +124,7 @@ abstract class BaseOverlay(
         }
     }
 
-    open fun remove() {
+    open fun remove(finishListener: (() -> Unit)? = null) {
         LoggingBugsnag.leaveBreadcrumb("Removing ${this::class.java.name}")
 
         hide {
@@ -132,6 +132,8 @@ abstract class BaseOverlay(
                 context.wm.removeView(this)
             } catch (e: Exception) {
                 LoggingBugsnag.leaveBreadcrumb("Error removing ${this::class.java.name}.", error = e)
+            } finally {
+                finishListener?.invoke()
             }
         }
     }
