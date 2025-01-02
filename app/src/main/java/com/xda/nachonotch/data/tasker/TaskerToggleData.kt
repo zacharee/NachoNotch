@@ -4,7 +4,6 @@ import com.joaomgcd.taskerpluginlibrary.input.TaskerInputField
 import com.joaomgcd.taskerpluginlibrary.input.TaskerInputRoot
 import com.joaomgcd.taskerpluginlibrary.output.TaskerOutputObject
 import com.joaomgcd.taskerpluginlibrary.output.TaskerOutputVariable
-import com.xda.nachonotch.R
 
 @TaskerInputRoot
 class TaskerToggleData @JvmOverloads constructor(
