@@ -42,23 +42,23 @@ class ImmersiveHelperManager(
     )
 
     private val verticalAttachListener = object : View.OnAttachStateChangeListener {
-        override fun onViewAttachedToWindow(v: View?) {
+        override fun onViewAttachedToWindow(v: View) {
             LoggingBugsnag.leaveBreadcrumb("Vertical helper attached.")
             verticalHelperAdded = true
         }
 
-        override fun onViewDetachedFromWindow(v: View?) {
+        override fun onViewDetachedFromWindow(v: View) {
             LoggingBugsnag.leaveBreadcrumb("Vertical helper detached.")
             verticalHelperAdded = false
         }
     }
     private val horizontalAttachListener = object : View.OnAttachStateChangeListener {
-        override fun onViewAttachedToWindow(v: View?) {
+        override fun onViewAttachedToWindow(v: View) {
             LoggingBugsnag.leaveBreadcrumb("Horizontal helper attached.")
             horizontalHelperAdded = true
         }
 
-        override fun onViewDetachedFromWindow(v: View?) {
+        override fun onViewDetachedFromWindow(v: View) {
             LoggingBugsnag.leaveBreadcrumb("Horizontal helper detached.")
             horizontalHelperAdded = false
         }

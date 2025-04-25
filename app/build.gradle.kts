@@ -8,12 +8,12 @@ plugins {
 android {
     namespace = "com.xda.nachonotch"
 
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.xda.nachonotch"
         minSdk = 24
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 42
         versionName = versionCode.toString()
 
