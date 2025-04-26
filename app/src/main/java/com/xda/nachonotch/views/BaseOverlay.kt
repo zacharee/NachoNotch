@@ -24,6 +24,10 @@ abstract class BaseOverlay(
     backgroundResource: Int = 0,
     backgroundColor: Int = Int.MIN_VALUE,
 ) : View(context), EventObserver, OnSharedPreferenceChangeListener {
+    companion object {
+        const val FULL_ALPHA = 1f
+    }
+
     open val params = WindowManager.LayoutParams().apply {
         @Suppress("DEPRECATION")
         flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
@@ -150,7 +154,7 @@ abstract class BaseOverlay(
 
         if (shouldAnimate) {
             var canceled = false
-            animator = ValueAnimator.ofFloat(params.alpha, 1f)
+            animator = ValueAnimator.ofFloat(params.alpha, FULL_ALPHA)
             animator?.addListener(
                 onEnd = {
                     if (!canceled) {
@@ -165,7 +169,7 @@ abstract class BaseOverlay(
             }
             animator?.start()
         } else {
-            params.alpha = 1f
+            params.alpha = FULL_ALPHA
             update()
             animationComplete?.invoke()
         }
@@ -192,7 +196,7 @@ abstract class BaseOverlay(
                 onCancel = { canceled = true },
             )
             animator?.addUpdateListener {
-                params.alpha = 1f - it.animatedFraction
+                params.alpha = FULL_ALPHA - it.animatedFraction
                 update()
             }
             animator?.start()

@@ -3,8 +3,12 @@ package com.xda.nachonotch.views
 import android.content.Context
 import android.content.SharedPreferences
 import android.graphics.Color
-import android.view.*
-import android.view.WindowManager.LayoutParams.*
+import android.os.Build
+import android.view.Gravity
+import android.view.WindowManager
+import android.view.WindowManager.LayoutParams.FLAG_BLUR_BEHIND
+import android.view.WindowManager.LayoutParams.FLAG_DIM_BEHIND
+import android.view.WindowManager.LayoutParams.MATCH_PARENT
 import com.xda.nachonotch.util.EnvironmentManager
 import com.xda.nachonotch.util.PrefManager
 import com.xda.nachonotch.util.environmentManager
@@ -12,11 +16,11 @@ import com.xda.nachonotch.util.prefManager
 
 class TopOverlay(context: Context) : BaseOverlay(context, backgroundColor = Color.BLACK) {
     override val params: WindowManager.LayoutParams = super.params.apply {
-        flags = flags or if (context.prefManager.forceLightStatusBarIcons) FLAG_DIM_BEHIND else 0
-        dimAmount = 0.000001f
         gravity = Gravity.TOP
         width = MATCH_PARENT
         height = context.prefManager.statusBarHeight
+
+        updateLightIconsState()
     }
 
     override val listenKeys: List<String>
@@ -27,13 +31,7 @@ class TopOverlay(context: Context) : BaseOverlay(context, backgroundColor = Colo
 
         when (key) {
             PrefManager.FORCE_LIGHT_STATUS_BAR_ICONS -> {
-                val forceLightIcons = context.prefManager.forceLightStatusBarIcons
-                params.flags = if (forceLightIcons) {
-                    params.flags or FLAG_DIM_BEHIND
-                } else {
-                    params.flags and FLAG_DIM_BEHIND.inv()
-                }
-                params.dimAmount = if (forceLightIcons) 0.000001f else 0f
+                params.updateLightIconsState()
 
                 hide {
                     show()
@@ -53,5 +51,29 @@ class TopOverlay(context: Context) : BaseOverlay(context, backgroundColor = Colo
     override fun canShow(): Boolean {
         return !context.environmentManager.hasAllStatuses(EnvironmentManager.EnvironmentStatus.STATUS_IMMERSIVE)
                 && checkLandscape()
+    }
+
+    private fun WindowManager.LayoutParams.updateLightIconsState() {
+        val forceLightIcons = context.prefManager.forceLightStatusBarIcons
+
+        flags = if (forceLightIcons) {
+            flags or if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                FLAG_BLUR_BEHIND
+            } else {
+                FLAG_DIM_BEHIND
+            }
+        } else {
+            flags and if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                FLAG_BLUR_BEHIND
+            } else {
+                FLAG_DIM_BEHIND
+            }.inv()
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            blurBehindRadius = 0
+        } else {
+            dimAmount = if (forceLightIcons) 0.000001f else 0f
+        }
     }
 }
