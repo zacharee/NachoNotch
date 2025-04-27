@@ -9,6 +9,8 @@ import android.os.Build
 import android.provider.Settings
 import android.view.View
 import android.view.WindowManager
+import androidx.annotation.ColorInt
+import androidx.annotation.DrawableRes
 import androidx.core.animation.addListener
 import com.xda.nachonotch.util.EnvironmentManager
 import com.xda.nachonotch.util.Event
@@ -21,8 +23,10 @@ import com.xda.nachonotch.util.wm
 
 abstract class BaseOverlay(
     context: Context,
-    backgroundResource: Int = 0,
-    backgroundColor: Int = Int.MIN_VALUE,
+    @DrawableRes
+    backgroundResource: Int? = null,
+    @ColorInt
+    backgroundColor: Int? = null,
 ) : View(context), EventObserver, OnSharedPreferenceChangeListener {
     companion object {
         const val FULL_ALPHA = 1f
@@ -67,9 +71,9 @@ abstract class BaseOverlay(
         }
 
     init {
-        if (backgroundResource != 0) {
+        if (backgroundResource != null) {
             setBackgroundResource(backgroundResource)
-        } else if (backgroundColor != Int.MIN_VALUE) {
+        } else if (backgroundColor != null) {
             setBackgroundColor(backgroundColor)
         }
 
