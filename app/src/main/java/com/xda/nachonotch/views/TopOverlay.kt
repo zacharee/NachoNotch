@@ -55,22 +55,23 @@ class TopOverlay(context: Context) : BaseOverlay(context, backgroundColor = Colo
 
     private fun WindowManager.LayoutParams.updateLightIconsState() {
         val forceLightIcons = context.prefManager.forceLightStatusBarIcons
+        val useBlurFlag = Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM
 
         flags = if (forceLightIcons) {
-            flags or if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            flags or if (useBlurFlag) {
                 FLAG_BLUR_BEHIND
             } else {
                 FLAG_DIM_BEHIND
             }
         } else {
-            flags and if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            flags and if (useBlurFlag) {
                 FLAG_BLUR_BEHIND
             } else {
                 FLAG_DIM_BEHIND
             }.inv()
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+        if (useBlurFlag) {
             blurBehindRadius = 0
         } else {
             dimAmount = if (forceLightIcons) 0.000001f else 0f
