@@ -14,7 +14,7 @@ android {
         applicationId = "com.xda.nachonotch"
         minSdk = 24
         targetSdk = 35
-        versionCode = 43
+        versionCode = 44
         versionName = versionCode.toString()
 
         resValue("string", "applicationId", "$applicationId")
