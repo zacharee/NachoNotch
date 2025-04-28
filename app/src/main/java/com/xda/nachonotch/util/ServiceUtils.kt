@@ -1,6 +1,5 @@
 package com.xda.nachonotch.util
 
-import android.annotation.TargetApi
 import android.app.job.JobInfo
 import android.app.job.JobScheduler
 import android.content.ComponentName
@@ -60,19 +59,17 @@ fun Context.updateServiceState(toggle: Boolean = false): Pair<Boolean, String?> 
     }
 }
 
-@TargetApi(Build.VERSION_CODES.Q)
 fun Context.scheduleService(): Boolean {
     LoggingBugsnag.leaveBreadcrumb("Scheduling service start.")
     val serviceComponent = ComponentName(this, BackgroundJobService::class.java)
     val builder = JobInfo.Builder(100, serviceComponent)
 
-    builder.setMinimumLatency(0)
-    builder.setOverrideDeadline(5 * 1000)
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
         builder.setExpedited(true)
-    } else {
+    } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
         @Suppress("DEPRECATION")
         builder.setImportantWhileForeground(true)
+        builder.setOverrideDeadline(5 * 1000)
     }
 
     val jobScheduler = getSystemService(Context.JOB_SCHEDULER_SERVICE) as JobScheduler?
