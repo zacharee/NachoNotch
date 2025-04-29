@@ -12,7 +12,9 @@ import android.view.WindowManager.LayoutParams.MATCH_PARENT
 import com.xda.nachonotch.util.EnvironmentManager
 import com.xda.nachonotch.util.PrefManager
 import com.xda.nachonotch.util.environmentManager
+import com.xda.nachonotch.util.isPixelUI
 import com.xda.nachonotch.util.prefManager
+import com.xda.nachonotch.util.wm
 
 class TopOverlay(context: Context) : BaseOverlay(context, backgroundColor = Color.BLACK) {
     override val params: WindowManager.LayoutParams = super.params.apply {
@@ -55,7 +57,7 @@ class TopOverlay(context: Context) : BaseOverlay(context, backgroundColor = Colo
 
     private fun WindowManager.LayoutParams.updateLightIconsState() {
         val forceLightIcons = context.prefManager.forceLightStatusBarIcons
-        val useBlurFlag = Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM
+        val useBlurFlag = Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM && (context.wm.isCrossWindowBlurEnabled || context.isPixelUI)
 
         flags = if (forceLightIcons) {
             flags or if (useBlurFlag) {
