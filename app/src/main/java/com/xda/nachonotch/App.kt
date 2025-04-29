@@ -3,7 +3,6 @@ package com.xda.nachonotch
 import android.annotation.SuppressLint
 import android.app.Application
 import android.content.ComponentName
-import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.IBinder
@@ -26,7 +25,7 @@ class App : Application() {
         val serviceManagerClass = Class.forName("android.os.ServiceManager")
 
         val binder = serviceManagerClass.getMethod("checkService", String::class.java)
-            .invoke(null, Context.WINDOW_SERVICE)
+            .invoke(null, WINDOW_SERVICE)
         stubClass.getMethod("asInterface", IBinder::class.java).invoke(null, binder)
     }
     private val rotationWatcher by lazy { RotationWatcher() }
@@ -78,7 +77,7 @@ class App : Application() {
                         .invoke(iWindowManager, watcher, displayId) as Int
                 }
             }
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             0
         }
     }
