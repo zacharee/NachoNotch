@@ -6,15 +6,12 @@ import android.graphics.Color
 import android.os.Build
 import android.view.Gravity
 import android.view.WindowManager
-import android.view.WindowManager.LayoutParams.FLAG_BLUR_BEHIND
 import android.view.WindowManager.LayoutParams.FLAG_DIM_BEHIND
 import android.view.WindowManager.LayoutParams.MATCH_PARENT
 import com.xda.nachonotch.util.EnvironmentManager
 import com.xda.nachonotch.util.PrefManager
 import com.xda.nachonotch.util.environmentManager
-import com.xda.nachonotch.util.isPixelUI
 import com.xda.nachonotch.util.prefManager
-import com.xda.nachonotch.util.wm
 
 class TopOverlay(context: Context) : BaseOverlay(context, backgroundColor = Color.BLACK) {
     override val params: WindowManager.LayoutParams = super.params.apply {
@@ -57,26 +54,14 @@ class TopOverlay(context: Context) : BaseOverlay(context, backgroundColor = Colo
 
     private fun WindowManager.LayoutParams.updateLightIconsState() {
         val forceLightIcons = context.prefManager.forceLightStatusBarIcons
-        val useBlurFlag = Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM && (context.wm.isCrossWindowBlurEnabled || context.isPixelUI)
+        val useZeroDimAmount = Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM
 
         flags = if (forceLightIcons) {
-            flags or if (useBlurFlag) {
-                FLAG_BLUR_BEHIND
-            } else {
-                FLAG_DIM_BEHIND
-            }
+            flags or FLAG_DIM_BEHIND
         } else {
-            flags and if (useBlurFlag) {
-                FLAG_BLUR_BEHIND
-            } else {
-                FLAG_DIM_BEHIND
-            }.inv()
+            flags and FLAG_DIM_BEHIND.inv()
         }
 
-        if (useBlurFlag) {
-            blurBehindRadius = 0
-        } else {
-            dimAmount = if (forceLightIcons) 0.000001f else 0f
-        }
+        dimAmount = if (forceLightIcons && !useZeroDimAmount) 0.000001f else 0f
     }
 }
