@@ -85,7 +85,11 @@ class OverlayHandler private constructor(private val context: Context) : Immersi
     }
 
     fun onCreate() {
+        LoggingBugsnag.leaveBreadcrumb("Calling OverlayHandler#onCreate()")
+
         if (!created.value) {
+            LoggingBugsnag.leaveBreadcrumb("Creating overlay stuff")
+
             immersiveManager.onCreate()
             context.prefManager.registerOnSharedPreferenceChangeListener(this)
             context.app.rotationWatchers.add(rotationWatcher)
@@ -95,7 +99,11 @@ class OverlayHandler private constructor(private val context: Context) : Immersi
     }
 
     fun onDestroy() {
+        LoggingBugsnag.leaveBreadcrumb("Calling OverlayHandler#onDestroy()")
+
         if (created.value) {
+            LoggingBugsnag.leaveBreadcrumb("Destroying overlay stuff")
+
             removeAllOverlays()
             immersiveManager.onDestroy()
             context.app.rotationWatchers.remove(rotationWatcher)
