@@ -28,6 +28,14 @@ fun Context.updateServiceState(toggle: Boolean = false): Pair<Boolean, String?> 
                 LoggingBugsnag.leaveBreadcrumb("Hide enabled.")
                 if (Settings.canDrawOverlays(this)) {
                     LoggingBugsnag.leaveBreadcrumb("Has permission to show, starting service.")
+
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+                        LoggingBugsnag.leaveBreadcrumb("Android 15 or later, attempting to add overlays *before* starting service.")
+
+                        overlayHandler.onCreate()
+                        overlayHandler.addOverlayAndEnable()
+                    }
+
                     try {
                         val service = Intent(this, BackgroundHandler::class.java)
                         ContextCompat.startForegroundService(this, service)

@@ -1,14 +1,15 @@
 [versions]
 activityCompose = "1.10.1"
-androidGradlePlugin = "8.9.2"
+androidGradlePlugin = "8.10.0"
 appcompat = "1.7.0"
-bugsnagAndroid = "6.12.1"
+bugsnagAndroid = "6.13.0"
 bugsnagAndroidGradlePlugin = "8.1.0"
 bugsnagAndroidPerformance = "1.11.0"
-composeBom = "2025.04.01"
+composeBom = "2025.05.00"
 constraintlayout = "2.2.1"
 hiddenapibypass = "6.1"
 kotlin = "2.1.20"
+kotlinx-atomicfu = "0.27.0"
 kotlinxCoroutinesCore = "1.10.2"
 markwon = "2.0.2"
 material = "1.12.0"
@@ -27,6 +28,7 @@ compose-material3 = { module = "androidx.compose.material3:material3" }
 constraintlayout = { module = "androidx.constraintlayout:constraintlayout", version.ref = "constraintlayout" }
 hiddenapibypass = { module = "org.lsposed.hiddenapibypass:hiddenapibypass", version.ref = "hiddenapibypass" }
 kotlin-stdlib-jdk8 = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk8", version.ref = "kotlin" }
+kotlinx-atomicfu = { module = "org.jetbrains.kotlinx:atomicfu", version.ref = "kotlinx-atomicfu" }
 kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlinxCoroutinesCore" }
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinxCoroutinesCore" }
 markwon = { module = "ru.noties:markwon", version.ref = "markwon" }
@@ -40,3 +42,4 @@ android-application = { id = "com.android.application", version.ref = "androidGr
 bugsnag-android = { id = "com.bugsnag.android.gradle", version.ref = "bugsnagAndroidGradlePlugin" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+kotlinx-atomicfu = { id = "org.jetbrains.kotlinx.atomicfu", version.ref = "kotlinx-atomicfu" }

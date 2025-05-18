@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.bugsnag.android)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.kotlinx.atomicfu)
 }
 
 android {
@@ -44,6 +45,7 @@ dependencies {
     implementation(libs.kotlin.stdlib.jdk8)
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.coroutines.android)
+    implementation(libs.kotlinx.atomicfu)
 
     //AndroidX
     implementation(libs.appcompat)
