@@ -143,10 +143,7 @@ class OverlayHandler private constructor(private val context: Context) : Immersi
         LoggingBugsnag.leaveBreadcrumb("Adding overlays.")
 
         immersiveManager.add()
-        addAllOverlays()
-    }
 
-    private fun addAllOverlays() {
         if (Settings.canDrawOverlays(context)) {
             removeAllOverlays {
                 if (!context.environmentManager.hasAllStatuses(EnvironmentManager.EnvironmentStatus.LANDSCAPE)) {
@@ -158,7 +155,7 @@ class OverlayHandler private constructor(private val context: Context) : Immersi
         }
     }
 
-    fun removeAllOverlays(finishedListener: (() -> Unit)? = null) {
+    private fun removeAllOverlays(finishedListener: (() -> Unit)? = null) {
         removeOverlays(*overlays.keys.toTypedArray(), finishedListener = finishedListener)
     }
 
