@@ -58,4 +58,12 @@ class EnvironmentManager private constructor(private val context: Context) {
             }
         }
     }
+
+    fun setStatus(add: Boolean, vararg status: EnvironmentStatus) {
+        if (add) {
+            addStatus(*status)
+        } else {
+            removeStatus(*status)
+        }
+    }
 }

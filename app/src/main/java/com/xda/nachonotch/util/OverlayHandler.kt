@@ -64,11 +64,7 @@ class OverlayHandler private constructor(private val context: Context) : Immersi
                     rotation != Surface.ROTATION_0
                 }
 
-                if (!hideBars) {
-                    context.environmentManager.removeStatus(EnvironmentManager.EnvironmentStatus.LANDSCAPE)
-                } else {
-                    context.environmentManager.addStatus(EnvironmentManager.EnvironmentStatus.LANDSCAPE)
-                }
+                context.environmentManager.setStatus(hideBars, EnvironmentManager.EnvironmentStatus.LANDSCAPE)
             }
         }
     }
@@ -116,18 +112,10 @@ class OverlayHandler private constructor(private val context: Context) : Immersi
     override fun onImmersiveChange() {
         val status = immersiveManager.isStatusImmersive()
 
-        if (status) {
-            context.environmentManager.addStatus(EnvironmentManager.EnvironmentStatus.STATUS_IMMERSIVE)
-        } else {
-            context.environmentManager.removeStatus(EnvironmentManager.EnvironmentStatus.STATUS_IMMERSIVE)
-        }
+        context.environmentManager.setStatus(status, EnvironmentManager.EnvironmentStatus.STATUS_IMMERSIVE)
 
         immersiveManager.isNavImmersive { nav ->
-            if (nav) {
-                context.environmentManager.addStatus(EnvironmentManager.EnvironmentStatus.NAV_IMMERSIVE)
-            } else {
-                context.environmentManager.removeStatus(EnvironmentManager.EnvironmentStatus.NAV_IMMERSIVE)
-            }
+            context.environmentManager.setStatus(nav, EnvironmentManager.EnvironmentStatus.NAV_IMMERSIVE)
         }
     }
 
