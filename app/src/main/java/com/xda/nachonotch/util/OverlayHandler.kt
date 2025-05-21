@@ -16,6 +16,7 @@ import com.xda.nachonotch.views.TopLeftCorner
 import com.xda.nachonotch.views.TopOverlay
 import com.xda.nachonotch.views.TopRightCorner
 import kotlinx.atomicfu.atomic
+import kotlin.collections.set
 
 val Context.overlayHandler: OverlayHandler
     get() = OverlayHandler.getInstance(this)
@@ -42,7 +43,14 @@ class OverlayHandler private constructor(private val context: Context) : Immersi
         BOTTOM_RIGHT_CORNER
     }
 
-    private val overlays = HashMap<OverlayPosition, BaseOverlay>()
+    private val overlays = hashMapOf<OverlayPosition, BaseOverlay>(
+        OverlayPosition.TOP_BAR to TopOverlay(context),
+        OverlayPosition.BOTTOM_BAR to BottomOverlay(context),
+        OverlayPosition.TOP_LEFT_CORNER to TopLeftCorner(context),
+        OverlayPosition.TOP_RIGHT_CORNER to TopRightCorner(context),
+        OverlayPosition.BOTTOM_LEFT_CORNER to BottomLeftCorner(context),
+        OverlayPosition.BOTTOM_RIGHT_CORNER to BottomRightCorner(context),
+    )
 
     private val immersiveManager by lazy {
         ImmersiveHelperManager(context, this)
@@ -69,16 +77,6 @@ class OverlayHandler private constructor(private val context: Context) : Immersi
         }
     }
     private val created = atomic(false)
-
-    init {
-        overlays[OverlayPosition.TOP_BAR] = TopOverlay(context)
-        overlays[OverlayPosition.BOTTOM_BAR] = BottomOverlay(context)
-
-        overlays[OverlayPosition.TOP_LEFT_CORNER] = TopLeftCorner(context)
-        overlays[OverlayPosition.TOP_RIGHT_CORNER] = TopRightCorner(context)
-        overlays[OverlayPosition.BOTTOM_LEFT_CORNER] = BottomLeftCorner(context)
-        overlays[OverlayPosition.BOTTOM_RIGHT_CORNER] = BottomRightCorner(context)
-    }
 
     fun onCreate() {
         LoggingBugsnag.leaveBreadcrumb("Calling OverlayHandler#onCreate()")
