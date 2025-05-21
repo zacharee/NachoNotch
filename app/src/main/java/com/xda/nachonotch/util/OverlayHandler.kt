@@ -142,9 +142,9 @@ class OverlayHandler private constructor(private val context: Context) : Immersi
     fun addOverlayAndEnable() {
         LoggingBugsnag.leaveBreadcrumb("Adding overlays.")
 
-        immersiveManager.add()
-
         if (Settings.canDrawOverlays(context)) {
+            immersiveManager.add()
+
             removeAllOverlays {
                 if (!context.environmentManager.hasAllStatuses(EnvironmentManager.EnvironmentStatus.LANDSCAPE)) {
                     addOverlays(*overlays.keys.toTypedArray())
