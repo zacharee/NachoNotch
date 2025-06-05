@@ -34,17 +34,8 @@ fun Context.updateServiceState(toggle: Boolean = false): Pair<Boolean, String?> 
 
                         overlayHandler.onCreate()
                         overlayHandler.addOverlayAndEnable()
-                    }
-
-                    try {
-                        val service = Intent(this, BackgroundHandler::class.java)
-                        ContextCompat.startForegroundService(this, service)
-                    } catch (e: Throwable) {
-                        LoggingBugsnag.leaveBreadcrumb(
-                            message = "Unable to directly start foreground service.",
-                            error = e,
-                        )
-                        scheduleService()
+                    } else {
+                        startService()
                     }
                 } else {
                     LoggingBugsnag.leaveBreadcrumb("Has no permission, requesting.")
@@ -86,5 +77,18 @@ fun Context.scheduleService(): Boolean {
         jobScheduler.schedule(builder.build()) == JobScheduler.RESULT_SUCCESS
     } else {
         false
+    }
+}
+
+fun Context.startService() {
+    try {
+        val service = Intent(this, BackgroundHandler::class.java)
+        ContextCompat.startForegroundService(this, service)
+    } catch (e: Throwable) {
+        LoggingBugsnag.leaveBreadcrumb(
+            message = "Unable to directly start foreground service.",
+            error = e,
+        )
+        scheduleService()
     }
 }

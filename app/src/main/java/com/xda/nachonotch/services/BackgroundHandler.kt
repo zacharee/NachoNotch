@@ -13,6 +13,7 @@ import androidx.core.app.ServiceCompat
 import com.xda.nachonotch.R
 import com.xda.nachonotch.activities.SettingsActivity
 import com.xda.nachonotch.util.LoggingBugsnag
+import com.xda.nachonotch.util.mainHandler
 import com.xda.nachonotch.util.overlayHandler
 import com.xda.nachonotch.util.prefManager
 import com.xda.nachonotch.util.scheduleService
@@ -20,6 +21,8 @@ import com.xda.nachonotch.util.scheduleService
 class BackgroundHandler : Service() {
     companion object {
         const val EXTRA_WAS_SCHEDULED = "was_scheduled"
+
+        var isCreated = false
     }
 
     override fun onCreate() {
@@ -32,7 +35,11 @@ class BackgroundHandler : Service() {
             notifMan.createNotificationChannel(NotificationChannel("nachonotch", resources.getString(R.string.app_name), NotificationManager.IMPORTANCE_LOW))
         }
 
-        overlayHandler.onCreate()
+        isCreated = true
+
+        mainHandler.post {
+            overlayHandler.onCreate()
+        }
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -79,11 +86,15 @@ class BackgroundHandler : Service() {
     }
 
     override fun onDestroy() {
+        isCreated = false
+
         LoggingBugsnag.leaveBreadcrumb("Service stopping.")
         super.onDestroy()
         ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE)
 
-        overlayHandler.onDestroy()
+        mainHandler.post {
+            overlayHandler.onDestroy()
+        }
     }
 
     override fun onBind(intent: Intent): IBinder {
