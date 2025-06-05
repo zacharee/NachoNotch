@@ -172,7 +172,7 @@ abstract class BaseOverlay(
                 onCancel = { canceled = true },
             )
             animator?.addUpdateListener {
-                params.alpha = it.animatedFraction
+                params.alpha = it.animatedFraction * FULL_ALPHA
                 update()
             }
             animator?.start()
