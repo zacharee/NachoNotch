@@ -16,7 +16,6 @@ import com.xda.nachonotch.views.TopLeftCorner
 import com.xda.nachonotch.views.TopOverlay
 import com.xda.nachonotch.views.TopRightCorner
 import kotlinx.atomicfu.atomic
-import kotlin.collections.set
 
 val Context.overlayHandler: OverlayHandler
     get() = OverlayHandler.getInstance(this)
