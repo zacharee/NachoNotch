@@ -5,6 +5,7 @@ import android.content.SharedPreferences
 import android.graphics.Color
 import android.os.Build
 import android.view.Gravity
+import android.view.WindowInsetsController
 import android.view.WindowManager
 import android.view.WindowManager.LayoutParams.FLAG_DIM_BEHIND
 import android.view.WindowManager.LayoutParams.MATCH_PARENT
@@ -70,6 +71,14 @@ class TopOverlay(context: Context) : BaseOverlay(context, backgroundColor = Colo
             flags or FLAG_DIM_BEHIND
         } else {
             flags and FLAG_DIM_BEHIND.inv()
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            insetsFlags.appearance = if (forceLightIcons) {
+                insetsFlags.appearance or WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS
+            } else {
+                insetsFlags.appearance and WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS.inv()
+            }
         }
 
         dimAmount = if (forceLightIcons && !useZeroDimAmount) 0.000001f else 0f

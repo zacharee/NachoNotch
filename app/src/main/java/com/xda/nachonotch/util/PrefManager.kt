@@ -67,7 +67,7 @@ class PrefManager private constructor(private val context: Context) {
         }
 
     val forceLightStatusBarIcons: Boolean
-        get() = getBoolean(FORCE_LIGHT_STATUS_BAR_ICONS, true)
+        get() = getBoolean(FORCE_LIGHT_STATUS_BAR_ICONS, false)
 
     val navBarHeight: Int
         get() = getInt(NAV_HEIGHT, context.resourceNavBarHeight)
